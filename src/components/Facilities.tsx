@@ -1,184 +1,121 @@
 
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Clock, Star, Search, Navigation } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Building2, Phone, Clock, MapPin, Star } from "lucide-react";
 
 const Facilities = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const { data: facilities = [], isLoading } = useQuery({
+    queryKey: ["facilities"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("facilities")
+        .select("*")
+        .order("rating", { ascending: false });
 
-  const facilities = [
-    {
-      id: 1,
-      name: "City General Hospital",
-      type: "Hospital",
-      address: "123 Main St, Downtown",
-      phone: "(555) 123-4567",
-      distance: "0.5 miles",
-      rating: 4.8,
-      hours: "24/7",
-      specialties: ["Emergency", "Cardiology", "Internal Medicine"]
+      if (error) throw error;
+      return data;
     },
-    {
-      id: 2,
-      name: "HealthFirst Clinic",
-      type: "Clinic",
-      address: "456 Oak Ave, Midtown",
-      phone: "(555) 987-6543",
-      distance: "1.2 miles",
-      rating: 4.6,
-      hours: "8 AM - 6 PM",
-      specialties: ["Primary Care", "Pediatrics", "Women's Health"]
-    },
-    {
-      id: 3,
-      name: "FitLife Wellness Center",
-      type: "Fitness",
-      address: "789 Pine Rd, Northside",
-      phone: "(555) 456-7890",
-      distance: "2.1 miles",
-      rating: 4.7,
-      hours: "5 AM - 11 PM",
-      specialties: ["Gym", "Yoga", "Physical Therapy"]
-    },
-    {
-      id: 4,
-      name: "Central Pharmacy",
-      type: "Pharmacy",
-      address: "321 Cedar St, Central",
-      phone: "(555) 234-5678",
-      distance: "0.8 miles",
-      rating: 4.5,
-      hours: "7 AM - 10 PM",
-      specialties: ["Prescriptions", "Vaccines", "Health Screening"]
-    }
-  ];
+  });
 
-  const facilityTypes = ["All", "Hospital", "Clinic", "Pharmacy", "Fitness", "Emergency"];
+  if (isLoading) {
+    return <div>Loading facilities...</div>;
+  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Healthcare Facilities</h2>
-        <p className="text-muted-foreground">Find healthcare providers and wellness facilities near you</p>
+        <h2 className="text-2xl font-bold">Healthcare Facilities</h2>
+        <p className="text-muted-foreground">Find nearby hospitals, clinics, and health services</p>
       </div>
 
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search facilities, doctors, or services..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <Button>
-              <Navigation className="h-4 w-4 mr-2" />
-              Use My Location
-            </Button>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 mt-4">
-            {facilityTypes.map((type) => (
-              <Badge
-                key={type}
-                variant="outline"
-                className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-              >
-                {type}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {facilities.map((facility) => (
-          <Card key={facility.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="pt-6">
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold">{facility.name}</h3>
-                    <Badge variant="secondary">{facility.type}</Badge>
+          <Card key={facility.id} className="h-full">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-lg flex items-center space-x-2">
+                    <Building2 className="h-5 w-5" />
+                    <span>{facility.name}</span>
+                  </CardTitle>
+                  <CardDescription>{facility.type}</CardDescription>
+                </div>
+                {facility.rating && (
+                  <div className="flex items-center space-x-1">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="text-sm font-medium">{facility.rating}</span>
                   </div>
-                  
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span>{facility.address}</span>
-                      <span className="text-primary font-medium">• {facility.distance}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4" />
-                      <span>{facility.phone}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span>{facility.hours}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span>{facility.rating}/5.0</span>
-                    </div>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2 text-sm">
+                <div className="flex items-start space-x-2">
+                  <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <span>{facility.address}</span>
+                </div>
+                
+                {facility.phone && (
+                  <div className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span>{facility.phone}</span>
                   </div>
-                  
-                  <div className="flex flex-wrap gap-1 mt-3">
+                )}
+                
+                {facility.hours && (
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span>{facility.hours}</span>
+                  </div>
+                )}
+                
+                {facility.distance && (
+                  <div className="text-blue-600 font-medium">
+                    {facility.distance}
+                  </div>
+                )}
+              </div>
+
+              {facility.specialties && facility.specialties.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Specialties:</p>
+                  <div className="flex flex-wrap gap-1">
                     {facility.specialties.map((specialty, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
+                      <Badge key={index} variant="secondary" className="text-xs">
                         {specialty}
                       </Badge>
                     ))}
                   </div>
                 </div>
-                
-                <div className="flex flex-col gap-2 md:min-w-[120px]">
-                  <Button variant="outline" size="sm">
-                    <Navigation className="h-4 w-4 mr-1" />
-                    Directions
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Phone className="h-4 w-4 mr-1" />
-                    Call
-                  </Button>
-                  <Button size="sm">
-                    Book Appointment
-                  </Button>
-                </div>
+              )}
+
+              <div className="flex space-x-2 pt-2">
+                <Button variant="outline" size="sm" className="flex-1">
+                  Get Directions
+                </Button>
+                <Button size="sm" className="flex-1">
+                  Contact
+                </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Emergency Information</CardTitle>
-          <CardDescription>Important numbers and quick access</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-2">
-            <Button variant="destructive" className="h-12">
-              <Phone className="h-5 w-5 mr-2" />
-              Emergency: 911
-            </Button>
-            <Button variant="outline" className="h-12">
-              <Phone className="h-5 w-5 mr-2" />
-              Poison Control: (800) 222-1222
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {facilities.length === 0 && (
+        <Card>
+          <CardContent className="text-center py-12">
+            <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No facilities found</h3>
+            <p className="text-muted-foreground">
+              We couldn't find any healthcare facilities in your area.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

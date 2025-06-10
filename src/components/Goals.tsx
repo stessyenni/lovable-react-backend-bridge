@@ -1,54 +1,62 @@
 
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Target, Plus, CheckCircle, Circle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Target, Plus, CheckCircle } from "lucide-react";
 
 const Goals = () => {
-  const [goals] = useState([
-    {
-      id: 1,
-      title: "Lose 10 pounds",
-      description: "Target weight loss over 3 months",
-      progress: 40,
-      current: "4 lbs lost",
-      target: "10 lbs",
-      deadline: "2024-09-10",
-      status: "active"
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: goals = [], isLoading } = useQuery({
+    queryKey: ["health-goals", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("health_goals")
+        .select("*")
+        .eq("user_id", user?.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
     },
-    {
-      id: 2,
-      title: "Exercise 5 times per week",
-      description: "Regular cardio and strength training",
-      progress: 60,
-      current: "3 days this week",
-      target: "5 days/week",
-      deadline: "Ongoing",
-      status: "active"
+    enabled: !!user?.id,
+  });
+
+  const updateGoalMutation = useMutation({
+    mutationFn: async ({ id, progress }: { id: string; progress: number }) => {
+      const status = progress >= 100 ? "completed" : "active";
+      const { error } = await supabase
+        .from("health_goals")
+        .update({ progress, status })
+        .eq("id", id);
+
+      if (error) throw error;
     },
-    {
-      id: 3,
-      title: "Drink 8 glasses of water daily",
-      description: "Stay hydrated throughout the day",
-      progress: 100,
-      current: "8 glasses",
-      target: "8 glasses",
-      deadline: "Daily",
-      status: "completed"
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["health-goals"] });
+      toast({
+        title: "Goal updated",
+        description: "Your progress has been saved successfully.",
+      });
     },
-    {
-      id: 4,
-      title: "Reduce sugar intake",
-      description: "Limit added sugars to 25g per day",
-      progress: 75,
-      current: "30g average",
-      target: "25g/day",
-      deadline: "2024-07-01",
-      status: "active"
-    }
-  ]);
+  });
+
+  const handleUpdateProgress = (goalId: string, currentProgress: number) => {
+    const newProgress = Math.min(currentProgress + 10, 100);
+    updateGoalMutation.mutate({ id: goalId, progress: newProgress });
+  };
+
+  if (isLoading) {
+    return <div>Loading goals...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -63,87 +71,117 @@ const Goals = () => {
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {goals.map((goal) => (
-          <Card key={goal.id} className="relative">
+      {goals.length === 0 ? (
+        <Card>
+          <CardContent className="text-center py-12">
+            <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No goals yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Start your health journey by setting your first goal
+            </p>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Your First Goal
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <div className="grid gap-4 md:grid-cols-2">
+            {goals.map((goal) => (
+              <Card key={goal.id} className="relative">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-2">
+                      {goal.status === "completed" ? (
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <Target className="h-5 w-5 text-blue-500" />
+                      )}
+                      <CardTitle className="text-lg">{goal.title}</CardTitle>
+                    </div>
+                    <Badge variant={goal.status === "completed" ? "default" : "secondary"}>
+                      {goal.status}
+                    </Badge>
+                  </div>
+                  <CardDescription>{goal.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Progress</span>
+                      <span>{goal.progress}%</span>
+                    </div>
+                    <Progress value={goal.progress} className="h-2" />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Current</p>
+                      <p className="font-medium">{goal.current_value || "Not set"}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Target</p>
+                      <p className="font-medium">{goal.target_value || "Not set"}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-sm text-muted-foreground">
+                      Deadline: {goal.deadline ? new Date(goal.deadline).toLocaleDateString() : "No deadline"}
+                    </span>
+                    <div className="space-x-2">
+                      <Button variant="outline" size="sm">Edit</Button>
+                      {goal.status === "active" && (
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleUpdateProgress(goal.id, goal.progress)}
+                          disabled={updateGoalMutation.isPending}
+                        >
+                          Update Progress
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card>
             <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-2">
-                  {goal.status === "completed" ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <Target className="h-5 w-5 text-blue-500" />
-                  )}
-                  <CardTitle className="text-lg">{goal.title}</CardTitle>
-                </div>
-                <Badge variant={goal.status === "completed" ? "default" : "secondary"}>
-                  {goal.status}
-                </Badge>
-              </div>
-              <CardDescription>{goal.description}</CardDescription>
+              <CardTitle>Goal Statistics</CardTitle>
+              <CardDescription>Your overall progress summary</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{goal.progress}%</span>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-500">{goals.length}</div>
+                  <p className="text-sm text-muted-foreground">Total Goals</p>
                 </div>
-                <Progress value={goal.progress} className="h-2" />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Current</p>
-                  <p className="font-medium">{goal.current}</p>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-500">
+                    {goals.filter(g => g.status === "completed").length}
+                  </div>
+                  <p className="text-sm text-muted-foreground">Completed</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Target</p>
-                  <p className="font-medium">{goal.target}</p>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-500">
+                    {goals.filter(g => g.status === "active").length}
+                  </div>
+                  <p className="text-sm text-muted-foreground">In Progress</p>
                 </div>
-              </div>
-              
-              <div className="flex justify-between items-center pt-2">
-                <span className="text-sm text-muted-foreground">
-                  Deadline: {goal.deadline}
-                </span>
-                <div className="space-x-2">
-                  <Button variant="outline" size="sm">Edit</Button>
-                  {goal.status === "active" && (
-                    <Button size="sm">Update Progress</Button>
-                  )}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-500">
+                    {goals.length > 0 ? Math.round(goals.reduce((acc, g) => acc + g.progress, 0) / goals.length) : 0}%
+                  </div>
+                  <p className="text-sm text-muted-foreground">Avg Progress</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Goal Statistics</CardTitle>
-          <CardDescription>Your overall progress summary</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-500">4</div>
-              <p className="text-sm text-muted-foreground">Total Goals</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-500">1</div>
-              <p className="text-sm text-muted-foreground">Completed</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-500">3</div>
-              <p className="text-sm text-muted-foreground">In Progress</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-500">69%</div>
-              <p className="text-sm text-muted-foreground">Avg Progress</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        </>
+      )}
     </div>
   );
 };

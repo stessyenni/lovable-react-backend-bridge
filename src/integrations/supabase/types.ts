@@ -9,6 +9,201 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_user_message: boolean | null
+          message: string
+          response: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_user_message?: boolean | null
+          message: string
+          response?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_user_message?: boolean | null
+          message?: string
+          response?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      diet_entries: {
+        Row: {
+          calories: number | null
+          created_at: string
+          fiber: string | null
+          id: string
+          logged_at: string
+          meal_name: string
+          meal_type: string | null
+          protein: string | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number | null
+          created_at?: string
+          fiber?: string | null
+          id?: string
+          logged_at?: string
+          meal_name: string
+          meal_type?: string | null
+          protein?: string | null
+          user_id: string
+        }
+        Update: {
+          calories?: number | null
+          created_at?: string
+          fiber?: string | null
+          id?: string
+          logged_at?: string
+          meal_name?: string
+          meal_type?: string | null
+          protein?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      facilities: {
+        Row: {
+          address: string
+          created_at: string
+          distance: string | null
+          hours: string | null
+          id: string
+          name: string
+          phone: string | null
+          rating: number | null
+          specialties: string[] | null
+          type: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          distance?: string | null
+          hours?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+          type: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          distance?: string | null
+          hours?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+          type?: string
+        }
+        Relationships: []
+      }
+      health_goals: {
+        Row: {
+          created_at: string
+          current_value: string | null
+          deadline: string | null
+          description: string | null
+          id: string
+          progress: number | null
+          status: string | null
+          target_value: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_value?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          progress?: number | null
+          status?: string | null
+          target_value?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_value?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          progress?: number | null
+          status?: string | null
+          target_value?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          allergies: string[] | null
+          created_at: string
+          email: string | null
+          emergency_contact: string | null
+          first_name: string | null
+          gender: string | null
+          height: string | null
+          id: string
+          last_name: string | null
+          medical_conditions: string[] | null
+          phone_number: string | null
+          updated_at: string
+          weight: string | null
+        }
+        Insert: {
+          age?: number | null
+          allergies?: string[] | null
+          created_at?: string
+          email?: string | null
+          emergency_contact?: string | null
+          first_name?: string | null
+          gender?: string | null
+          height?: string | null
+          id: string
+          last_name?: string | null
+          medical_conditions?: string[] | null
+          phone_number?: string | null
+          updated_at?: string
+          weight?: string | null
+        }
+        Update: {
+          age?: number | null
+          allergies?: string[] | null
+          created_at?: string
+          email?: string | null
+          emergency_contact?: string | null
+          first_name?: string | null
+          gender?: string | null
+          height?: string | null
+          id?: string
+          last_name?: string | null
+          medical_conditions?: string[] | null
+          phone_number?: string | null
+          updated_at?: string
+          weight?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           email: string | null
