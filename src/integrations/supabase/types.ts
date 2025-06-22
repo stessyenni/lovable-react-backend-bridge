@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ai_consultations: {
+        Row: {
+          ai_recommendation: string | null
+          created_at: string
+          id: string
+          recommended_action: string | null
+          severity_level: string | null
+          symptoms: string[] | null
+          user_id: string
+        }
+        Insert: {
+          ai_recommendation?: string | null
+          created_at?: string
+          id?: string
+          recommended_action?: string | null
+          severity_level?: string | null
+          symptoms?: string[] | null
+          user_id: string
+        }
+        Update: {
+          ai_recommendation?: string | null
+          created_at?: string
+          id?: string
+          recommended_action?: string | null
+          severity_level?: string | null
+          symptoms?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           created_at: string
@@ -68,6 +98,33 @@ export type Database = {
           meal_name?: string
           meal_type?: string | null
           protein?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      diet_uploads: {
+        Row: {
+          ai_suggestions: string[] | null
+          analysis_result: Json | null
+          created_at: string
+          id: string
+          image_url: string
+          user_id: string
+        }
+        Insert: {
+          ai_suggestions?: string[] | null
+          analysis_result?: Json | null
+          created_at?: string
+          id?: string
+          image_url: string
+          user_id: string
+        }
+        Update: {
+          ai_suggestions?: string[] | null
+          analysis_result?: Json | null
+          created_at?: string
+          id?: string
+          image_url?: string
           user_id?: string
         }
         Relationships: []
@@ -153,6 +210,36 @@ export type Database = {
         }
         Relationships: []
       }
+      offline_sync: {
+        Row: {
+          created_at: string
+          data_payload: Json
+          data_type: string
+          id: string
+          sync_status: string | null
+          synced_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_payload: Json
+          data_type: string
+          id?: string
+          sync_status?: string | null
+          synced_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_payload?: Json
+          data_type?: string
+          id?: string
+          sync_status?: string | null
+          synced_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
@@ -167,6 +254,7 @@ export type Database = {
           last_name: string | null
           medical_conditions: string[] | null
           phone_number: string | null
+          profile_image_url: string | null
           updated_at: string
           weight: string | null
         }
@@ -183,6 +271,7 @@ export type Database = {
           last_name?: string | null
           medical_conditions?: string[] | null
           phone_number?: string | null
+          profile_image_url?: string | null
           updated_at?: string
           weight?: string | null
         }
@@ -199,8 +288,51 @@ export type Database = {
           last_name?: string | null
           medical_conditions?: string[] | null
           phone_number?: string | null
+          profile_image_url?: string | null
           updated_at?: string
           weight?: string | null
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          created_at: string
+          enable_braille: boolean | null
+          enable_screen_reader: boolean | null
+          enable_speech_to_text: boolean | null
+          enable_text_to_speech: boolean | null
+          id: string
+          language_preference: string | null
+          profile_image_url: string | null
+          updated_at: string
+          user_id: string
+          voice_preference: string | null
+        }
+        Insert: {
+          created_at?: string
+          enable_braille?: boolean | null
+          enable_screen_reader?: boolean | null
+          enable_speech_to_text?: boolean | null
+          enable_text_to_speech?: boolean | null
+          id?: string
+          language_preference?: string | null
+          profile_image_url?: string | null
+          updated_at?: string
+          user_id: string
+          voice_preference?: string | null
+        }
+        Update: {
+          created_at?: string
+          enable_braille?: boolean | null
+          enable_screen_reader?: boolean | null
+          enable_speech_to_text?: boolean | null
+          enable_text_to_speech?: boolean | null
+          id?: string
+          language_preference?: string | null
+          profile_image_url?: string | null
+          updated_at?: string
+          user_id?: string
+          voice_preference?: string | null
         }
         Relationships: []
       }
