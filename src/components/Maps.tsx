@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Navigation, Search, Phone, Clock, Star, Directions } from "lucide-react";
+import { MapPin, Navigation, Search, Phone, Clock, Star } from "lucide-react";
 
 const Maps = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -193,7 +193,7 @@ const Maps = () => {
                     className="flex-1"
                     onClick={() => getDirections(facility.address)}
                   >
-                    <Directions className="h-4 w-4 mr-1" />
+                    <Navigation className="h-4 w-4 mr-1" />
                     Directions
                   </Button>
                   <Button 
