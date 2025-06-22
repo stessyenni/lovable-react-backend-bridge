@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Hemapp</string>
+    <string name="title_activity_main">Hemapp</string>
+    <string name="package_name">com.lovable.hemapp</string>
+    <string name="custom_url_scheme">com.lovable.hemapp</string>
+</resources>
