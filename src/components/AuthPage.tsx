@@ -1,12 +1,12 @@
 
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Heart, Loader2, Shield, Smartphone, Brain } from "lucide-react";
 
 const AuthPage = () => {
@@ -16,42 +16,28 @@ const AuthPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const { toast } = useToast();
+  const { signUp, signIn } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    console.log('Starting sign up process...');
-
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-          },
-          emailRedirectTo: `${window.location.origin}/`,
-        },
-      });
+      const { error } = await signUp(email, password, firstName, lastName);
 
       if (error) {
-        console.error('Sign up error:', error);
         toast({
           title: "Sign up failed",
           description: error.message,
           variant: "destructive",
         });
       } else {
-        console.log('Sign up successful');
         toast({
           title: "Welcome to Hemapp! 🎉",
           description: "Please check your email for verification.",
         });
       }
     } catch (error) {
-      console.error('Unexpected sign up error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred during sign up",
@@ -66,30 +52,22 @@ const AuthPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    console.log('Starting sign in process...');
-
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await signIn(email, password);
 
       if (error) {
-        console.error('Sign in error:', error);
         toast({
           title: "Sign in failed",
           description: error.message,
           variant: "destructive",
         });
       } else {
-        console.log('Sign in successful');
         toast({
           title: "Welcome back! 👋",
           description: "Successfully signed in to Hemapp.",
         });
       }
     } catch (error) {
-      console.error('Unexpected sign in error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred during sign in",
