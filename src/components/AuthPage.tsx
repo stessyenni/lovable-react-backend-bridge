@@ -21,6 +21,8 @@ const AuthPage = () => {
     e.preventDefault();
     setLoading(true);
 
+    console.log('Starting sign up process...');
+
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -35,21 +37,24 @@ const AuthPage = () => {
       });
 
       if (error) {
+        console.error('Sign up error:', error);
         toast({
           title: "Sign up failed",
           description: error.message,
           variant: "destructive",
         });
       } else {
+        console.log('Sign up successful');
         toast({
           title: "Welcome to Hemapp! 🎉",
           description: "Please check your email for verification.",
         });
       }
     } catch (error) {
+      console.error('Unexpected sign up error:', error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: "An unexpected error occurred during sign up",
         variant: "destructive",
       });
     } finally {
@@ -61,6 +66,8 @@ const AuthPage = () => {
     e.preventDefault();
     setLoading(true);
 
+    console.log('Starting sign in process...');
+
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -68,21 +75,24 @@ const AuthPage = () => {
       });
 
       if (error) {
+        console.error('Sign in error:', error);
         toast({
           title: "Sign in failed",
           description: error.message,
           variant: "destructive",
         });
       } else {
+        console.log('Sign in successful');
         toast({
           title: "Welcome back! 👋",
           description: "Successfully signed in to Hemapp.",
         });
       }
     } catch (error) {
+      console.error('Unexpected sign in error:', error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: "An unexpected error occurred during sign in",
         variant: "destructive",
       });
     } finally {
