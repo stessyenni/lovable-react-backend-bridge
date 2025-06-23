@@ -336,33 +336,6 @@ export type Database = {
         }
         Relationships: []
       }
-      users: {
-        Row: {
-          email: string | null
-          first_name: string
-          id: number
-          last_name: string | null
-          middle_name: string | null
-          phone_number: string | null
-        }
-        Insert: {
-          email?: string | null
-          first_name: string
-          id?: number
-          last_name?: string | null
-          middle_name?: string | null
-          phone_number?: string | null
-        }
-        Update: {
-          email?: string | null
-          first_name?: string
-          id?: number
-          last_name?: string | null
-          middle_name?: string | null
-          phone_number?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
