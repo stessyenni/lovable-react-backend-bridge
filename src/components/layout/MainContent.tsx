@@ -4,11 +4,12 @@ import AIConsultation from "../AIConsultation";
 import DietMonitoring from "../DietMonitoring";
 import HealthGoals from "../HealthGoals";
 import HealthFacilities from "../HealthFacilities";
+import Messages from "../Messages";
 import UserAccount from "../UserAccount";
 import AppSettings from "../AppSettings";
 
 interface MenuItem {
-  id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'account' | 'settings';
+  id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'settings';
   label: string;
   icon: React.FC<any>;
 }
@@ -31,6 +32,8 @@ const MainContent = ({ activeSection, brailleMode }: MainContentProps) => {
         return <HealthGoals />;
       case 'facilities':
         return <HealthFacilities />;
+      case 'messages':
+        return <Messages />;
       case 'account':
         return <UserAccount />;
       case 'settings':
