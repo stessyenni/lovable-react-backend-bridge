@@ -7,8 +7,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, firstName: string, lastName: string, username: string) => Promise<{ error: any }>;
+  signIn: (emailOrUsername: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
+  const signUp = async (email: string, password: string, firstName: string, lastName: string, username: string) => {
     console.log('Starting sign up process...');
     try {
       const { error } = await supabase.auth.signUp({
@@ -60,6 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           data: {
             first_name: firstName,
             last_name: lastName,
+            username: username,
           },
         },
       });
@@ -77,9 +78,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (emailOrUsername: string, password: string) => {
     console.log('Starting sign in process...');
     try {
+      let email = emailOrUsername;
+      
+      // Check if input is a username (doesn't contain @)
+      if (!emailOrUsername.includes('@')) {
+        console.log('Attempting to find email by username...');
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('username', emailOrUsername)
+          .single();
+
+        if (profileError || !profile?.email) {
+          console.error('Username not found:', profileError);
+          return { error: { message: 'Invalid username or password' } };
+        }
+        
+        email = profile.email;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,

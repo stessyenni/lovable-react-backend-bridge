@@ -256,6 +256,7 @@ export type Database = {
           phone_number: string | null
           profile_image_url: string | null
           updated_at: string
+          username: string | null
           weight: string | null
         }
         Insert: {
@@ -273,6 +274,7 @@ export type Database = {
           phone_number?: string | null
           profile_image_url?: string | null
           updated_at?: string
+          username?: string | null
           weight?: string | null
         }
         Update: {
@@ -290,6 +292,7 @@ export type Database = {
           phone_number?: string | null
           profile_image_url?: string | null
           updated_at?: string
+          username?: string | null
           weight?: string | null
         }
         Relationships: []
