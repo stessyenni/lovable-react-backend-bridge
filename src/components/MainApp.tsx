@@ -79,10 +79,11 @@ const MainApp = () => {
   };
 
   const handleOnlineToggle = () => {
-    // In a real app, this would control offline mode
+    const newOnlineStatus = !isOnline;
+    setIsOnline(newOnlineStatus);
     toast({
-      title: isOnline ? "Going offline" : "Going online",
-      description: isOnline ? "App will work in offline mode" : "Reconnecting to online services",
+      title: newOnlineStatus ? "Going online" : "Going offline",
+      description: newOnlineStatus ? "Reconnecting to online services" : "App will work in offline mode",
     });
   };
 
@@ -215,7 +216,6 @@ const MainApp = () => {
                   <Switch 
                     checked={isOnline}
                     onCheckedChange={handleOnlineToggle}
-                    size="sm"
                   />
                 </div>
 
