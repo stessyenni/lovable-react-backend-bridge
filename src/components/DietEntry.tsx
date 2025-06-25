@@ -10,7 +10,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Plus } from "lucide-react";
 
-const DietEntry = () => {
+interface DietEntryProps {
+  onSuccess?: () => void;
+}
+
+const DietEntry = ({ onSuccess }: DietEntryProps) => {
   const [mealName, setMealName] = useState("");
   const [mealType, setMealType] = useState("");
   const [calories, setCalories] = useState("");
@@ -59,6 +63,11 @@ const DietEntry = () => {
       setCalories("");
       setProtein("");
       setFiber("");
+
+      // Call success callback
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error('Unexpected error:', error);
       toast({

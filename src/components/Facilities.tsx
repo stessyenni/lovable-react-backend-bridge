@@ -4,9 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Building2, Phone, Clock, MapPin, Star } from "lucide-react";
+import { Building2, Phone, Clock, MapPin, Star, Navigation, MessageCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Facilities = () => {
+  const { toast } = useToast();
+  
   const { data: facilities = [], isLoading } = useQuery({
     queryKey: ["facilities"],
     queryFn: async () => {
@@ -20,8 +23,46 @@ const Facilities = () => {
     },
   });
 
+  const handleGetDirections = (address: string, name: string) => {
+    const encodedAddress = encodeURIComponent(address);
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+    window.open(mapsUrl, '_blank');
+    
+    toast({
+      title: "Opening Directions",
+      description: `Getting directions to ${name}`,
+    });
+  };
+
+  const handleContact = (facility: any) => {
+    if (facility.phone) {
+      window.open(`tel:${facility.phone}`, '_self');
+      toast({
+        title: "Calling Facility",
+        description: `Calling ${facility.name}`,
+      });
+    } else {
+      toast({
+        title: "Contact Information",
+        description: "Phone number not available for this facility",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
-    return <div>Loading facilities...</div>;
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="animate-pulse">
+            <CardContent className="p-6">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -33,7 +74,7 @@ const Facilities = () => {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {facilities.map((facility) => (
-          <Card key={facility.id} className="h-full">
+          <Card key={facility.id} className="h-full hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
@@ -93,10 +134,21 @@ const Facilities = () => {
               )}
 
               <div className="flex space-x-2 pt-2">
-                <Button variant="outline" size="sm" className="flex-1">
-                  Get Directions
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1"
+                  onClick={() => handleGetDirections(facility.address, facility.name)}
+                >
+                  <Navigation className="h-4 w-4 mr-1" />
+                  Directions
                 </Button>
-                <Button size="sm" className="flex-1">
+                <Button 
+                  size="sm" 
+                  className="flex-1"
+                  onClick={() => handleContact(facility)}
+                >
+                  <MessageCircle className="h-4 w-4 mr-1" />
                   Contact
                 </Button>
               </div>

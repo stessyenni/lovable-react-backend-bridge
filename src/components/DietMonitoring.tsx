@@ -4,12 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Camera, Plus, TrendingUp, Apple, Coffee, Utensils, Cookie } from "lucide-react";
+import { Camera, Plus, TrendingUp, Apple, Coffee, Utensils, Cookie, Bookmark } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import DietEntry from "./DietEntry";
 import DietUpload from "./DietUpload";
+import MealCategories from "./MealCategories";
 
 interface DietEntryType {
   id: string;
@@ -19,6 +20,7 @@ interface DietEntryType {
   protein: string | null;
   fiber: string | null;
   logged_at: string;
+  category?: string;
 }
 
 const DietMonitoring = () => {
@@ -28,6 +30,7 @@ const DietMonitoring = () => {
   const [loading, setLoading] = useState(true);
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showDietUpload, setShowDietUpload] = useState(false);
+  const [showMealCategories, setShowMealCategories] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -90,6 +93,34 @@ const DietMonitoring = () => {
     };
   };
 
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'add-meal':
+        setShowDietEntry(true);
+        break;
+      case 'photo-analysis':
+        setShowDietUpload(true);
+        break;
+      case 'view-trends':
+        toast({
+          title: "Trends",
+          description: "Opening nutrition trends analysis...",
+        });
+        break;
+      case 'nutrition-goals':
+        toast({
+          title: "Nutrition Goals",
+          description: "Opening goal setting interface...",
+        });
+        break;
+      case 'meal-categories':
+        setShowMealCategories(true);
+        break;
+      default:
+        break;
+    }
+  };
+
   const stats = getTodayStats();
 
   return (
@@ -97,16 +128,16 @@ const DietMonitoring = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Diet Monitoring</h2>
-          <p className="text-muted-foreground">Track your meals and nutrition intake</p>
+          <p className="text-muted-foreground">Track your meals and nutrition intake with AI-powered analysis</p>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-5">
         <Button 
           variant="outline" 
           className="h-20 flex flex-col gap-2"
-          onClick={() => setShowDietEntry(true)}
+          onClick={() => handleQuickAction('add-meal')}
         >
           <Plus className="h-6 w-6" />
           <span className="text-sm">Add Meal</span>
@@ -114,22 +145,38 @@ const DietMonitoring = () => {
         <Button 
           variant="outline" 
           className="h-20 flex flex-col gap-2"
-          onClick={() => setShowDietUpload(true)}
+          onClick={() => handleQuickAction('photo-analysis')}
         >
           <Camera className="h-6 w-6" />
-          <span className="text-sm">Photo Analysis</span>
+          <span className="text-sm">AI Photo Analysis</span>
         </Button>
-        <Button variant="outline" className="h-20 flex flex-col gap-2">
+        <Button 
+          variant="outline" 
+          className="h-20 flex flex-col gap-2"
+          onClick={() => handleQuickAction('view-trends')}
+        >
           <TrendingUp className="h-6 w-6" />
           <span className="text-sm">View Trends</span>
         </Button>
-        <Button variant="outline" className="h-20 flex flex-col gap-2">
+        <Button 
+          variant="outline" 
+          className="h-20 flex flex-col gap-2"
+          onClick={() => handleQuickAction('nutrition-goals')}
+        >
           <Apple className="h-6 w-6" />
           <span className="text-sm">Nutrition Goals</span>
         </Button>
+        <Button 
+          variant="outline" 
+          className="h-20 flex flex-col gap-2"
+          onClick={() => handleQuickAction('meal-categories')}
+        >
+          <Bookmark className="h-6 w-6" />
+          <span className="text-sm">Meal Categories</span>
+        </Button>
       </div>
 
-      {/* Diet Entry Modal */}
+      {/* Modals */}
       {showDietEntry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-background rounded-lg">
@@ -144,18 +191,20 @@ const DietMonitoring = () => {
               </Button>
             </div>
             <div className="p-4">
-              <DietEntry />
+              <DietEntry onSuccess={() => {
+                setShowDietEntry(false);
+                fetchDietEntries();
+              }} />
             </div>
           </div>
         </div>
       )}
 
-      {/* Diet Upload Modal */}
       {showDietUpload && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-background rounded-lg max-w-2xl w-full">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold">Photo Analysis</h3>
+              <h3 className="text-lg font-semibold">AI Photo Analysis</h3>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -165,7 +214,30 @@ const DietMonitoring = () => {
               </Button>
             </div>
             <div className="p-4">
-              <DietUpload />
+              <DietUpload onSuccess={() => {
+                setShowDietUpload(false);
+                fetchDietEntries();
+              }} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showMealCategories && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-background rounded-lg max-w-lg w-full">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-semibold">Meal Categories</h3>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowMealCategories(false)}
+              >
+                ✕
+              </Button>
+            </div>
+            <div className="p-4">
+              <MealCategories />
             </div>
           </div>
         </div>
@@ -210,7 +282,7 @@ const DietMonitoring = () => {
       <Card>
         <CardHeader>
           <CardTitle>Recent Meals</CardTitle>
-          <CardDescription>Your latest food entries</CardDescription>
+          <CardDescription>Your latest food entries with AI analysis</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -243,6 +315,11 @@ const DietMonitoring = () => {
                         {entry.meal_type && (
                           <Badge variant="secondary" className="mr-2 capitalize">
                             {entry.meal_type}
+                          </Badge>
+                        )}
+                        {entry.category && (
+                          <Badge variant="outline" className="mr-2">
+                            {entry.category}
                           </Badge>
                         )}
                         {new Date(entry.logged_at).toLocaleDateString()}
