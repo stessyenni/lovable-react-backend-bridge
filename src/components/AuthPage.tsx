@@ -91,15 +91,15 @@ const AuthPage = () => {
             </div>
             <div className="text-left">
               <h1 className="text-3xl font-bold text-foreground">
-                Hemapp
+                HEMAPP
               </h1>
-              <p className="text-sm text-muted-foreground">Your AI Health Companion</p>
+              <p className="text-sm text-muted-foreground">Your Hemapp Companion</p>
             </div>
           </div>
 
-          <CardTitle className="text-foreground">Welcome to Your Health Journey</CardTitle>
+          <CardTitle className="text-foreground">Welcome to Your Health Management Journey</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Sign in to access AI-powered health insights, diet monitoring, and personalized care
+            Sign in to access AI-powered health insights, diet monitoring, diet control and personalized care
           </CardDescription>
 
           {/* Features Preview */}
@@ -108,7 +108,7 @@ const AuthPage = () => {
               <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-2">
                 <Brain className="h-6 w-6 text-muted-foreground" />
               </div>
-              <p className="text-xs text-muted-foreground">AI Insights</p>
+              <p className="text-xs text-muted-foreground">HemAI Insights</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-2">
