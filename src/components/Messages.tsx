@@ -66,8 +66,8 @@ const Messages = () => {
         .from('user_connections')
         .select(`
           *,
-          follower:follower_id(id, first_name, last_name, username, email),
-          following:following_id(id, first_name, last_name, username, email)
+          follower:profiles!user_connections_follower_id_fkey(id, first_name, last_name, username, email),
+          following:profiles!user_connections_following_id_fkey(id, first_name, last_name, username, email)
         `)
         .or(`follower_id.eq.${user.id},following_id.eq.${user.id}`)
         .eq('status', 'accepted');
@@ -91,7 +91,7 @@ const Messages = () => {
         .from('messages')
         .select(`
           *,
-          sender:sender_id(id, first_name, last_name, username, email)
+          sender:profiles!messages_sender_id_fkey(id, first_name, last_name, username, email)
         `)
         .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
