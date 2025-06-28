@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,24 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-interface User {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-  username: string | null;
-  email: string | null;
-}
-
-interface Message {
-  id: string;
-  sender_id: string;
-  recipient_id: string;
-  content: string;
-  read_at: string | null;
-  created_at: string;
-  sender?: User;
-}
+import { Message, User } from "./types";
 
 interface ChatWindowProps {
   recipientId: string;

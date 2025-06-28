@@ -4,26 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UserMinus, MessageCircle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-
-interface User {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-  username: string | null;
-  email: string | null;
-}
-
-interface Connection {
-  id: string;
-  follower_id: string;
-  following_id: string;
-  status: string;
-  created_at: string;
-  follower?: User;
-  following?: User;
-}
+import { Connection, User } from "./types";
 
 interface ConnectionsListProps {
   connections: Connection[];
@@ -32,41 +13,6 @@ interface ConnectionsListProps {
 }
 
 const ConnectionsList = ({ connections, currentUserId, onRefresh }: ConnectionsListProps) => {
-  const { toast } = useToast();
-
-  const removeConnection = async (connectionId: string) => {
-    try {
-      const { error } = await supabase
-        .from('user_connections')
-        .delete()
-        .eq('id', connectionId);
-
-      if (error) {
-        console.error('Error removing connection:', error);
-        toast({
-          title: "Error",
-          description: "Failed to remove connection. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: "Connection removed",
-        description: "The connection has been removed successfully.",
-      });
-      
-      onRefresh();
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to remove connection. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const getDisplayName = (user: User | undefined) => {
     if (!user) return 'Unknown User';
     if (user.first_name && user.last_name) {
@@ -129,11 +75,7 @@ const ConnectionsList = ({ connections, currentUserId, onRefresh }: ConnectionsL
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Message
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => removeConnection(connection.id)}
-                  >
+                  <Button variant="outline" size="sm">
                     <UserMinus className="h-4 w-4 mr-2" />
                     Remove
                   </Button>

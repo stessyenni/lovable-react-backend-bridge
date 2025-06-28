@@ -8,24 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, UserPlus, Clock, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-interface User {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-  username: string | null;
-  email: string | null;
-}
-
-interface Connection {
-  id: string;
-  follower_id: string;
-  following_id: string;
-  status: string;
-  created_at: string;
-  follower?: User;
-  following?: User;
-}
+import { Connection, User } from "./types";
 
 interface UserSearchProps {
   currentUserId: string;
