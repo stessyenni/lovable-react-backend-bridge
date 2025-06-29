@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,11 +8,13 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Target, Plus, CheckCircle } from "lucide-react";
+import GoalDialog from "./GoalDialog";
 
 const Goals = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [showGoalDialog, setShowGoalDialog] = useState(false);
 
   const { data: goals = [], isLoading } = useQuery({
     queryKey: ["health-goals", user?.id],
@@ -54,6 +55,10 @@ const Goals = () => {
     updateGoalMutation.mutate({ id: goalId, progress: newProgress });
   };
 
+  const handleGoalCreated = () => {
+    queryClient.invalidateQueries({ queryKey: ["health-goals"] });
+  };
+
   if (isLoading) {
     return <div>Loading goals...</div>;
   }
@@ -65,11 +70,17 @@ const Goals = () => {
           <h2 className="text-2xl font-bold">Health Goals</h2>
           <p className="text-muted-foreground">Track your progress towards better health</p>
         </div>
-        <Button>
+        <Button onClick={() => setShowGoalDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add New Goal
         </Button>
       </div>
+
+      <GoalDialog
+        open={showGoalDialog}
+        onOpenChange={setShowGoalDialog}
+        onSuccess={handleGoalCreated}
+      />
 
       {goals.length === 0 ? (
         <Card>
@@ -79,7 +90,7 @@ const Goals = () => {
             <p className="text-muted-foreground mb-4">
               Start your health journey by setting your first goal
             </p>
-            <Button>
+            <Button onClick={() => setShowGoalDialog(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create Your First Goal
             </Button>

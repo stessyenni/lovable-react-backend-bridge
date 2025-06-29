@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Tag } from "lucide-react";
+import { Plus, Trash2, Tag, Save, X } from "lucide-react";
 
 interface MealCategory {
   id: string;
@@ -15,7 +15,11 @@ interface MealCategory {
   meals: string[];
 }
 
-const MealCategories = () => {
+interface MealCategoriesProps {
+  onClose?: () => void;
+}
+
+const MealCategories = ({ onClose }: MealCategoriesProps) => {
   const [categories, setCategories] = useState<MealCategory[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newMealName, setNewMealName] = useState("");
@@ -63,6 +67,14 @@ const MealCategories = () => {
   const saveCategories = (updatedCategories: MealCategory[]) => {
     setCategories(updatedCategories);
     localStorage.setItem('mealCategories', JSON.stringify(updatedCategories));
+  };
+
+  const handleSave = () => {
+    localStorage.setItem('mealCategories', JSON.stringify(categories));
+    toast({
+      title: "Categories Saved",
+      description: "Your meal categories have been saved successfully.",
+    });
   };
 
   const addCategory = () => {
@@ -140,11 +152,25 @@ const MealCategories = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Meal Categories</h3>
-        <p className="text-sm text-muted-foreground">
-          Organize your meals into categories for easy tracking and repetition.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Meal Categories</h3>
+          <p className="text-sm text-muted-foreground">
+            Organize your meals into categories for easy tracking and repetition.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={handleSave} size="sm" className="bg-green-600 hover:bg-green-700">
+            <Save className="h-4 w-4 mr-2" />
+            Save
+          </Button>
+          {onClose && (
+            <Button onClick={onClose} variant="outline" size="sm">
+              <X className="h-4 w-4 mr-2" />
+              Close
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Add New Category */}

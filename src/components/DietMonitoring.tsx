@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Camera, Plus, TrendingUp, Apple, Coffee, Utensils, Cookie, Bookmark } from "lucide-react";
+import { Camera, Plus, TrendingUp, Apple, Coffee, Utensils, Cookie, Bookmark, Edit, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +19,8 @@ interface DietEntryType {
   protein: string | null;
   fiber: string | null;
   logged_at: string;
+  meal_content?: string | null;
+  image_url?: string | null;
   category?: string;
 }
 
@@ -31,6 +32,7 @@ const DietMonitoring = () => {
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showDietUpload, setShowDietUpload] = useState(false);
   const [showMealCategories, setShowMealCategories] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<DietEntryType | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -60,6 +62,41 @@ const DietMonitoring = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeleteEntry = async (entryId: string) => {
+    if (!confirm('Are you sure you want to delete this meal entry?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('diet_entries')
+        .delete()
+        .eq('id', entryId);
+
+      if (error) {
+        console.error('Error deleting entry:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete meal entry",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Meal entry deleted successfully",
+      });
+
+      fetchDietEntries();
+    } catch (error) {
+      console.error('Unexpected error:', error);
+    }
+  };
+
+  const handleEditEntry = (entry: DietEntryType) => {
+    setEditingEntry(entry);
+    setShowDietEntry(true);
   };
 
   const getMealIcon = (mealType: string | null) => {
@@ -96,6 +133,7 @@ const DietMonitoring = () => {
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'add-meal':
+        setEditingEntry(null);
         setShowDietEntry(true);
         break;
       case 'photo-analysis':
@@ -132,7 +170,6 @@ const DietMonitoring = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-5">
         <Button 
           variant="outline" 
@@ -176,25 +213,34 @@ const DietMonitoring = () => {
         </Button>
       </div>
 
-      {/* Modals */}
       {showDietEntry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-background rounded-lg">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold">Add New Meal</h3>
+              <h3 className="text-lg font-semibold">
+                {editingEntry ? "Edit Meal" : "Add New Meal"}
+              </h3>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => setShowDietEntry(false)}
+                onClick={() => {
+                  setShowDietEntry(false);
+                  setEditingEntry(null);
+                }}
               >
                 ✕
               </Button>
             </div>
             <div className="p-4">
-              <DietEntry onSuccess={() => {
-                setShowDietEntry(false);
-                fetchDietEntries();
-              }} />
+              <DietEntry 
+                editMode={!!editingEntry}
+                existingEntry={editingEntry}
+                onSuccess={() => {
+                  setShowDietEntry(false);
+                  setEditingEntry(null);
+                  fetchDietEntries();
+                }} 
+              />
             </div>
           </div>
         </div>
@@ -226,24 +272,13 @@ const DietMonitoring = () => {
       {showMealCategories && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-background rounded-lg max-w-lg w-full">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold">Meal Categories</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowMealCategories(false)}
-              >
-                ✕
-              </Button>
-            </div>
             <div className="p-4">
-              <MealCategories />
+              <MealCategories onClose={() => setShowMealCategories(false)} />
             </div>
           </div>
         </div>
       )}
 
-      {/* Today's Summary */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
@@ -278,7 +313,6 @@ const DietMonitoring = () => {
         </Card>
       </div>
 
-      {/* Recent Meals */}
       <Card>
         <CardHeader>
           <CardTitle>Recent Meals</CardTitle>
@@ -308,9 +342,19 @@ const DietMonitoring = () => {
               {entries.map((entry) => (
                 <div key={entry.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-3">
+                    {entry.image_url && (
+                      <img 
+                        src={entry.image_url} 
+                        alt="Meal" 
+                        className="w-12 h-12 rounded-lg object-cover"
+                      />
+                    )}
                     {getMealIcon(entry.meal_type)}
                     <div>
                       <h4 className="font-medium">{entry.meal_name}</h4>
+                      {entry.meal_content && (
+                        <p className="text-sm text-muted-foreground">{entry.meal_content}</p>
+                      )}
                       <p className="text-sm text-muted-foreground">
                         {entry.meal_type && (
                           <Badge variant="secondary" className="mr-2 capitalize">
@@ -326,11 +370,28 @@ const DietMonitoring = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-medium">{entry.calories || '--'} kcal</p>
-                    {entry.protein && (
-                      <p className="text-sm text-muted-foreground">{entry.protein}g protein</p>
-                    )}
+                  <div className="flex items-center gap-2">
+                    <div className="text-right">
+                      <p className="font-medium">{entry.calories || '--'} kcal</p>
+                      {entry.protein && (
+                        <p className="text-sm text-muted-foreground">{entry.protein}g protein</p>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditEntry(entry)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteEntry(entry.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               ))}

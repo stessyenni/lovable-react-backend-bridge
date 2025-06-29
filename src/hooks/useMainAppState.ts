@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useOfflineMode } from "./useOfflineMode";
 
 interface MenuItem {
   id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'settings';
@@ -14,26 +15,21 @@ export const useMainAppState = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isOffline, syncOfflineData } = useOfflineMode();
   const [activeSection, setActiveSection] = useState<MenuItem['id']>('dashboard');
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [speechEnabled, setSpeechEnabled] = useState(false);
   const [brailleMode, setBrailleMode] = useState(false);
 
   useEffect(() => {
-    const handleOnlineStatus = () => setIsOnline(navigator.onLine);
-
-    window.addEventListener('online', handleOnlineStatus);
-    window.addEventListener('offline', handleOnlineStatus);
-
     // Check for braille preference in localStorage
     const savedBrailleMode = localStorage.getItem('brailleMode') === 'true';
     setBrailleMode(savedBrailleMode);
 
-    return () => {
-      window.removeEventListener('online', handleOnlineStatus);
-      window.removeEventListener('offline', handleOnlineStatus);
-    };
-  }, []);
+    // Sync offline data when coming back online
+    if (!isOffline) {
+      syncOfflineData();
+    }
+  }, [isOffline, syncOfflineData]);
 
   const handleSignOut = async () => {
     try {
@@ -53,11 +49,10 @@ export const useMainAppState = () => {
   };
 
   const handleOnlineToggle = () => {
-    const newOnlineStatus = !isOnline;
-    setIsOnline(newOnlineStatus);
+    // This would simulate offline mode for testing
     toast({
-      title: newOnlineStatus ? "Going online" : "Going offline",
-      description: newOnlineStatus ? "Reconnecting to online services" : "App will work in offline mode",
+      title: isOffline ? "Going online" : "Going offline",
+      description: isOffline ? "Reconnecting to online services" : "App will work in offline mode",
     });
   };
 
@@ -79,7 +74,7 @@ export const useMainAppState = () => {
     user,
     activeSection,
     setActiveSection,
-    isOnline,
+    isOnline: !isOffline,
     speechEnabled,
     brailleMode,
     handleSignOut,

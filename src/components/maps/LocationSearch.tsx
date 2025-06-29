@@ -3,22 +3,29 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Navigation, Search } from "lucide-react";
+import { MapPin, Navigation, Search, RefreshCw } from "lucide-react";
 
 interface LocationSearchProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   currentLocation: { lat: number; lng: number } | null;
   setCurrentLocation: (location: { lat: number; lng: number } | null) => void;
+  onSearch?: () => void;
+  onRefresh?: () => void;
 }
 
 const LocationSearch = ({ 
   searchQuery, 
   setSearchQuery, 
   currentLocation, 
-  setCurrentLocation 
+  setCurrentLocation,
+  onSearch,
+  onRefresh
 }: LocationSearchProps) => {
+  const [loading, setLoading] = useState(false);
+
   const getCurrentLocation = () => {
+    setLoading(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -26,11 +33,33 @@ const LocationSearch = ({
             lat: position.coords.latitude,
             lng: position.coords.longitude
           });
+          setLoading(false);
         },
         (error) => {
           console.error("Error getting location:", error);
+          setLoading(false);
         }
       );
+    } else {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = () => {
+    if (onSearch) {
+      onSearch();
+    }
+  };
+
+  const handleRefresh = () => {
+    if (onRefresh) {
+      onRefresh();
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
     }
   };
 
@@ -49,20 +78,33 @@ const LocationSearch = ({
               placeholder="Search for hospitals, clinics, pharmacies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
               className="border-royal-blue/30"
             />
           </div>
-          <Button variant="outline" className="border-royal-blue text-royal-blue">
+          <Button 
+            variant="outline" 
+            className="border-royal-blue text-royal-blue"
+            onClick={handleSearch}
+          >
             <Search className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            className="border-royal-blue text-royal-blue"
+            onClick={handleRefresh}
+          >
+            <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
         
         <Button 
           onClick={getCurrentLocation}
+          disabled={loading}
           className="w-full bg-hemapp-green hover:bg-hemapp-green/90"
         >
           <Navigation className="mr-2 h-4 w-4" />
-          Use Current Location
+          {loading ? "Getting Location..." : "Use Current Location"}
         </Button>
         
         {currentLocation && (
