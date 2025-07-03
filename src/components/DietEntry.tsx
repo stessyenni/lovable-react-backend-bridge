@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Plus, Camera, Upload, X } from "lucide-react";
+
+interface MealCategory {
+  id: string;
+  name: string;
+  color: string;
+  meals: string[];
+}
 
 interface DietEntryProps {
   onSuccess?: () => void;
@@ -24,11 +31,22 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry }: DietEntryProp
   const [protein, setProtein] = useState(existingEntry?.protein || "");
   const [fiber, setFiber] = useState(existingEntry?.fiber || "");
   const [mealContent, setMealContent] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(existingEntry?.category || "");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [categories, setCategories] = useState<MealCategory[]>([]);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Load categories from localStorage
+    const savedCategories = localStorage.getItem('mealCategories');
+    if (savedCategories) {
+      setCategories(JSON.parse(savedCategories));
+    }
+  }, []);
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -45,6 +63,28 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry }: DietEntryProp
   const removeImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
+  };
+
+  const addNewCategory = () => {
+    if (!newCategoryName.trim()) return;
+
+    const newCategory: MealCategory = {
+      id: Date.now().toString(),
+      name: newCategoryName,
+      color: 'bg-purple-100 text-purple-800',
+      meals: []
+    };
+
+    const updatedCategories = [...categories, newCategory];
+    setCategories(updatedCategories);
+    localStorage.setItem('mealCategories', JSON.stringify(updatedCategories));
+    setSelectedCategory(newCategory.id);
+    setNewCategoryName("");
+    
+    toast({
+      title: "Category Added",
+      description: `"${newCategoryName}" category has been created.`,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,6 +113,9 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry }: DietEntryProp
         imageUrl = publicUrl;
       }
 
+      // Get selected category name
+      const categoryName = categories.find(cat => cat.id === selectedCategory)?.name || null;
+
       const mealData = {
         user_id: user.id,
         meal_name: mealName,
@@ -82,6 +125,7 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry }: DietEntryProp
         fiber: fiber || null,
         meal_content: mealContent || null,
         image_url: imageUrl,
+        category: categoryName,
         logged_at: editMode ? existingEntry.logged_at : new Date().toISOString(),
       };
 
@@ -122,6 +166,7 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry }: DietEntryProp
         setProtein("");
         setFiber("");
         setMealContent("");
+        setSelectedCategory("");
         setSelectedImage(null);
         setImagePreview(null);
       }
@@ -178,6 +223,33 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry }: DietEntryProp
                 <SelectItem value="snack">Snack</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="mealCategory">Meal Category</Label>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select or add category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex space-x-2 mt-2">
+              <Input
+                placeholder="New category name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addNewCategory()}
+              />
+              <Button type="button" onClick={addNewCategory} size="sm" variant="outline">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-2">

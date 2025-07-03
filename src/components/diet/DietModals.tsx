@@ -76,10 +76,8 @@ const DietModals = ({
 
       {showMealCategories && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-background rounded-lg max-w-lg w-full">
-            <div className="p-4">
-              <MealCategories onClose={onCloseMealCategories} />
-            </div>
+          <div className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <MealCategories onClose={onCloseMealCategories} />
           </div>
         </div>
       )}

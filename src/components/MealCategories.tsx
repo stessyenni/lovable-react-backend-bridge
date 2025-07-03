@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Tag, Save, X } from "lucide-react";
 
@@ -151,10 +152,11 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col">
+      {/* Header with Save and Close buttons */}
+      <div className="flex items-center justify-between p-4 border-b">
         <div>
-          <h3 className="text-lg font-semibold mb-2">Meal Categories</h3>
+          <h3 className="text-lg font-semibold">Meal Categories</h3>
           <p className="text-sm text-muted-foreground">
             Organize your meals into categories for easy tracking and repetition.
           </p>
@@ -173,107 +175,112 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
         </div>
       </div>
 
-      {/* Add New Category */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Add New Category</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex space-x-2">
-            <Input
-              placeholder="Category name"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addCategory()}
-            />
-            <Button onClick={addCategory} size="sm">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Add Meal to Category */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Add Meal to Category</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <Label htmlFor="meal-name">Meal Name</Label>
-            <Input
-              id="meal-name"
-              placeholder="Enter meal name"
-              value={newMealName}
-              onChange={(e) => setNewMealName(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="category-select">Select Category</Label>
-            <select
-              id="category-select"
-              className="w-full p-2 border rounded-md"
-              value={selectedCategoryId}
-              onChange={(e) => setSelectedCategoryId(e.target.value)}
-            >
-              <option value="">Choose a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <Button onClick={addMealToCategory} className="w-full" size="sm">
-            <Tag className="h-4 w-4 mr-2" />
-            Add Meal
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Categories Display */}
-      <div className="space-y-4">
-        {categories.map((category) => (
-          <Card key={category.id}>
+      {/* Scrollable content */}
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-6">
+          {/* Add New Category */}
+          <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm flex items-center space-x-2">
-                  <Badge className={category.color}>{category.name}</Badge>
-                  <span className="text-xs text-muted-foreground">
-                    ({category.meals.length} meals)
-                  </span>
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => deleteCategory(category.id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+              <CardTitle className="text-sm">Add New Category</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {category.meals.map((meal, index) => (
-                  <Badge 
-                    key={index} 
-                    variant="outline" 
-                    className="cursor-pointer group"
-                    onClick={() => removeMealFromCategory(category.id, index)}
-                  >
-                    {meal}
-                    <span className="ml-1 opacity-0 group-hover:opacity-100 text-red-500">×</span>
-                  </Badge>
-                ))}
-                {category.meals.length === 0 && (
-                  <span className="text-sm text-muted-foreground">No meals added yet</span>
-                )}
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="Category name"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addCategory()}
+                />
+                <Button onClick={addCategory} size="sm">
+                  <Plus className="h-4 w-4" />
+                </Button>
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+
+          {/* Add Meal to Category */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Add Meal to Category</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <Label htmlFor="meal-name">Meal Name</Label>
+                <Input
+                  id="meal-name"
+                  placeholder="Enter meal name"
+                  value={newMealName}
+                  onChange={(e) => setNewMealName(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="category-select">Select Category</Label>
+                <select
+                  id="category-select"
+                  className="w-full p-2 border rounded-md"
+                  value={selectedCategoryId}
+                  onChange={(e) => setSelectedCategoryId(e.target.value)}
+                >
+                  <option value="">Choose a category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Button onClick={addMealToCategory} className="w-full" size="sm">
+                <Tag className="h-4 w-4 mr-2" />
+                Add Meal
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Categories Display */}
+          <div className="space-y-4">
+            {categories.map((category) => (
+              <Card key={category.id}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm flex items-center space-x-2">
+                      <Badge className={category.color}>{category.name}</Badge>
+                      <span className="text-xs text-muted-foreground">
+                        ({category.meals.length} meals)
+                      </span>
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteCategory(category.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {category.meals.map((meal, index) => (
+                      <Badge 
+                        key={index} 
+                        variant="outline" 
+                        className="cursor-pointer group"
+                        onClick={() => removeMealFromCategory(category.id, index)}
+                      >
+                        {meal}
+                        <span className="ml-1 opacity-0 group-hover:opacity-100 text-red-500">×</span>
+                      </Badge>
+                    ))}
+                    {category.meals.length === 0 && (
+                      <span className="text-sm text-muted-foreground">No meals added yet</span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </ScrollArea>
     </div>
   );
 };
