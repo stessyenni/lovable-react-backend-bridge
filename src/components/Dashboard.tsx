@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, Heart, Utensils, Calendar, TrendingUp, Camera, Plus, Apple, Bookmark } from "lucide-react";
+import { Activity, Heart, Utensils, Calendar, TrendingUp, Camera, Plus, Apple, Bookmark, Eye } from "lucide-react";
 import DietModals from "./diet/DietModals";
 
 const Dashboard = () => {
@@ -34,6 +33,9 @@ const Dashboard = () => {
         });
         break;
       case 'meal-categories':
+        setShowMealCategories(true);
+        break;
+      case 'view-meal-categories':
         setShowMealCategories(true);
         break;
       default:
@@ -115,7 +117,7 @@ const Dashboard = () => {
           <CardDescription>Fast access to common health tracking features</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <Button 
               variant="outline" 
               className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
@@ -150,11 +152,19 @@ const Dashboard = () => {
             </Button>
             <Button 
               variant="outline" 
-              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm col-span-2 sm:col-span-1"
+              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
               onClick={() => handleQuickAction('meal-categories')}
             >
               <Bookmark className="h-4 w-4 sm:h-6 sm:w-6" />
               <span>Meal Categories</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
+              onClick={() => handleQuickAction('view-meal-categories')}
+            >
+              <Eye className="h-4 w-4 sm:h-6 sm:w-6" />
+              <span>View Categories</span>
             </Button>
           </div>
         </CardContent>

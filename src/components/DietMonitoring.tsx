@@ -44,6 +44,9 @@ const DietMonitoring = () => {
       case 'meal-categories':
         setShowMealCategories(true);
         break;
+      case 'view-meal-categories':
+        setShowMealCategories(true);
+        break;
       default:
         break;
     }
