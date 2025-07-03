@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Activity, Heart, Utensils, Calendar, TrendingUp, Camera, Plus, Apple, Bookmark } from "lucide-react";
-import DietEntry from "./DietEntry";
-import DietUpload from "./DietUpload";
-import MealCategories from "./MealCategories";
+import DietModals from "./diet/DietModals";
 
 const Dashboard = () => {
   const { toast } = useToast();
@@ -53,57 +51,57 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
-        <p className="text-muted-foreground">Here's your health overview for today</p>
+    <div className="space-y-6 max-w-full">
+      <div className="responsive-padding">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Welcome back!</h1>
+        <p className="text-muted-foreground responsive-text">Here's your health overview for today</p>
       </div>
 
       {/* Today's Progress */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 responsive-padding">
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Steps Today</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8,542</div>
+            <div className="text-xl sm:text-2xl font-bold">8,542</div>
             <p className="text-xs text-muted-foreground">+2.5% from yesterday</p>
             <Progress value={85} className="mt-2" />
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Heart Rate</CardTitle>
             <Heart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">72 bpm</div>
+            <div className="text-xl sm:text-2xl font-bold">72 bpm</div>
             <p className="text-xs text-muted-foreground">Resting rate</p>
             <Progress value={60} className="mt-2" />
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Calories</CardTitle>
             <Utensils className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,247</div>
+            <div className="text-xl sm:text-2xl font-bold">1,247</div>
             <p className="text-xs text-muted-foreground">Goal: 2,000</p>
             <Progress value={62} className="mt-2" />
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Sleep</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">7.5h</div>
+            <div className="text-xl sm:text-2xl font-bold">7.5h</div>
             <p className="text-xs text-muted-foreground">Last night</p>
             <Progress value={94} className="mt-2" />
           </CardContent>
@@ -111,59 +109,59 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <Card>
+      <Card className="responsive-margin">
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
           <CardDescription>Fast access to common health tracking features</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             <Button 
               variant="outline" 
-              className="h-20 flex flex-col gap-2"
+              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
               onClick={() => handleQuickAction('add-meal')}
             >
-              <Plus className="h-6 w-6" />
-              <span className="text-sm">Add Meal</span>
+              <Plus className="h-4 w-4 sm:h-6 sm:w-6" />
+              <span>Add Meal</span>
             </Button>
             <Button 
               variant="outline" 
-              className="h-20 flex flex-col gap-2"
+              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
               onClick={() => handleQuickAction('photo-analysis')}
             >
-              <Camera className="h-6 w-6" />
-              <span className="text-sm">AI Photo Analysis</span>
+              <Camera className="h-4 w-4 sm:h-6 sm:w-6" />
+              <span>AI Photo Analysis</span>
             </Button>
             <Button 
               variant="outline" 
-              className="h-20 flex flex-col gap-2"
+              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
               onClick={() => handleQuickAction('view-trends')}
             >
-              <TrendingUp className="h-6 w-6" />
-              <span className="text-sm">View Trends</span>
+              <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6" />
+              <span>View Trends</span>
             </Button>
             <Button 
               variant="outline" 
-              className="h-20 flex flex-col gap-2"
+              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
               onClick={() => handleQuickAction('nutrition-goals')}
             >
-              <Apple className="h-6 w-6" />
-              <span className="text-sm">Nutrition Goals</span>
+              <Apple className="h-4 w-4 sm:h-6 sm:w-6" />
+              <span>Nutrition Goals</span>
             </Button>
             <Button 
               variant="outline" 
-              className="h-20 flex flex-col gap-2"
+              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm col-span-2 sm:col-span-1"
               onClick={() => handleQuickAction('meal-categories')}
             >
-              <Bookmark className="h-6 w-6" />
-              <span className="text-sm">Meal Categories</span>
+              <Bookmark className="h-4 w-4 sm:h-6 sm:w-6" />
+              <span>Meal Categories</span>
             </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Recent Activity */}
-      <Card>
+      <Card className="responsive-margin">
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
           <CardDescription>Your latest health and fitness activities</CardDescription>
@@ -201,54 +199,16 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Modals */}
-      {showDietEntry && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-background rounded-lg">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold">Add New Meal</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowDietEntry(false)}
-              >
-                ✕
-              </Button>
-            </div>
-            <div className="p-4">
-              <DietEntry onSuccess={handleSuccess} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showDietUpload && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-background rounded-lg max-w-2xl w-full">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold">AI Photo Analysis</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowDietUpload(false)}
-              >
-                ✕
-              </Button>
-            </div>
-            <div className="p-4">
-              <DietUpload onSuccess={handleSuccess} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showMealCategories && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
-            <MealCategories onClose={() => setShowMealCategories(false)} />
-          </div>
-        </div>
-      )}
+      <DietModals
+        showDietEntry={showDietEntry}
+        showDietUpload={showDietUpload}
+        showMealCategories={showMealCategories}
+        editingEntry={null}
+        onCloseDietEntry={() => setShowDietEntry(false)}
+        onCloseDietUpload={() => setShowDietUpload(false)}
+        onCloseMealCategories={() => setShowMealCategories(false)}
+        onSuccess={handleSuccess}
+      />
     </div>
   );
 };

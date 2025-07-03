@@ -1,21 +1,15 @@
 
-import Dashboard from "../Dashboard";
-import AIConsultation from "../AIConsultation";
-import DietMonitoring from "../DietMonitoring";
-import HealthGoals from "../HealthGoals";
-import HealthFacilities from "../HealthFacilities";
-import Messages from "../Messages";
-import UserAccount from "../UserAccount";
-import AppSettings from "../AppSettings";
-
-interface MenuItem {
-  id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'settings';
-  label: string;
-  icon: React.FC<any>;
-}
+import Dashboard from "@/components/Dashboard";
+import AIConsultation from "@/components/AIConsultation";
+import DietMonitoring from "@/components/DietMonitoring";
+import HealthGoals from "@/components/HealthGoals";
+import HealthFacilities from "@/components/HealthFacilities";
+import Messages from "@/components/Messages";
+import UserAccount from "@/components/UserAccount";
+import AppSettings from "@/components/AppSettings";
 
 interface MainContentProps {
-  activeSection: MenuItem['id'];
+  activeSection: string;
   brailleMode: boolean;
 }
 
@@ -39,13 +33,18 @@ const MainContent = ({ activeSection, brailleMode }: MainContentProps) => {
       case 'settings':
         return <AppSettings />;
       default:
-        return <div>Section not implemented yet.</div>;
+        return <Dashboard />;
     }
   };
 
   return (
-    <main className="flex-1 overflow-y-auto">
-      <div className={`p-6 ${brailleMode ? "text-lg" : ""}`}>
+    <main 
+      className={`flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto ${
+        brailleMode ? 'font-mono text-lg' : ''
+      } max-w-full`}
+      style={{ maxHeight: 'calc(100vh - 80px)' }}
+    >
+      <div className="max-w-7xl mx-auto w-full">
         {renderContent()}
       </div>
     </main>

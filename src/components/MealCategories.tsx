@@ -152,9 +152,9 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full max-h-[90vh] flex flex-col w-full max-w-4xl mx-auto">
       {/* Header with Save and Close buttons */}
-      <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center justify-between p-4 border-b bg-background sticky top-0 z-10">
         <div>
           <h3 className="text-lg font-semibold">Meal Categories</h3>
           <p className="text-sm text-muted-foreground">
@@ -176,8 +176,8 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
       </div>
 
       {/* Scrollable content */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-6">
+      <ScrollArea className="flex-1 h-full">
+        <div className="p-4 space-y-6">
           {/* Add New Category */}
           <Card>
             <CardHeader>
@@ -217,7 +217,7 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
                 <Label htmlFor="category-select">Select Category</Label>
                 <select
                   id="category-select"
-                  className="w-full p-2 border rounded-md"
+                  className="w-full p-2 border rounded-md bg-background"
                   value={selectedCategoryId}
                   onChange={(e) => setSelectedCategoryId(e.target.value)}
                 >

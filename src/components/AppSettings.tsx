@@ -1,12 +1,14 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield, Watch } from "lucide-react";
+import SmartWatchSync from "./SmartWatchSync";
 
 const AppSettings = () => {
   const [notifications, setNotifications] = useState(true);
@@ -15,13 +17,95 @@ const AppSettings = () => {
   const [highContrast, setHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState([16]);
   const [voiceVolume, setVoiceVolume] = useState([75]);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Apply dark mode
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  useEffect(() => {
+    // Apply font size
+    document.documentElement.style.fontSize = `${fontSize[0]}px`;
+  }, [fontSize]);
+
+  useEffect(() => {
+    // Apply high contrast
+    if (highContrast) {
+      document.documentElement.classList.add('high-contrast');
+    } else {
+      document.documentElement.classList.remove('high-contrast');
+    }
+  }, [highContrast]);
+
+  const handleBiometricAuth = async () => {
+    try {
+      if ('credentials' in navigator) {
+        const credential = await (navigator as any).credentials.create({
+          publicKey: {
+            challenge: new Uint8Array(32),
+            rp: { name: "Hemapp" },
+            user: {
+              id: new Uint8Array(16),
+              name: "user@example.com",
+              displayName: "User"
+            },
+            pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+            authenticatorSelection: {
+              authenticatorAttachment: "platform",
+              userVerification: "required"
+            }
+          }
+        });
+        
+        if (credential) {
+          setBiometricEnabled(true);
+          toast({
+            title: "Biometric Authentication Enabled",
+            description: "Your device biometric authentication is now active.",
+          });
+        }
+      } else {
+        toast({
+          title: "Biometric Not Supported",
+          description: "Your device doesn't support biometric authentication.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Biometric Setup Failed",
+        description: "Failed to set up biometric authentication. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl mx-auto p-4">
       <div>
         <h2 className="text-2xl font-bold mb-2">App Settings</h2>
         <p className="text-muted-foreground">Customize your Hemapp experience</p>
       </div>
+
+      {/* SmartWatch Integration */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Watch className="h-5 w-5" />
+            SmartWatch Integration
+          </CardTitle>
+          <CardDescription>Connect and sync with your smartwatch</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SmartWatchSync />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -46,7 +130,7 @@ const AppSettings = () => {
 
           <div className="space-y-4">
             <Label>Notification Types</Label>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Medication Reminders</span>
                 <Switch defaultChecked />
@@ -205,7 +289,24 @@ const AppSettings = () => {
               <Label htmlFor="biometric-lock">Biometric Lock</Label>
               <p className="text-sm text-muted-foreground">Use fingerprint or face ID to unlock app</p>
             </div>
-            <Switch id="biometric-lock" />
+            <div className="flex items-center gap-2">
+              <Switch 
+                id="biometric-lock" 
+                checked={biometricEnabled}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    handleBiometricAuth();
+                  } else {
+                    setBiometricEnabled(false);
+                  }
+                }}
+              />
+              {!biometricEnabled && (
+                <Button onClick={handleBiometricAuth} size="sm" variant="outline">
+                  Setup
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
