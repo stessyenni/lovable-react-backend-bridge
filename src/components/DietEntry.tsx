@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Camera, Upload, X } from "lucide-react";
+import { Plus, Camera, X } from "lucide-react";
 
 interface MealCategory {
   id: string;
@@ -187,155 +187,159 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry }: DietEntryProp
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Plus className="h-5 w-5" />
+    <div className="w-full max-w-full">
+      <div className="mb-4">
+        <h3 className="text-base sm:text-lg font-semibold">
           {editMode ? "Edit Meal Entry" : "Add Meal Entry"}
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           {editMode ? "Update your meal information" : "Log your meals to track your nutrition"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="mealName">Meal Name *</Label>
+        </p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="mealName" className="text-xs sm:text-sm">Meal Name *</Label>
+          <Input
+            id="mealName"
+            placeholder="e.g., Grilled Chicken Salad"
+            value={mealName}
+            onChange={(e) => setMealName(e.target.value)}
+            required
+            className="text-xs sm:text-sm"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="mealType" className="text-xs sm:text-sm">Meal Type</Label>
+          <Select value={mealType} onValueChange={setMealType}>
+            <SelectTrigger className="text-xs sm:text-sm">
+              <SelectValue placeholder="Select meal type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="breakfast">Breakfast</SelectItem>
+              <SelectItem value="lunch">Lunch</SelectItem>
+              <SelectItem value="dinner">Dinner</SelectItem>
+              <SelectItem value="snack">Snack</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="mealCategory" className="text-xs sm:text-sm">Meal Category</Label>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="text-xs sm:text-sm">
+              <SelectValue placeholder="Select or add category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="flex space-x-2 mt-2">
             <Input
-              id="mealName"
-              placeholder="e.g., Grilled Chicken Salad"
-              value={mealName}
-              onChange={(e) => setMealName(e.target.value)}
-              required
+              placeholder="New category name"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addNewCategory()}
+              className="text-xs sm:text-sm"
             />
+            <Button type="button" onClick={addNewCategory} size="sm" variant="outline" className="shrink-0">
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="mealType">Meal Type</Label>
-            <Select value={mealType} onValueChange={setMealType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select meal type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="breakfast">Breakfast</SelectItem>
-                <SelectItem value="lunch">Lunch</SelectItem>
-                <SelectItem value="dinner">Dinner</SelectItem>
-                <SelectItem value="snack">Snack</SelectItem>
-              </SelectContent>
-            </Select>
+        <div className="space-y-2">
+          <Label htmlFor="mealContent" className="text-xs sm:text-sm">Meal Content</Label>
+          <Textarea
+            id="mealContent"
+            placeholder="List the ingredients or components of your meal..."
+            value={mealContent}
+            onChange={(e) => setMealContent(e.target.value)}
+            rows={3}
+            className="text-xs sm:text-sm resize-none"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs sm:text-sm">Meal Image</Label>
+          <div className="flex gap-2">
+            <Input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleImageSelect}
+              className="flex-1 text-xs sm:text-sm"
+            />
+            <Button type="button" variant="outline" size="sm" className="shrink-0">
+              <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="mealCategory">Meal Category</Label>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select or add category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="flex space-x-2 mt-2">
-              <Input
-                placeholder="New category name"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && addNewCategory()}
+          
+          {imagePreview && (
+            <div className="relative">
+              <img 
+                src={imagePreview} 
+                alt="Meal preview" 
+                className="w-full h-32 object-cover rounded-lg"
               />
-              <Button type="button" onClick={addNewCategory} size="sm" variant="outline">
-                <Plus className="h-4 w-4" />
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                className="absolute top-1 right-1 h-6 w-6 p-0"
+                onClick={removeImage}
+              >
+                <X className="h-3 w-3" />
               </Button>
             </div>
-          </div>
+          )}
+        </div>
 
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
           <div className="space-y-2">
-            <Label htmlFor="mealContent">Meal Content</Label>
-            <Textarea
-              id="mealContent"
-              placeholder="List the ingredients or components of your meal..."
-              value={mealContent}
-              onChange={(e) => setMealContent(e.target.value)}
-              rows={3}
+            <Label htmlFor="calories" className="text-xs sm:text-sm">Calories</Label>
+            <Input
+              id="calories"
+              type="number"
+              placeholder="250"
+              value={calories}
+              onChange={(e) => setCalories(e.target.value)}
+              min="0"
+              className="text-xs sm:text-sm"
             />
           </div>
-
           <div className="space-y-2">
-            <Label>Meal Image</Label>
-            <div className="flex gap-2">
-              <Input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleImageSelect}
-                className="flex-1"
-              />
-              <Button type="button" variant="outline" size="icon">
-                <Camera className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            {imagePreview && (
-              <div className="relative">
-                <img 
-                  src={imagePreview} 
-                  alt="Meal preview" 
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  className="absolute top-1 right-1"
-                  onClick={removeImage}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
+            <Label htmlFor="protein" className="text-xs sm:text-sm">Protein (g)</Label>
+            <Input
+              id="protein"
+              placeholder="20"
+              value={protein}
+              onChange={(e) => setProtein(e.target.value)}
+              className="text-xs sm:text-sm"
+            />
           </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="calories">Calories</Label>
-              <Input
-                id="calories"
-                type="number"
-                placeholder="250"
-                value={calories}
-                onChange={(e) => setCalories(e.target.value)}
-                min="0"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="protein">Protein (g)</Label>
-              <Input
-                id="protein"
-                placeholder="20"
-                value={protein}
-                onChange={(e) => setProtein(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="fiber">Fiber (g)</Label>
-              <Input
-                id="fiber"
-                placeholder="5"
-                value={fiber}
-                onChange={(e) => setFiber(e.target.value)}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="fiber" className="text-xs sm:text-sm">Fiber (g)</Label>
+            <Input
+              id="fiber"
+              placeholder="5"
+              value={fiber}
+              onChange={(e) => setFiber(e.target.value)}
+              className="text-xs sm:text-sm"
+            />
           </div>
+        </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? (editMode ? "Updating..." : "Adding...") : (editMode ? "Update Meal" : "Add Meal")}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        <Button type="submit" className="w-full text-xs sm:text-sm" disabled={loading}>
+          {loading ? (editMode ? "Updating..." : "Adding...") : (editMode ? "Update Meal" : "Add Meal")}
+        </Button>
+      </form>
+    </div>
   );
 };
 

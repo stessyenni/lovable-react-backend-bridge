@@ -152,23 +152,23 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
   };
 
   return (
-    <div className="h-full max-h-[90vh] flex flex-col w-full max-w-4xl mx-auto">
+    <div className="h-full max-h-[90vh] flex flex-col w-full">
       {/* Header with Save and Close buttons */}
-      <div className="flex items-center justify-between p-4 border-b bg-background sticky top-0 z-10">
-        <div>
-          <h3 className="text-lg font-semibold">Meal Categories</h3>
-          <p className="text-sm text-muted-foreground">
-            Organize your meals into categories for easy tracking and repetition.
+      <div className="flex items-center justify-between p-3 sm:p-4 border-b bg-background shrink-0">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base sm:text-lg font-semibold truncate">Meal Categories</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Organize your meals into categories for easy tracking.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={handleSave} size="sm" className="bg-green-600 hover:bg-green-700">
-            <Save className="h-4 w-4 mr-2" />
+        <div className="flex gap-2 ml-2">
+          <Button onClick={handleSave} size="sm" className="bg-green-600 hover:bg-green-700 text-xs sm:text-sm">
+            <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             Save
           </Button>
           {onClose && (
-            <Button onClick={onClose} variant="outline" size="sm">
-              <X className="h-4 w-4 mr-2" />
+            <Button onClick={onClose} variant="outline" size="sm" className="text-xs sm:text-sm">
+              <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Close
             </Button>
           )}
@@ -176,12 +176,12 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
       </div>
 
       {/* Scrollable content */}
-      <ScrollArea className="flex-1 h-full">
-        <div className="p-4 space-y-6">
+      <ScrollArea className="flex-1 h-0">
+        <div className="p-3 sm:p-4 space-y-4 sm:space-y-6">
           {/* Add New Category */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Add New Category</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm sm:text-base">Add New Category</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex space-x-2">
@@ -190,9 +190,10 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && addCategory()}
+                  className="text-xs sm:text-sm"
                 />
-                <Button onClick={addCategory} size="sm">
-                  <Plus className="h-4 w-4" />
+                <Button onClick={addCategory} size="sm" className="shrink-0">
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
             </CardContent>
@@ -200,24 +201,25 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
 
           {/* Add Meal to Category */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Add Meal to Category</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm sm:text-base">Add Meal to Category</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <Label htmlFor="meal-name">Meal Name</Label>
+                <Label htmlFor="meal-name" className="text-xs sm:text-sm">Meal Name</Label>
                 <Input
                   id="meal-name"
                   placeholder="Enter meal name"
                   value={newMealName}
                   onChange={(e) => setNewMealName(e.target.value)}
+                  className="text-xs sm:text-sm"
                 />
               </div>
               <div>
-                <Label htmlFor="category-select">Select Category</Label>
+                <Label htmlFor="category-select" className="text-xs sm:text-sm">Select Category</Label>
                 <select
                   id="category-select"
-                  className="w-full p-2 border rounded-md bg-background"
+                  className="w-full p-2 border rounded-md bg-background text-xs sm:text-sm"
                   value={selectedCategoryId}
                   onChange={(e) => setSelectedCategoryId(e.target.value)}
                 >
@@ -230,20 +232,20 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
                 </select>
               </div>
               <Button onClick={addMealToCategory} className="w-full" size="sm">
-                <Tag className="h-4 w-4 mr-2" />
+                <Tag className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 Add Meal
               </Button>
             </CardContent>
           </Card>
 
           {/* Categories Display */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {categories.map((category) => (
               <Card key={category.id}>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-sm flex items-center space-x-2">
-                      <Badge className={category.color}>{category.name}</Badge>
+                      <Badge className={`${category.color} text-xs`}>{category.name}</Badge>
                       <span className="text-xs text-muted-foreground">
                         ({category.meals.length} meals)
                       </span>
@@ -252,9 +254,9 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
                       variant="ghost"
                       size="sm"
                       onClick={() => deleteCategory(category.id)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
                 </CardHeader>
@@ -264,7 +266,7 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
                       <Badge 
                         key={index} 
                         variant="outline" 
-                        className="cursor-pointer group"
+                        className="cursor-pointer group text-xs"
                         onClick={() => removeMealFromCategory(category.id, index)}
                       >
                         {meal}
@@ -272,7 +274,7 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
                       </Badge>
                     ))}
                     {category.meals.length === 0 && (
-                      <span className="text-sm text-muted-foreground">No meals added yet</span>
+                      <span className="text-xs text-muted-foreground">No meals added yet</span>
                     )}
                   </div>
                 </CardContent>

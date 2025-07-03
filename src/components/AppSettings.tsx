@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -23,7 +22,37 @@ const AppSettings = () => {
   const [fontSize, setFontSize] = useState([16]);
   const [voiceVolume, setVoiceVolume] = useState([75]);
   const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [biometricSupported, setBiometricSupported] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if biometric authentication is supported
+    const checkBiometricSupport = async () => {
+      if ('credentials' in navigator && 'create' in (navigator as any).credentials) {
+        try {
+          const available = await (navigator as any).credentials.get({
+            publicKey: {
+              challenge: new Uint8Array(32),
+              timeout: 60000,
+              userVerification: "required"
+            }
+          });
+          setBiometricSupported(true);
+        } catch (error) {
+          // Biometric not available or supported
+          setBiometricSupported(false);
+        }
+      } else {
+        setBiometricSupported(false);
+      }
+    };
+
+    checkBiometricSupport();
+    
+    // Load saved biometric setting
+    const savedBiometric = localStorage.getItem('biometricEnabled') === 'true';
+    setBiometricEnabled(savedBiometric);
+  }, []);
 
   useEffect(() => {
     // Apply dark mode
@@ -67,67 +96,79 @@ const AppSettings = () => {
   }, []);
 
   const handleBiometricAuth = async () => {
+    if (!biometricSupported) {
+      toast({
+        title: "Biometric Not Supported",
+        description: "Your device doesn't support biometric authentication or it's not set up.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
-      if ('credentials' in navigator && 'create' in (navigator as any).credentials) {
-        const credential = await (navigator as any).credentials.create({
-          publicKey: {
-            challenge: crypto.getRandomValues(new Uint8Array(32)),
-            rp: { name: "Hemapp" },
-            user: {
-              id: crypto.getRandomValues(new Uint8Array(16)),
-              name: "user@example.com",
-              displayName: "User"
-            },
-            pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-            authenticatorSelection: {
-              authenticatorAttachment: "platform",
-              userVerification: "required"
-            },
-            timeout: 60000,
-            attestation: "direct"
-          }
-        });
-        
-        if (credential) {
-          setBiometricEnabled(true);
-          localStorage.setItem('biometricEnabled', 'true');
-          toast({
-            title: "Biometric Authentication Enabled",
-            description: "Your device biometric authentication is now active.",
-          });
+      // Try to create a credential
+      const credential = await (navigator as any).credentials.create({
+        publicKey: {
+          challenge: crypto.getRandomValues(new Uint8Array(32)),
+          rp: { name: "Hemapp" },
+          user: {
+            id: crypto.getRandomValues(new Uint8Array(16)),
+            name: "user@hemapp.com",
+            displayName: "Hemapp User"
+          },
+          pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+          authenticatorSelection: {
+            authenticatorAttachment: "platform",
+            userVerification: "required"
+          },
+          timeout: 60000,
+          attestation: "direct"
         }
-      } else {
+      });
+      
+      if (credential) {
+        setBiometricEnabled(true);
+        localStorage.setItem('biometricEnabled', 'true');
         toast({
-          title: "Biometric Not Supported",
-          description: "Your device doesn't support biometric authentication.",
-          variant: "destructive"
+          title: "Biometric Authentication Enabled",
+          description: "Your device biometric authentication is now active.",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Biometric setup error:', error);
+      
+      let errorMessage = "Failed to set up biometric authentication.";
+      if (error.name === 'NotSupportedError') {
+        errorMessage = "Biometric authentication is not supported on this device.";
+      } else if (error.name === 'NotAllowedError') {
+        errorMessage = "Biometric authentication was not allowed. Please check your device settings.";
+      } else if (error.name === 'InvalidStateError') {
+        errorMessage = "Biometric authentication is already set up or device is not ready.";
+      }
+      
       toast({
         title: "Biometric Setup Failed",
-        description: "Failed to set up biometric authentication. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     }
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto p-4">
+    <div className="space-y-6 max-w-4xl mx-auto p-2 sm:p-4 overflow-y-auto max-h-screen">
       <div>
-        <h2 className="text-2xl font-bold mb-2">App Settings</h2>
-        <p className="text-muted-foreground">Customize your Hemapp experience</p>
+        <h2 className="text-xl sm:text-2xl font-bold mb-2">App Settings</h2>
+        <p className="text-muted-foreground text-sm sm:text-base">Customize your Hemapp experience</p>
       </div>
 
       {/* SmartWatch Integration */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Watch className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+            <Watch className="h-4 w-4 sm:h-5 sm:w-5" />
             SmartWatch Integration
           </CardTitle>
-          <CardDescription>Connect and sync with your smartwatch</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Connect and sync with your smartwatch</CardDescription>
         </CardHeader>
         <CardContent>
           <SmartWatchSync />
@@ -136,17 +177,17 @@ const AppSettings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+            <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             Notifications
           </CardTitle>
-          <CardDescription>Control when and how you receive notifications</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Control when and how you receive notifications</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="push-notifications">Push Notifications</Label>
-              <p className="text-sm text-muted-foreground">Receive notifications on your device</p>
+              <Label htmlFor="push-notifications" className="text-xs sm:text-sm">Push Notifications</Label>
+              <p className="text-xs text-muted-foreground">Receive notifications on your device</p>
             </div>
             <Switch
               id="push-notifications"
@@ -156,33 +197,33 @@ const AppSettings = () => {
           </div>
 
           <div className="space-y-4">
-            <Label>Notification Types</Label>
+            <Label className="text-xs sm:text-sm">Notification Types</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm">Medication Reminders</span>
+                <span className="text-xs sm:text-sm">Medication Reminders</span>
                 <Switch defaultChecked />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Meal Logging</span>
+                <span className="text-xs sm:text-sm">Meal Logging</span>
                 <Switch defaultChecked />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Exercise Reminders</span>
+                <span className="text-xs sm:text-sm">Exercise Reminders</span>
                 <Switch defaultChecked />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Goal Updates</span>
+                <span className="text-xs sm:text-sm">Goal Updates</span>
                 <Switch />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Health Tips</span>
+                <span className="text-xs sm:text-sm">Health Tips</span>
                 <Switch />
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notification-time">Quiet Hours</Label>
+            <Label htmlFor="notification-time" className="text-xs sm:text-sm">Quiet Hours</Label>
             <Select>
               <SelectTrigger>
                 <SelectValue placeholder="Select quiet hours" />
@@ -200,17 +241,17 @@ const AppSettings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Accessibility className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+            <Accessibility className="h-4 w-4 sm:h-5 sm:w-5" />
             Accessibility
           </CardTitle>
-          <CardDescription>Make Hemapp easier to use</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Make Hemapp easier to use</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="voice-guidance">Voice Guidance</Label>
-              <p className="text-sm text-muted-foreground">Read aloud app content and instructions</p>
+              <Label htmlFor="voice-guidance" className="text-xs sm:text-sm">Voice Guidance</Label>
+              <p className="text-xs text-muted-foreground">Read aloud app content and instructions</p>
             </div>
             <Switch
               id="voice-guidance"
@@ -220,7 +261,7 @@ const AppSettings = () => {
           </div>
 
           <div className="space-y-2">
-            <Label>Voice Volume: {voiceVolume[0]}%</Label>
+            <Label className="text-xs sm:text-sm">Voice Volume: {voiceVolume[0]}%</Label>
             <Slider
               value={voiceVolume}
               onValueChange={setVoiceVolume}
@@ -232,8 +273,8 @@ const AppSettings = () => {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="high-contrast">High Contrast Mode</Label>
-              <p className="text-sm text-muted-foreground">Increase contrast for better visibility</p>
+              <Label htmlFor="high-contrast" className="text-xs sm:text-sm">High Contrast Mode</Label>
+              <p className="text-xs text-muted-foreground">Increase contrast for better visibility</p>
             </div>
             <Switch
               id="high-contrast"
@@ -243,7 +284,7 @@ const AppSettings = () => {
           </div>
 
           <div className="space-y-2">
-            <Label>Font Size: {fontSize[0]}px</Label>
+            <Label className="text-xs sm:text-sm">Font Size: {fontSize[0]}px</Label>
             <Slider
               value={fontSize}
               onValueChange={setFontSize}
@@ -256,8 +297,8 @@ const AppSettings = () => {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="haptic-feedback">Haptic Feedback</Label>
-              <p className="text-sm text-muted-foreground">Vibrate for touch interactions</p>
+              <Label htmlFor="haptic-feedback" className="text-xs sm:text-sm">Haptic Feedback</Label>
+              <p className="text-xs text-muted-foreground">Vibrate for touch interactions</p>
             </div>
             <Switch id="haptic-feedback" defaultChecked />
           </div>
@@ -266,17 +307,17 @@ const AppSettings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Moon className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+            <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
             Appearance
           </CardTitle>
-          <CardDescription>Customize how the app looks</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Customize how the app looks</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="dark-mode">Dark Mode</Label>
-              <p className="text-sm text-muted-foreground">Use dark theme for better visibility in low light</p>
+              <Label htmlFor="dark-mode" className="text-xs sm:text-sm">Dark Mode</Label>
+              <p className="text-xs text-muted-foreground">Use dark theme for better visibility in low light</p>
             </div>
             <Switch
               id="dark-mode"
@@ -286,7 +327,7 @@ const AppSettings = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="theme">Color Theme</Label>
+            <Label htmlFor="theme" className="text-xs sm:text-sm">Color Theme</Label>
             <Select>
               <SelectTrigger>
                 <SelectValue placeholder="Select theme" />
@@ -304,32 +345,39 @@ const AppSettings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+            <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
             Privacy & Security
           </CardTitle>
-          <CardDescription>Control your data and privacy settings</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Control your data and privacy settings</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="biometric-lock">Biometric Lock</Label>
-              <p className="text-sm text-muted-foreground">Use fingerprint or face ID to unlock app</p>
+              <Label htmlFor="biometric-lock" className="text-xs sm:text-sm">Biometric Lock</Label>
+              <p className="text-xs text-muted-foreground">
+                {biometricSupported ? "Use fingerprint or face ID to unlock app" : "Not supported on this device"}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <Switch 
                 id="biometric-lock" 
                 checked={biometricEnabled}
+                disabled={!biometricSupported}
                 onCheckedChange={(checked) => {
                   if (checked) {
                     handleBiometricAuth();
                   } else {
                     setBiometricEnabled(false);
                     localStorage.setItem('biometricEnabled', 'false');
+                    toast({
+                      title: "Biometric Lock Disabled",
+                      description: "Biometric authentication has been turned off.",
+                    });
                   }
                 }}
               />
-              {!biometricEnabled && (
+              {!biometricEnabled && biometricSupported && (
                 <Button onClick={handleBiometricAuth} size="sm" variant="outline">
                   Setup
                 </Button>
@@ -339,28 +387,28 @@ const AppSettings = () => {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="auto-lock">Auto Lock</Label>
-              <p className="text-sm text-muted-foreground">Lock app when not in use</p>
+              <Label htmlFor="auto-lock" className="text-xs sm:text-sm">Auto Lock</Label>
+              <p className="text-xs text-muted-foreground">Lock app when not in use</p>
             </div>
             <Switch id="auto-lock" defaultChecked />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="analytics">Share Usage Analytics</Label>
-              <p className="text-sm text-muted-foreground">Help improve the app (anonymous data only)</p>
+              <Label htmlFor="analytics" className="text-xs sm:text-sm">Share Usage Analytics</Label>
+              <p className="text-xs text-muted-foreground">Help improve the app (anonymous data only)</p>
             </div>
             <Switch id="analytics" defaultChecked />
           </div>
 
           <div className="pt-4 space-y-3">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full text-xs sm:text-sm">
               Export My Data
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full text-xs sm:text-sm">
               Reset All Settings
             </Button>
-            <Button variant="destructive" className="w-full">
+            <Button variant="destructive" className="w-full text-xs sm:text-sm">
               Delete Account
             </Button>
           </div>
