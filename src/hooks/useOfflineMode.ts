@@ -4,15 +4,18 @@ import { useToast } from "@/hooks/use-toast";
 
 export const useOfflineMode = () => {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [manualOffline, setManualOffline] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     const handleOnline = () => {
-      setIsOffline(false);
-      toast({
-        title: "Back Online",
-        description: "Connection restored. Syncing data...",
-      });
+      if (!manualOffline) {
+        setIsOffline(false);
+        toast({
+          title: "Back Online",
+          description: "Connection restored. Syncing data...",
+        });
+      }
     };
 
     const handleOffline = () => {
@@ -31,7 +34,18 @@ export const useOfflineMode = () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [toast]);
+  }, [toast, manualOffline]);
+
+  const toggleOfflineMode = () => {
+    const newOfflineState = !isOffline;
+    setIsOffline(newOfflineState);
+    setManualOffline(newOfflineState);
+    
+    toast({
+      title: newOfflineState ? "Going Offline" : "Going Online",
+      description: newOfflineState ? "App will work in offline mode" : "Reconnecting to online services",
+    });
+  };
 
   const saveOfflineData = (key: string, data: any) => {
     try {
@@ -58,16 +72,13 @@ export const useOfflineMode = () => {
   const syncOfflineData = async () => {
     if (isOffline) return;
 
-    // Get all offline data and sync with server
     const keys = Object.keys(localStorage).filter(key => key.startsWith('offline_'));
     
     for (const key of keys) {
       const offlineData = getOfflineData(key.replace('offline_', ''));
       if (offlineData && !offlineData.synced) {
-        // Sync logic would go here
         console.log('Syncing offline data:', key, offlineData);
         
-        // Mark as synced
         localStorage.setItem(key, JSON.stringify({
           ...offlineData,
           synced: true
@@ -78,6 +89,7 @@ export const useOfflineMode = () => {
 
   return {
     isOffline,
+    toggleOfflineMode,
     saveOfflineData,
     getOfflineData,
     syncOfflineData

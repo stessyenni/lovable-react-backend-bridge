@@ -15,17 +15,15 @@ export const useMainAppState = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isOffline, syncOfflineData } = useOfflineMode();
+  const { isOffline, toggleOfflineMode, syncOfflineData } = useOfflineMode();
   const [activeSection, setActiveSection] = useState<MenuItem['id']>('dashboard');
   const [speechEnabled, setSpeechEnabled] = useState(false);
   const [brailleMode, setBrailleMode] = useState(false);
 
   useEffect(() => {
-    // Check for braille preference in localStorage
     const savedBrailleMode = localStorage.getItem('brailleMode') === 'true';
     setBrailleMode(savedBrailleMode);
 
-    // Sync offline data when coming back online
     if (!isOffline) {
       syncOfflineData();
     }
@@ -49,11 +47,7 @@ export const useMainAppState = () => {
   };
 
   const handleOnlineToggle = () => {
-    // This would simulate offline mode for testing
-    toast({
-      title: isOffline ? "Going online" : "Going offline",
-      description: isOffline ? "Reconnecting to online services" : "App will work in offline mode",
-    });
+    toggleOfflineMode();
   };
 
   const handleBrailleToggle = () => {

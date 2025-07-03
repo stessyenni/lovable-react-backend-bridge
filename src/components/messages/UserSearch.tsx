@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Search, UserPlus, Clock, Check } from "lucide-react";
+import { Search, UserPlus, Clock, Check, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Connection, User } from "./types";
@@ -20,24 +20,29 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [searching, setSearching] = useState(false);
+  const [showAllUsers, setShowAllUsers] = useState(false);
   const { toast } = useToast();
 
   const searchUsers = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() && !showAllUsers) return;
 
     setSearching(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('profiles')
         .select('id, first_name, last_name, username, email')
-        .or(`first_name.ilike.%${searchQuery}%,last_name.ilike.%${searchQuery}%,username.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`)
-        .neq('id', currentUserId)
-        .limit(10);
+        .neq('id', currentUserId);
+
+      if (searchQuery.trim()) {
+        query = query.or(`first_name.ilike.%${searchQuery}%,last_name.ilike.%${searchQuery}%,username.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`);
+      }
+
+      const { data, error } = await query.limit(20);
 
       if (error) {
         console.error('Error searching users:', error);
         toast({
-          title: "Error",
+          title: "Search Error",
           description: "Failed to search users. Please try again.",
           variant: "destructive",
         });
@@ -45,6 +50,13 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
       }
 
       setSearchResults(data || []);
+      
+      if (data && data.length === 0) {
+        toast({
+          title: "No Users Found",
+          description: searchQuery ? "No users match your search criteria." : "No other users found in the system.",
+        });
+      }
     } catch (error) {
       console.error('Unexpected error:', error);
       toast({
@@ -55,6 +67,12 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
     } finally {
       setSearching(false);
     }
+  };
+
+  const loadAllUsers = () => {
+    setShowAllUsers(true);
+    setSearchQuery('');
+    searchUsers();
   };
 
   const sendConnectionRequest = async (userId: string) => {
@@ -70,7 +88,7 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
       if (error) {
         console.error('Error sending connection request:', error);
         toast({
-          title: "Error",
+          title: "Connection Error",
           description: "Failed to send connection request. Please try again.",
           variant: "destructive",
         });
@@ -78,7 +96,7 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
       }
 
       toast({
-        title: "Connection request sent",
+        title: "Connection Request Sent",
         description: "Your connection request has been sent successfully.",
       });
       
@@ -122,7 +140,10 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Discover Users</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Users className="h-5 w-5" />
+          Discover Users
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex space-x-2">
@@ -137,8 +158,26 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
           </Button>
         </div>
 
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={loadAllUsers}
+            disabled={searching}
+            className="flex items-center gap-2"
+          >
+            <Users className="h-4 w-4" />
+            Show All Users
+          </Button>
+        </div>
+
+        {searching && (
+          <div className="text-center py-4">
+            <p className="text-muted-foreground">Searching for users...</p>
+          </div>
+        )}
+
         {searchResults.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-3 max-h-96 overflow-y-auto">
             {searchResults.map((user) => {
               const connection = getConnectionStatus(user.id);
               
@@ -185,10 +224,15 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
           </div>
         )}
 
-        {searchQuery && searchResults.length === 0 && !searching && (
-          <p className="text-muted-foreground text-center py-8">
-            No users found matching your search.
-          </p>
+        {!searching && searchResults.length === 0 && (searchQuery || showAllUsers) && (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">
+              {searchQuery 
+                ? "No users found matching your search. Try a different search term."
+                : "No other users found in the system yet."
+              }
+            </p>
+          </div>
         )}
       </CardContent>
     </Card>

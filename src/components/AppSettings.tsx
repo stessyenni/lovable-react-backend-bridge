@@ -12,7 +12,12 @@ import SmartWatchSync from "./SmartWatchSync";
 
 const AppSettings = () => {
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark');
+    }
+    return false;
+  });
   const [voiceGuidance, setVoiceGuidance] = useState(true);
   const [highContrast, setHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState([16]);
@@ -24,34 +29,52 @@ const AppSettings = () => {
     // Apply dark mode
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('darkMode', 'true');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('darkMode', 'false');
     }
   }, [darkMode]);
 
   useEffect(() => {
     // Apply font size
     document.documentElement.style.fontSize = `${fontSize[0]}px`;
+    localStorage.setItem('fontSize', fontSize[0].toString());
   }, [fontSize]);
 
   useEffect(() => {
     // Apply high contrast
     if (highContrast) {
       document.documentElement.classList.add('high-contrast');
+      localStorage.setItem('highContrast', 'true');
     } else {
       document.documentElement.classList.remove('high-contrast');
+      localStorage.setItem('highContrast', 'false');
     }
   }, [highContrast]);
 
+  useEffect(() => {
+    // Load saved settings on component mount
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    const savedHighContrast = localStorage.getItem('highContrast') === 'true';
+    const savedFontSize = localStorage.getItem('fontSize');
+    
+    setDarkMode(savedDarkMode);
+    setHighContrast(savedHighContrast);
+    if (savedFontSize) {
+      setFontSize([parseInt(savedFontSize)]);
+    }
+  }, []);
+
   const handleBiometricAuth = async () => {
     try {
-      if ('credentials' in navigator) {
+      if ('credentials' in navigator && 'create' in (navigator as any).credentials) {
         const credential = await (navigator as any).credentials.create({
           publicKey: {
-            challenge: new Uint8Array(32),
+            challenge: crypto.getRandomValues(new Uint8Array(32)),
             rp: { name: "Hemapp" },
             user: {
-              id: new Uint8Array(16),
+              id: crypto.getRandomValues(new Uint8Array(16)),
               name: "user@example.com",
               displayName: "User"
             },
@@ -59,12 +82,15 @@ const AppSettings = () => {
             authenticatorSelection: {
               authenticatorAttachment: "platform",
               userVerification: "required"
-            }
+            },
+            timeout: 60000,
+            attestation: "direct"
           }
         });
         
         if (credential) {
           setBiometricEnabled(true);
+          localStorage.setItem('biometricEnabled', 'true');
           toast({
             title: "Biometric Authentication Enabled",
             description: "Your device biometric authentication is now active.",
@@ -78,6 +104,7 @@ const AppSettings = () => {
         });
       }
     } catch (error) {
+      console.error('Biometric setup error:', error);
       toast({
         title: "Biometric Setup Failed",
         description: "Failed to set up biometric authentication. Please try again.",
@@ -298,6 +325,7 @@ const AppSettings = () => {
                     handleBiometricAuth();
                   } else {
                     setBiometricEnabled(false);
+                    localStorage.setItem('biometricEnabled', 'false');
                   }
                 }}
               />
