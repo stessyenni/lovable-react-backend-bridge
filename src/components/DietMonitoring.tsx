@@ -6,6 +6,8 @@ import QuickActions from "./diet/QuickActions";
 import DietStats from "./diet/DietStats";
 import MealList from "./diet/MealList";
 import DietModals from "./diet/DietModals";
+import TrendsPage from "./TrendsPage";
+import NutritionGoalsPage from "./NutritionGoalsPage";
 
 const DietMonitoring = () => {
   const { toast } = useToast();
@@ -13,6 +15,8 @@ const DietMonitoring = () => {
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showDietUpload, setShowDietUpload] = useState(false);
   const [showMealCategories, setShowMealCategories] = useState(false);
+  const [showTrends, setShowTrends] = useState(false);
+  const [showNutritionGoals, setShowNutritionGoals] = useState(false);
   const [editingEntry, setEditingEntry] = useState<DietEntryType | null>(null);
 
   const handleEditEntry = (entry: DietEntryType) => {
@@ -30,16 +34,10 @@ const DietMonitoring = () => {
         setShowDietUpload(true);
         break;
       case 'view-trends':
-        toast({
-          title: "Trends",
-          description: "Opening nutrition trends analysis...",
-        });
+        setShowTrends(true);
         break;
       case 'nutrition-goals':
-        toast({
-          title: "Nutrition Goals",
-          description: "Opening goal setting interface...",
-        });
+        setShowNutritionGoals(true);
         break;
       case 'meal-categories':
         setShowMealCategories(true);
@@ -97,6 +95,24 @@ const DietMonitoring = () => {
         onCloseMealCategories={() => setShowMealCategories(false)}
         onSuccess={handleSuccess}
       />
+
+      {/* Trends Modal */}
+      {showTrends && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-background rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
+            <TrendsPage onClose={() => setShowTrends(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* Nutrition Goals Modal */}
+      {showNutritionGoals && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-background rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <NutritionGoalsPage onClose={() => setShowNutritionGoals(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

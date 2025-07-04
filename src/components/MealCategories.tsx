@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Tag, Save, X } from "lucide-react";
+import { Plus, Trash2, Tag, Save, X, Edit2, Undo2, Redo2 } from "lucide-react";
 
 interface MealCategory {
   id: string;
@@ -25,16 +25,24 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newMealName, setNewMealName] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [editingCategoryId, setEditingCategoryId] = useState("");
+  const [editingCategoryName, setEditingCategoryName] = useState("");
+  const [history, setHistory] = useState<MealCategory[][]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load categories from localStorage
+    loadCategories();
+  }, []);
+
+  const loadCategories = () => {
     const savedCategories = localStorage.getItem('mealCategories');
+    let initialCategories: MealCategory[];
+    
     if (savedCategories) {
-      setCategories(JSON.parse(savedCategories));
+      initialCategories = JSON.parse(savedCategories);
     } else {
-      // Default categories
-      const defaultCategories: MealCategory[] = [
+      initialCategories = [
         {
           id: '1',
           name: 'Protein Rich',
@@ -60,12 +68,23 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
           meals: ['Rice', 'Pasta', 'Bread', 'Potatoes']
         }
       ];
-      setCategories(defaultCategories);
-      localStorage.setItem('mealCategories', JSON.stringify(defaultCategories));
+      localStorage.setItem('mealCategories', JSON.stringify(initialCategories));
     }
-  }, []);
+    
+    setCategories(initialCategories);
+    setHistory([initialCategories]);
+    setHistoryIndex(0);
+  };
+
+  const saveToHistory = (newCategories: MealCategory[]) => {
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push([...newCategories]);
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  };
 
   const saveCategories = (updatedCategories: MealCategory[]) => {
+    saveToHistory(updatedCategories);
     setCategories(updatedCategories);
     localStorage.setItem('mealCategories', JSON.stringify(updatedCategories));
   };
@@ -76,6 +95,34 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
       title: "Categories Saved",
       description: "Your meal categories have been saved successfully.",
     });
+  };
+
+  const handleUndo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      const previousState = history[newIndex];
+      setCategories([...previousState]);
+      setHistoryIndex(newIndex);
+      localStorage.setItem('mealCategories', JSON.stringify(previousState));
+      toast({
+        title: "Undone",
+        description: "Last action has been undone.",
+      });
+    }
+  };
+
+  const handleRedo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      const nextState = history[newIndex];
+      setCategories([...nextState]);
+      setHistoryIndex(newIndex);
+      localStorage.setItem('mealCategories', JSON.stringify(nextState));
+      toast({
+        title: "Redone",
+        description: "Action has been redone.",
+      });
+    }
   };
 
   const addCategory = () => {
@@ -106,6 +153,36 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
       title: "Category Deleted",
       description: "Category has been removed.",
     });
+  };
+
+  const startEditingCategory = (category: MealCategory) => {
+    setEditingCategoryId(category.id);
+    setEditingCategoryName(category.name);
+  };
+
+  const saveEditingCategory = () => {
+    if (!editingCategoryName.trim()) return;
+    
+    const updatedCategories = categories.map(category => {
+      if (category.id === editingCategoryId) {
+        return { ...category, name: editingCategoryName };
+      }
+      return category;
+    });
+
+    saveCategories(updatedCategories);
+    setEditingCategoryId("");
+    setEditingCategoryName("");
+    
+    toast({
+      title: "Category Updated",
+      description: "Category name has been updated.",
+    });
+  };
+
+  const cancelEditingCategory = () => {
+    setEditingCategoryId("");
+    setEditingCategoryName("");
   };
 
   const addMealToCategory = () => {
@@ -153,7 +230,7 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
 
   return (
     <div className="h-full max-h-[90vh] flex flex-col w-full">
-      {/* Header with Save and Close buttons */}
+      {/* Header with Save, Undo, Redo and Close buttons */}
       <div className="flex items-center justify-between p-3 sm:p-4 border-b bg-background shrink-0">
         <div className="flex-1 min-w-0">
           <h3 className="text-base sm:text-lg font-semibold truncate">Meal Categories</h3>
@@ -162,6 +239,12 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
           </p>
         </div>
         <div className="flex gap-2 ml-2">
+          <Button onClick={handleUndo} disabled={historyIndex <= 0} size="sm" variant="outline" className="text-xs sm:text-sm">
+            <Undo2 className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
+          <Button onClick={handleRedo} disabled={historyIndex >= history.length - 1} size="sm" variant="outline" className="text-xs sm:text-sm">
+            <Redo2 className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
           <Button onClick={handleSave} size="sm" className="bg-green-600 hover:bg-green-700 text-xs sm:text-sm">
             <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             Save
@@ -238,26 +321,55 @@ const MealCategories = ({ onClose }: MealCategoriesProps) => {
             </CardContent>
           </Card>
 
-          {/* Categories Display */}
+          {/* Categories Display with Edit functionality */}
           <div className="space-y-3 sm:space-y-4">
             {categories.map((category) => (
               <Card key={category.id}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm flex items-center space-x-2">
-                      <Badge className={`${category.color} text-xs`}>{category.name}</Badge>
-                      <span className="text-xs text-muted-foreground">
-                        ({category.meals.length} meals)
-                      </span>
-                    </CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteCategory(category.id)}
-                      className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                    <div className="flex items-center space-x-2 flex-1">
+                      {editingCategoryId === category.id ? (
+                        <div className="flex items-center space-x-2 flex-1">
+                          <Input
+                            value={editingCategoryName}
+                            onChange={(e) => setEditingCategoryName(e.target.value)}
+                            className="text-xs sm:text-sm"
+                            onKeyPress={(e) => e.key === 'Enter' && saveEditingCategory()}
+                          />
+                          <Button size="sm" onClick={saveEditingCategory} className="bg-green-600 hover:bg-green-700">
+                            <Save className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={cancelEditingCategory}>
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <Badge className={`${category.color} text-xs`}>{category.name}</Badge>
+                          <span className="text-xs text-muted-foreground">
+                            ({category.meals.length} meals)
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => startEditingCategory(category)}
+                            className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700"
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                    {editingCategoryId !== category.id && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteCategory(category.id)}
+                        className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>

@@ -1,21 +1,18 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Bell, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { User, Settings, Edit } from "lucide-react";
 import EditProfileDialog from "./EditProfileDialog";
 
 interface Profile {
   id: string;
   first_name: string | null;
   last_name: string | null;
-  username: string | null;
   email: string | null;
   phone_number: string | null;
   age: number | null;
@@ -25,220 +22,167 @@ interface Profile {
   medical_conditions: string[] | null;
   allergies: string[] | null;
   emergency_contact: string | null;
+  profile_image_url: string | null;
+  username: string | null;
 }
 
 const UserAccount = () => {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
-    }
-  }, [user]);
-
-  const fetchProfile = async () => {
-    if (!user) return;
-
-    try {
+  const { data: profile, isLoading, refetch } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
         .single();
 
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return;
-      }
+      if (error) throw error;
+      return data as Profile;
+    },
+    enabled: !!user?.id,
+  });
 
-      setProfile(data);
-    } catch (error) {
-      console.error('Unexpected error:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleEditSuccess = () => {
+    refetch(); // Refresh profile data
+    setShowEditDialog(false);
+    toast({
+      title: "Profile Updated",
+      description: "Your profile has been updated successfully.",
+    });
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <div>Loading profile...</div>;
   }
 
-  const getInitials = () => {
-    if (profile?.first_name && profile?.last_name) {
-      return `${profile.first_name[0]}${profile.last_name[0]}`;
-    }
-    if (profile?.username) {
-      return profile.username.substring(0, 2).toUpperCase();
-    }
-    return 'U';
-  };
-
-  const getDisplayName = () => {
-    if (profile?.first_name && profile?.last_name) {
-      return `${profile.first_name} ${profile.last_name}`;
-    }
-    if (profile?.username) {
-      return profile.username;
-    }
-    return 'User';
-  };
+  if (!profile) {
+    return <div>Profile not found</div>;
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">User Account</h2>
+          <h2 className="text-2xl font-bold">My Account</h2>
           <p className="text-muted-foreground">Manage your profile and account settings</p>
         </div>
-        <EditProfileDialog />
+        <Button onClick={() => setShowEditDialog(true)}>
+          <Edit className="h-4 w-4 mr-2" />
+          Edit Profile
+        </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2">
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Personal Information */}
+        <Card>
           <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
-            <CardDescription>Your personal details and health information</CardDescription>
+            <CardTitle className="flex items-center space-x-2">
+              <User className="h-5 w-5" />
+              <span>Personal Information</span>
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src="/placeholder.svg" alt="Profile" />
-                <AvatarFallback>{getInitials()}</AvatarFallback>
-              </Avatar>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <h3 className="text-xl font-semibold">{getDisplayName()}</h3>
-                <p className="text-muted-foreground">Member</p>
-                <Badge variant="secondary">Active</Badge>
+                <p className="text-sm font-medium text-muted-foreground">First Name</p>
+                <p className="text-sm">{profile.first_name || "Not set"}</p>
               </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" value={profile?.email || "Not provided"} readOnly />
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Last Name</p>
+                <p className="text-sm">{profile.last_name || "Not set"}</p>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" value={profile?.username || "Not set"} readOnly />
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Username</p>
+                <p className="text-sm">{profile.username || "Not set"}</p>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" value={profile?.phone_number || "Not provided"} readOnly />
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Email</p>
+                <p className="text-sm">{profile.email || "Not set"}</p>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="age">Age</Label>
-                <Input id="age" value={profile?.age?.toString() || "Not provided"} readOnly />
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Phone</p>
+                <p className="text-sm">{profile.phone_number || "Not set"}</p>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
-                <Input id="gender" value={profile?.gender || "Not specified"} readOnly />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="height">Height</Label>
-                <Input id="height" value={profile?.height || "Not provided"} readOnly />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="weight">Weight</Label>
-                <Input id="weight" value={profile?.weight || "Not provided"} readOnly />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="emergency">Emergency Contact</Label>
-                <Input id="emergency" value={profile?.emergency_contact || "Not provided"} readOnly />
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Age</p>
+                <p className="text-sm">{profile.age || "Not set"}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Stats</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Member Since</span>
-                <span className="font-medium">Recent</span>
+        {/* Health Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Settings className="h-5 w-5" />
+              <span>Health Information</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Gender</p>
+                <p className="text-sm">{profile.gender || "Not set"}</p>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Goals Completed</span>
-                <span className="font-medium">0</span>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Height</p>
+                <p className="text-sm">{profile.height || "Not set"}</p>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Streak</span>
-                <span className="font-medium">1 day</span>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Weight (KG)</p>
+                <p className="text-sm">{profile.weight || "Not set"}</p>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Health Score</span>
-                <span className="font-medium">--</span>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Emergency Contact</p>
+                <p className="text-sm">{profile.emergency_contact || "Not set"}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full justify-start">
-                <Shield className="h-4 w-4 mr-2" />
-                Privacy Settings
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Mail className="h-4 w-4 mr-2" />
-                Export Data
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-2">Medical Conditions</p>
+              <div className="flex flex-wrap gap-2">
+                {profile.medical_conditions && profile.medical_conditions.length > 0 ? (
+                  profile.medical_conditions.map((condition, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      {condition}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">None specified</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-2">Allergies</p>
+              <div className="flex flex-wrap gap-2">
+                {profile.allergies && profile.allergies.length > 0 ? (
+                  profile.allergies.map((allergy, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      {allergy}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">None specified</p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Health Conditions & Allergies</CardTitle>
-          <CardDescription>Important medical information for healthcare providers</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <h4 className="font-medium mb-2">Medical Conditions</h4>
-              <div className="space-y-1">
-                {profile?.medical_conditions && profile.medical_conditions.length > 0 ? (
-                  profile.medical_conditions.map((condition, index) => (
-                    <Badge key={index} variant="outline">{condition}</Badge>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground">No conditions listed</p>
-                )}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2">Allergies</h4>
-              <div className="space-y-1">
-                {profile?.allergies && profile.allergies.length > 0 ? (
-                  profile.allergies.map((allergy, index) => (
-                    <Badge key={index} variant="destructive">{allergy}</Badge>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground">No allergies listed</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <EditProfileDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        profile={profile}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 };
