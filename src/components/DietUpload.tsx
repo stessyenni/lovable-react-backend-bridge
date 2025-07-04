@@ -210,7 +210,10 @@ const DietUpload = ({ onSuccess, onClose }: DietUploadProps) => {
                   variant="outline" 
                   size="sm" 
                   className="shrink-0"
-                  onClick={() => document.querySelector('input[type="file"]')?.click()}
+                  onClick={() => {
+                    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                    fileInput?.click();
+                  }}
                 >
                   <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
