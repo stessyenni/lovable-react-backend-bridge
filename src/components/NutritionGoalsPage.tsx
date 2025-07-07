@@ -10,6 +10,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { X, Save, Target } from "lucide-react";
 
+interface NutritionGoals {
+  id?: string;
+  daily_calories: number | null;
+  daily_protein: number | null;
+  daily_fiber: number | null;
+  daily_water: number | null;
+}
+
 interface NutritionGoalsPageProps {
   onClose?: () => void;
 }
@@ -40,13 +48,17 @@ const NutritionGoalsPage = ({ onClose }: NutritionGoalsPageProps) => {
 
   const fetchGoals = async () => {
     try {
+      // Using a direct query since nutrition_goals table might not be in types yet
       const { data, error } = await supabase
         .from('nutrition_goals')
         .select('*')
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching goals:', error);
+        return;
+      }
 
       if (data) {
         setGoals({
@@ -66,10 +78,13 @@ const NutritionGoalsPage = ({ onClose }: NutritionGoalsPageProps) => {
       const today = new Date().toDateString();
       const { data, error } = await supabase
         .from('diet_entries')
-        .select('calories, protein, fiber')
+        .select('calories, protein, fiber, logged_at')
         .eq('user_id', user?.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching today stats:', error);
+        return;
+      }
 
       const todayEntries = data?.filter(entry => 
         new Date(entry.logged_at).toDateString() === today
