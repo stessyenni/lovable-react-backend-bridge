@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -166,7 +167,7 @@ const EditProfileDialog = ({ open, onOpenChange, profile, onSuccess }: EditProfi
               <Label htmlFor="height">Height</Label>
               <Input
                 id="height"
-                placeholder="e.g., 5'8\" or 175cm"
+                placeholder="e.g., 5'8&quot; or 175cm"
                 value={formData.height}
                 onChange={(e) => setFormData(prev => ({ ...prev, height: e.target.value }))}
               />
