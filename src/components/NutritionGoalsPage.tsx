@@ -48,8 +48,8 @@ const NutritionGoalsPage = ({ onClose }: NutritionGoalsPageProps) => {
 
   const fetchGoals = async () => {
     try {
-      // Using a direct query since nutrition_goals table might not be in types yet
-      const { data, error } = await supabase
+      // Type assertion to work around the missing table in types
+      const { data, error } = await (supabase as any)
         .from('nutrition_goals')
         .select('*')
         .eq('user_id', user?.id)
@@ -116,7 +116,7 @@ const NutritionGoalsPage = ({ onClose }: NutritionGoalsPageProps) => {
         updated_at: new Date().toISOString()
       };
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('nutrition_goals')
         .upsert(goalData);
 
