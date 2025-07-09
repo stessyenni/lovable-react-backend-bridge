@@ -516,6 +516,54 @@ export type Database = {
         }
         Relationships: []
       }
+      sample_health_goals: {
+        Row: {
+          category: string
+          created_at: string
+          default_current_value: string | null
+          default_target_value: string | null
+          description: string | null
+          difficulty_level: string | null
+          estimated_timeframe: string | null
+          icon_name: string | null
+          id: string
+          is_popular: boolean | null
+          target_type: string
+          tips: string[] | null
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          default_current_value?: string | null
+          default_target_value?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_timeframe?: string | null
+          icon_name?: string | null
+          id?: string
+          is_popular?: boolean | null
+          target_type: string
+          tips?: string[] | null
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          default_current_value?: string | null
+          default_target_value?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_timeframe?: string | null
+          icon_name?: string | null
+          id?: string
+          is_popular?: boolean | null
+          target_type?: string
+          tips?: string[] | null
+          title?: string
+        }
+        Relationships: []
+      }
       user_connections: {
         Row: {
           created_at: string

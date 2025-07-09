@@ -87,9 +87,66 @@ export const useDietData = () => {
       sum + (entry.calories || 0), 0
     );
 
+    const totalProtein = todayEntries.reduce((sum, entry) => 
+      sum + (parseFloat(entry.protein || '0') || 0), 0
+    );
+
+    const totalFiber = todayEntries.reduce((sum, entry) => 
+      sum + (parseFloat(entry.fiber || '0') || 0), 0
+    );
+
+    // Group by meal type for breakdown
+    const mealBreakdown = todayEntries.reduce((acc, entry) => {
+      const mealType = entry.meal_type || 'Other';
+      if (!acc[mealType]) {
+        acc[mealType] = { count: 0, calories: 0 };
+      }
+      acc[mealType].count += 1;
+      acc[mealType].calories += entry.calories || 0;
+      return acc;
+    }, {} as Record<string, { count: number; calories: number }>);
+
     return {
       meals: todayEntries.length,
-      calories: totalCalories
+      calories: totalCalories,
+      protein: Math.round(totalProtein * 10) / 10,
+      fiber: Math.round(totalFiber * 10) / 10,
+      mealBreakdown,
+      entries: todayEntries
+    };
+  };
+
+  const getWeeklyStats = () => {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+    const weeklyEntries = entries.filter(entry => 
+      new Date(entry.logged_at) >= oneWeekAgo
+    );
+
+    const dailyStats = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dayEntries = weeklyEntries.filter(entry => 
+        new Date(entry.logged_at).toDateString() === date.toDateString()
+      );
+      
+      return {
+        date: date.toISOString().split('T')[0],
+        calories: dayEntries.reduce((sum, entry) => sum + (entry.calories || 0), 0),
+        meals: dayEntries.length
+      };
+    }).reverse();
+
+    const weeklyAverage = Math.round(
+      dailyStats.reduce((sum, day) => sum + day.calories, 0) / 7
+    );
+
+    return {
+      dailyStats,
+      weeklyAverage,
+      totalMeals: weeklyEntries.length,
+      totalCalories: weeklyEntries.reduce((sum, entry) => sum + (entry.calories || 0), 0)
     };
   };
 
@@ -104,7 +161,8 @@ export const useDietData = () => {
     loading,
     fetchDietEntries,
     handleDeleteEntry,
-    getTodayStats
+    getTodayStats,
+    getWeeklyStats
   };
 };
 

@@ -13,7 +13,7 @@ import { useOfflineSync } from "@/hooks/useOfflineSync";
 
 const DietMonitoring = () => {
   const { toast } = useToast();
-  const { entries, loading, fetchDietEntries, handleDeleteEntry, getTodayStats } = useDietData();
+  const { entries, loading, fetchDietEntries, handleDeleteEntry, getTodayStats, getWeeklyStats } = useDietData();
   const { isOnline, pendingSync } = useOfflineSync();
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showDietUpload, setShowDietUpload] = useState(false);
@@ -66,6 +66,7 @@ const DietMonitoring = () => {
   };
 
   const stats = getTodayStats();
+  const weeklyStats = getWeeklyStats();
 
   return (
     <div className="space-y-6">
@@ -95,7 +96,7 @@ const DietMonitoring = () => {
 
       <QuickActions onQuickAction={handleQuickAction} />
 
-      <DietStats stats={stats} />
+      <DietStats stats={stats} weeklyStats={weeklyStats} />
 
       <MealList
         entries={entries}
