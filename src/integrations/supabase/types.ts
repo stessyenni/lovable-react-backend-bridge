@@ -292,6 +292,95 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_categories: {
+        Row: {
+          color_class: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color_class?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color_class?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meal_items: {
+        Row: {
+          ai_analysis_data: Json | null
+          calories_per_serving: number | null
+          carbs_per_serving: number | null
+          category_id: string
+          created_at: string
+          fat_per_serving: number | null
+          fiber_per_serving: number | null
+          id: string
+          image_url: string | null
+          name: string
+          protein_per_serving: number | null
+          serving_size: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_analysis_data?: Json | null
+          calories_per_serving?: number | null
+          carbs_per_serving?: number | null
+          category_id: string
+          created_at?: string
+          fat_per_serving?: number | null
+          fiber_per_serving?: number | null
+          id?: string
+          image_url?: string | null
+          name: string
+          protein_per_serving?: number | null
+          serving_size?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_analysis_data?: Json | null
+          calories_per_serving?: number | null
+          carbs_per_serving?: number | null
+          category_id?: string
+          created_at?: string
+          fat_per_serving?: number | null
+          fiber_per_serving?: number | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          protein_per_serving?: number | null
+          serving_size?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "meal_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string

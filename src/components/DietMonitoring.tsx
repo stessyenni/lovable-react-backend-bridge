@@ -8,10 +8,13 @@ import MealList from "./diet/MealList";
 import DietModals from "./diet/DietModals";
 import TrendsPage from "./TrendsPage";
 import NutritionGoalsPage from "./NutritionGoalsPage";
+import EnhancedMealCategories from "./enhanced/EnhancedMealCategories";
+import { useOfflineSync } from "@/hooks/useOfflineSync";
 
 const DietMonitoring = () => {
   const { toast } = useToast();
   const { entries, loading, fetchDietEntries, handleDeleteEntry, getTodayStats } = useDietData();
+  const { isOnline, pendingSync } = useOfflineSync();
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showDietUpload, setShowDietUpload] = useState(false);
   const [showMealCategories, setShowMealCategories] = useState(false);
@@ -70,6 +73,23 @@ const DietMonitoring = () => {
         <div>
           <h2 className="text-2xl font-bold">Diet Monitoring</h2>
           <p className="text-muted-foreground">Track your meals and nutrition intake with AI-powered analysis</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
+            isOnline 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-orange-100 text-orange-800'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${
+              isOnline ? 'bg-green-600' : 'bg-orange-600'
+            }`} />
+            {isOnline ? 'Online' : 'Offline'}
+          </div>
+          {pendingSync.length > 0 && (
+            <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+              {pendingSync.length} pending sync
+            </div>
+          )}
         </div>
       </div>
 
