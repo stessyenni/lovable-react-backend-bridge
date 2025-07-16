@@ -6,10 +6,23 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield, Watch } from "lucide-react";
+import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield, Watch, Mic } from "lucide-react";
 import SmartWatchSync from "./SmartWatchSync";
+import VoiceCommands from "./VoiceCommands";
 
-const AppSettings = () => {
+interface AppSettingsProps {
+  brailleMode?: boolean;
+  onNavigate?: (section: string) => void;
+  speechEnabled?: boolean;
+  onSpeechToggle?: () => void;
+}
+
+const AppSettings = ({ 
+  brailleMode = false, 
+  onNavigate,
+  speechEnabled = false,
+  onSpeechToggle 
+}: AppSettingsProps = {}) => {
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -172,6 +185,24 @@ const AppSettings = () => {
         </CardHeader>
         <CardContent>
           <SmartWatchSync />
+        </CardContent>
+      </Card>
+
+      {/* Voice Commands */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+            <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
+            Voice Commands
+          </CardTitle>
+          <CardDescription className="text-xs sm:text-sm">Control the app with voice commands</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <VoiceCommands 
+            onNavigate={onNavigate}
+            speechEnabled={speechEnabled}
+            onSpeechToggle={onSpeechToggle}
+          />
         </CardContent>
       </Card>
 

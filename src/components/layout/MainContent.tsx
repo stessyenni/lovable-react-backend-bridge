@@ -7,6 +7,9 @@ import HealthFacilities from "@/components/HealthFacilities";
 import Messages from "@/components/Messages";
 import UserAccount from "@/components/UserAccount";
 import AppSettings from "@/components/AppSettings";
+import SmartWatchSync from "@/components/SmartWatchSync";
+import TrendsPage from "@/components/TrendsPage";
+import EmergencyPage from "@/components/EmergencyPage";
 
 interface MainContentProps {
   activeSection: string;
@@ -32,6 +35,12 @@ const MainContent = ({ activeSection, brailleMode }: MainContentProps) => {
         return <UserAccount />;
       case 'settings':
         return <AppSettings />;
+      case 'smartwatch':
+        return <SmartWatchSync />;
+      case 'analytics':
+        return <TrendsPage />;
+      case 'emergency':
+        return <EmergencyPage />;
       default:
         return <Dashboard />;
     }

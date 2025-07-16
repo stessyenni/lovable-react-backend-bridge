@@ -17,7 +17,7 @@ import { Heart, Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface MenuItem {
-  id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'settings';
+  id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'settings' | 'smartwatch' | 'emergency' | 'analytics';
   label: string;
   icon: React.FC<any>;
 }
