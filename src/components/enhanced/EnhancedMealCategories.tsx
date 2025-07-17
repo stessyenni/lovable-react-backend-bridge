@@ -29,12 +29,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 
 interface MealCategory {
   id: string;
@@ -304,235 +298,242 @@ const EnhancedMealCategories = ({ onClose }: EnhancedMealCategoriesProps) => {
         </div>
       </div>
 
-      <Tabs defaultValue="categories" className="flex-1 flex flex-col h-0">
-        <TabsList className="grid w-full grid-cols-2 mx-4 mt-4">
-          <TabsTrigger value="categories">View Categories</TabsTrigger>
-          <TabsTrigger value="manage">Manage Items</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="categories" className="flex-1 h-0">
-          <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
-              {categories.length === 0 ? (
-                <Card>
-                  <CardContent className="flex items-center justify-center py-12">
-                    <div className="text-center">
-                      <ChefHat className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No meal categories yet</p>
-                      <Button 
-                        onClick={() => setShowAddCategory(true)} 
-                        className="mt-4"
-                        variant="outline"
-                      >
-                        Create your first category
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                categories.map((category) => (
-                  <Card key={category.id} className="hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Badge className={category.color_class}>
-                            {category.name}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">
-                            {category.meal_items?.length || 0} items
-                          </span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingCategory(category)}
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => deleteCategory(category.id)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      {category.description && (
-                        <CardDescription>{category.description}</CardDescription>
-                      )}
-                    </CardHeader>
-                    <CardContent>
-                      {category.meal_items && category.meal_items.length > 0 ? (
-                        <div className="space-y-3">
-                          {category.meal_items.map((item) => (
-                            <div 
-                              key={item.id} 
-                              className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                            >
-                              <div className="flex-1">
-                                <div className="font-medium">{item.name}</div>
-                                <div className="text-sm text-muted-foreground flex gap-4 mt-1">
-                                  {item.calories_per_serving && (
-                                    <span>🔥 {item.calories_per_serving} cal</span>
-                                  )}
-                                  {item.protein_per_serving && (
-                                    <span>💪 {item.protein_per_serving}g protein</span>
-                                  )}
-                                  {item.carbs_per_serving && (
-                                    <span>🌾 {item.carbs_per_serving}g carbs</span>
-                                  )}
-                                  {item.fat_per_serving && (
-                                    <span>🥑 {item.fat_per_serving}g fat</span>
-                                  )}
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  per {item.serving_size}
-                                </div>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => deleteMealItem(item.id)}
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <Utensils className="h-8 w-8 mx-auto mb-2" />
-                          <p>No meals in this category yet</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </ScrollArea>
-        </TabsContent>
-
-        <TabsContent value="manage" className="flex-1 h-0">
-          <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
+      {/* Main content - unified view and manage */}
+      <div className="flex-1 h-0">
+        <ScrollArea className="h-full">
+          <div className="p-4 space-y-6">
+            {/* Categories Display */}
+            {categories.length === 0 ? (
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Add Meal Item</CardTitle>
-                  <CardDescription>
-                    Add a new meal item to one of your categories
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>Select Category</Label>
-                    <select
-                      className="w-full p-2 border rounded-md bg-background mt-1"
-                      value={selectedCategory || ""}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
+                <CardContent className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <ChefHat className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No meal categories yet</p>
+                    <Button 
+                      onClick={() => setShowAddCategory(true)} 
+                      className="mt-4"
+                      variant="outline"
                     >
-                      <option value="">Choose a category</option>
-                      {categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
+                      Create your first category
+                    </Button>
                   </div>
-
-                  <div>
-                    <Label>Meal Name</Label>
-                    <Input
-                      placeholder="Enter meal name"
-                      value={newMealItem.name}
-                      onChange={(e) => setNewMealItem(prev => ({ ...prev, name: e.target.value }))}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Calories per serving</Label>
-                      <Input
-                        type="number"
-                        placeholder="250"
-                        value={newMealItem.calories_per_serving}
-                        onChange={(e) => setNewMealItem(prev => ({ ...prev, calories_per_serving: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label>Serving size</Label>
-                      <Input
-                        placeholder="100g"
-                        value={newMealItem.serving_size}
-                        onChange={(e) => setNewMealItem(prev => ({ ...prev, serving_size: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Protein (g)</Label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        placeholder="20.5"
-                        value={newMealItem.protein_per_serving}
-                        onChange={(e) => setNewMealItem(prev => ({ ...prev, protein_per_serving: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label>Carbs (g)</Label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        placeholder="30.0"
-                        value={newMealItem.carbs_per_serving}
-                        onChange={(e) => setNewMealItem(prev => ({ ...prev, carbs_per_serving: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Fat (g)</Label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        placeholder="10.0"
-                        value={newMealItem.fat_per_serving}
-                        onChange={(e) => setNewMealItem(prev => ({ ...prev, fat_per_serving: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label>Fiber (g)</Label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        placeholder="5.0"
-                        value={newMealItem.fiber_per_serving}
-                        onChange={(e) => setNewMealItem(prev => ({ ...prev, fiber_per_serving: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  <Button 
-                    onClick={() => selectedCategory && addMealItem(selectedCategory)} 
-                    className="w-full"
-                    disabled={!selectedCategory || !newMealItem.name.trim()}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Meal Item
-                  </Button>
                 </CardContent>
               </Card>
-            </div>
-          </ScrollArea>
-        </TabsContent>
-      </Tabs>
+            ) : (
+              categories.map((category) => (
+                <Card key={category.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Badge className={category.color_class}>
+                          {category.name}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {category.meal_items?.length || 0} items
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEditingCategory(category)}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteCategory(category.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    {category.description && (
+                      <CardDescription>{category.description}</CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Meal Items Display */}
+                    {category.meal_items && category.meal_items.length > 0 ? (
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-sm">Meals in this category:</h4>
+                        {category.meal_items.map((item) => (
+                          <div 
+                            key={item.id} 
+                            className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border"
+                          >
+                            <div className="flex-1">
+                              <div className="font-medium text-base">{item.name}</div>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                                {item.calories_per_serving && (
+                                  <div className="flex items-center text-sm">
+                                    <span className="text-red-600 mr-1">🔥</span>
+                                    <span className="font-medium">{item.calories_per_serving}</span>
+                                    <span className="text-muted-foreground ml-1">cal</span>
+                                  </div>
+                                )}
+                                {item.protein_per_serving && (
+                                  <div className="flex items-center text-sm">
+                                    <span className="text-blue-600 mr-1">💪</span>
+                                    <span className="font-medium">{item.protein_per_serving}g</span>
+                                    <span className="text-muted-foreground ml-1">protein</span>
+                                  </div>
+                                )}
+                                {item.carbs_per_serving && (
+                                  <div className="flex items-center text-sm">
+                                    <span className="text-orange-600 mr-1">🌾</span>
+                                    <span className="font-medium">{item.carbs_per_serving}g</span>
+                                    <span className="text-muted-foreground ml-1">carbs</span>
+                                  </div>
+                                )}
+                                {item.fat_per_serving && (
+                                  <div className="flex items-center text-sm">
+                                    <span className="text-green-600 mr-1">🥑</span>
+                                    <span className="font-medium">{item.fat_per_serving}g</span>
+                                    <span className="text-muted-foreground ml-1">fat</span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-2">
+                                Per {item.serving_size} • Added {new Date(category.created_at).toLocaleDateString()}
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteMealItem(item.id)}
+                              className="text-red-500 hover:text-red-700 ml-4"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-muted-foreground border-2 border-dashed border-muted rounded-lg">
+                        <Utensils className="h-8 w-8 mx-auto mb-2" />
+                        <p>No meals in this category yet</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => setSelectedCategory(category.id)}
+                          className="mt-2"
+                        >
+                          Add first meal
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Quick Add Meal to This Category */}
+                    {selectedCategory === category.id && (
+                      <Card className="border-primary">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm">Add Meal to {category.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div>
+                            <Label>Meal Name</Label>
+                            <Input
+                              placeholder="Enter meal name"
+                              value={newMealItem.name}
+                              onChange={(e) => setNewMealItem(prev => ({ ...prev, name: e.target.value }))}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label>Calories</Label>
+                              <Input
+                                type="number"
+                                placeholder="250"
+                                value={newMealItem.calories_per_serving}
+                                onChange={(e) => setNewMealItem(prev => ({ ...prev, calories_per_serving: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <Label>Serving Size</Label>
+                              <Input
+                                placeholder="100g"
+                                value={newMealItem.serving_size}
+                                onChange={(e) => setNewMealItem(prev => ({ ...prev, serving_size: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label>Protein (g)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                placeholder="20.5"
+                                value={newMealItem.protein_per_serving}
+                                onChange={(e) => setNewMealItem(prev => ({ ...prev, protein_per_serving: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <Label>Carbs (g)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                placeholder="30.0"
+                                value={newMealItem.carbs_per_serving}
+                                onChange={(e) => setNewMealItem(prev => ({ ...prev, carbs_per_serving: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label>Fat (g)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                placeholder="10.0"
+                                value={newMealItem.fat_per_serving}
+                                onChange={(e) => setNewMealItem(prev => ({ ...prev, fat_per_serving: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <Label>Fiber (g)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                placeholder="5.0"
+                                value={newMealItem.fiber_per_serving}
+                                onChange={(e) => setNewMealItem(prev => ({ ...prev, fiber_per_serving: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button 
+                              onClick={() => addMealItem(category.id)}
+                              className="flex-1"
+                              disabled={!newMealItem.name.trim()}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Meal
+                            </Button>
+                            <Button 
+                              variant="outline"
+                              onClick={() => setSelectedCategory(null)}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </ScrollArea>
+      </div>
 
       {/* Add Category Dialog */}
       <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
