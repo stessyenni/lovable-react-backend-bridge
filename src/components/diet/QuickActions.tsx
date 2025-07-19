@@ -51,15 +51,15 @@ const QuickActions = ({ onQuickAction }: QuickActionsProps) => {
           <Button 
             variant="outline" 
             className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
-            onClick={() => onQuickAction('meal-categories')}
+            onClick={() => onQuickAction('view-meals')}
           >
             <Bookmark className="h-4 w-4 sm:h-6 sm:w-6" />
-            <span>Manage Categories</span>
+            <span>View Meals</span>
           </Button>
           <Button 
             variant="outline" 
             className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
-            onClick={() => onQuickAction('view-meal-categories')}
+            onClick={() => onQuickAction('view-categories')}
           >
             <Eye className="h-4 w-4 sm:h-6 sm:w-6" />
             <span>View Categories</span>

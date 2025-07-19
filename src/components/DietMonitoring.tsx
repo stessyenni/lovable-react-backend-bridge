@@ -8,7 +8,8 @@ import MealList from "./diet/MealList";
 import DietModals from "./diet/DietModals";
 import TrendsPage from "./TrendsPage";
 import NutritionGoalsPage from "./NutritionGoalsPage";
-import EnhancedMealCategories from "./enhanced/EnhancedMealCategories";
+import ViewMeals from "./ViewMeals";
+import ViewCategories from "./ViewCategories";
 import { useOfflineSync } from "@/hooks/useOfflineSync";
 
 const DietMonitoring = () => {
@@ -17,7 +18,8 @@ const DietMonitoring = () => {
   const { isOnline, pendingSync } = useOfflineSync();
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showDietUpload, setShowDietUpload] = useState(false);
-  const [showMealCategories, setShowMealCategories] = useState(false);
+  const [showViewMeals, setShowViewMeals] = useState(false);
+  const [showViewCategories, setShowViewCategories] = useState(false);
   const [showTrends, setShowTrends] = useState(false);
   const [showNutritionGoals, setShowNutritionGoals] = useState(false);
   const [editingEntry, setEditingEntry] = useState<DietEntryType | null>(null);
@@ -42,11 +44,11 @@ const DietMonitoring = () => {
       case 'nutrition-goals':
         setShowNutritionGoals(true);
         break;
-      case 'meal-categories':
-        setShowMealCategories(true);
+      case 'view-meals':
+        setShowViewMeals(true);
         break;
-      case 'view-meal-categories':
-        setShowMealCategories(true);
+      case 'view-categories':
+        setShowViewCategories(true);
         break;
       default:
         break;
@@ -109,13 +111,32 @@ const DietMonitoring = () => {
       <DietModals
         showDietEntry={showDietEntry}
         showDietUpload={showDietUpload}
-        showMealCategories={showMealCategories}
         editingEntry={editingEntry}
         onCloseDietEntry={handleCloseDietEntry}
         onCloseDietUpload={() => setShowDietUpload(false)}
-        onCloseMealCategories={() => setShowMealCategories(false)}
         onSuccess={handleSuccess}
       />
+
+      {/* View Meals Modal */}
+      {showViewMeals && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg w-full max-w-4xl h-[90vh] flex flex-col">
+            <ViewMeals 
+              onClose={() => setShowViewMeals(false)}
+              onEditMeal={handleEditEntry}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* View Categories Modal */}
+      {showViewCategories && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg w-full max-w-4xl h-[90vh] flex flex-col">
+            <ViewCategories onClose={() => setShowViewCategories(false)} />
+          </div>
+        </div>
+      )}
 
       {/* Trends Modal */}
       {showTrends && (

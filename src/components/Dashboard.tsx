@@ -10,7 +10,6 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showDietUpload, setShowDietUpload] = useState(false);
-  const [showMealCategories, setShowMealCategories] = useState(false);
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -33,10 +32,16 @@ const Dashboard = () => {
         });
         break;
       case 'meal-categories':
-        setShowMealCategories(true);
+        toast({
+          title: "Meal Categories",
+          description: "Opening meal categories interface...",
+        });
         break;
       case 'view-meal-categories':
-        setShowMealCategories(true);
+        toast({
+          title: "View Categories",
+          description: "Opening categories view...",
+        });
         break;
       default:
         break;
@@ -212,11 +217,9 @@ const Dashboard = () => {
       <DietModals
         showDietEntry={showDietEntry}
         showDietUpload={showDietUpload}
-        showMealCategories={showMealCategories}
         editingEntry={null}
         onCloseDietEntry={() => setShowDietEntry(false)}
         onCloseDietUpload={() => setShowDietUpload(false)}
-        onCloseMealCategories={() => setShowMealCategories(false)}
         onSuccess={handleSuccess}
       />
     </div>
