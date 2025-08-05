@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Message, User } from "./types";
+import { UserAvatarPlaceholder } from "@/assets";
 
 interface ChatWindowProps {
   recipientId: string;
@@ -56,7 +57,7 @@ const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) =
       <CardHeader>
         <CardTitle className="flex items-center space-x-3">
           <Avatar>
-            <AvatarImage src="/placeholder.svg" alt="Recipient Avatar" />
+            <AvatarImage src={UserAvatarPlaceholder} alt="Recipient Avatar" />
             <AvatarFallback>{getInitials(recipientInfo)}</AvatarFallback>
           </Avatar>
           <span>{getDisplayName(recipientInfo)}</span>

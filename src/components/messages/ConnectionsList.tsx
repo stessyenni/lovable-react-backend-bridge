@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UserMinus, MessageCircle } from "lucide-react";
 import { Connection, User } from "./types";
+import { UserAvatarPlaceholder } from "@/assets";
 
 interface ConnectionsListProps {
   connections: Connection[];
@@ -58,7 +59,7 @@ const ConnectionsList = ({ connections, currentUserId, onRefresh }: ConnectionsL
               <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-3">
                   <Avatar>
-                    <AvatarImage src="/placeholder.svg" alt="User Avatar" />
+                    <AvatarImage src={UserAvatarPlaceholder} alt="User Avatar" />
                     <AvatarFallback>{getInitials(otherUser)}</AvatarFallback>
                   </Avatar>
                   <div>

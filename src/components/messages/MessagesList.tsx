@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { Message, User } from "./types";
+import { UserAvatarPlaceholder } from "@/assets";
 
 interface MessagesListProps {
   messages: Message[];
@@ -78,7 +79,7 @@ const MessagesList = ({ messages, currentUserId, onSelectChat, selectedChat }: M
               }`}
             >
               <Avatar>
-                <AvatarImage src="/placeholder.svg" alt="User Avatar" />
+                <AvatarImage src={UserAvatarPlaceholder} alt="User Avatar" />
                 <AvatarFallback>{getInitials(message)}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">

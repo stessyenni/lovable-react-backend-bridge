@@ -13,8 +13,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Heart, Video } from "lucide-react";
+import { Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AppLogo } from "@/assets";
 
 interface MenuItem {
   id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'settings' | 'smartwatch' | 'emergency' | 'analytics';
@@ -51,7 +52,7 @@ const AppSidebar = ({
     <Sidebar className={brailleMode ? "border-2 border-yellow-400" : ""}>
       <SidebarHeader className="p-4">
         <div className="flex items-center space-x-2">
-          <Heart className="h-8 w-8 text-primary" />
+          <img src={AppLogo} alt="Hemapp Logo" className="h-8 w-8" />
           <span className="text-xl font-bold">Hemapp</span>
         </div>
       </SidebarHeader>
