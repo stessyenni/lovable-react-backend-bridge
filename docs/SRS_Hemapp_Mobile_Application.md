@@ -78,7 +78,7 @@ Hemapp is a standalone mobile health application that integrates with:
 - **Healthcare Professionals:** Medical practitioners using the app for patient guidance
 
 **User Characteristics:**
-- Age range: 18-80 years
+- Age range: 25-80 years
 - Varying technical expertise levels
 - Multiple language preferences
 - Different accessibility needs
@@ -198,6 +198,14 @@ Emergency health services providing quick access to critical health information 
 - **REQ-EMERG-002:** System shall display critical health information during emergencies
 - **REQ-EMERG-003:** Users shall be able to access emergency services without authentication
 - **REQ-EMERG-004:** System shall provide location-based emergency facility information
+- **REQ-EMERG-005:** Users shall be able to configure emergency contact preferences
+- **REQ-EMERG-006:** System shall provide one-tap emergency dialing functionality
+- **REQ-EMERG-007:** System shall display user medical information in emergency situations
+- **REQ-EMERG-008:** Users shall be able to share location with emergency contacts
+
+#### 3.6.3 Input/Output Specifications
+**Inputs:** Emergency contact information, medical conditions, allergies, current location
+**Outputs:** Emergency contact lists, location data, medical summaries, emergency service connections
 
 ### 3.7 Health Facility Mapping
 
@@ -209,6 +217,14 @@ Location-based service for finding nearby healthcare facilities.
 - **REQ-FAC-002:** Users shall be able to search facilities by type and specialty
 - **REQ-FAC-003:** System shall provide facility details (address, phone, hours, ratings)
 - **REQ-FAC-004:** Users shall be able to get directions to selected facilities
+- **REQ-FAC-005:** Users shall be able to filter facilities by distance, ratings, and availability
+- **REQ-FAC-006:** System shall provide real-time facility capacity information
+- **REQ-FAC-007:** Users shall be able to save favorite facilities
+- **REQ-FAC-008:** System shall provide estimated wait times for facilities
+
+#### 3.7.3 Input/Output Specifications
+**Inputs:** Location data, search criteria, facility preferences, filter parameters
+**Outputs:** Facility lists, map displays, directions, facility details, wait times
 
 ### 3.8 Accessibility Features
 
@@ -221,6 +237,14 @@ Comprehensive accessibility support for users with visual impairments and other 
 - **REQ-ACCESS-003:** System shall support speech-to-text input
 - **REQ-ACCESS-004:** System shall be compatible with screen readers
 - **REQ-ACCESS-005:** Users shall be able to customize accessibility settings
+- **REQ-ACCESS-006:** System shall support high contrast mode and font size adjustment
+- **REQ-ACCESS-007:** System shall provide voice navigation commands
+- **REQ-ACCESS-008:** Users shall be able to set up voice shortcuts for common actions
+- **REQ-ACCESS-009:** System shall support gesture-based navigation
+
+#### 3.8.3 Input/Output Specifications
+**Inputs:** Voice commands, accessibility preferences, gesture inputs, user settings
+**Outputs:** Audio feedback, visual adjustments, voice responses, haptic feedback
 
 ### 3.9 Smart Watch Integration
 
@@ -231,6 +255,14 @@ Integration with smart watch devices for health data synchronization.
 - **REQ-WATCH-001:** System shall sync health data from connected smart watches
 - **REQ-WATCH-002:** Users shall be able to view synchronized health metrics
 - **REQ-WATCH-003:** System shall support multiple smart watch platforms
+- **REQ-WATCH-004:** Users shall be able to configure sync frequency and data types
+- **REQ-WATCH-005:** System shall provide real-time health monitoring alerts
+- **REQ-WATCH-006:** Users shall be able to set health thresholds for watch notifications
+- **REQ-WATCH-007:** System shall maintain historical health data from watch devices
+
+#### 3.9.3 Input/Output Specifications
+**Inputs:** Watch health data, sync preferences, threshold settings, device configurations
+**Outputs:** Health metrics display, trend analysis, alerts, historical reports
 
 ### 3.10 Offline Functionality
 
@@ -242,6 +274,14 @@ Offline mode support with data synchronization capabilities.
 - **REQ-OFFLINE-002:** System shall automatically sync data when connection is restored
 - **REQ-OFFLINE-003:** Users shall be able to manually toggle offline mode
 - **REQ-OFFLINE-004:** System shall queue offline actions for later synchronization
+- **REQ-OFFLINE-005:** System shall cache essential data for offline access
+- **REQ-OFFLINE-006:** Users shall receive notifications about sync status
+- **REQ-OFFLINE-007:** System shall handle conflict resolution for concurrent data modifications
+- **REQ-OFFLINE-008:** Users shall be able to view offline data storage usage
+
+#### 3.10.3 Input/Output Specifications
+**Inputs:** Offline actions, sync preferences, cached data, user modifications
+**Outputs:** Sync status notifications, cached content, conflict resolution prompts, storage reports
 
 ---
 
