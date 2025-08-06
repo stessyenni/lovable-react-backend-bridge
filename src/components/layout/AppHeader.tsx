@@ -7,7 +7,7 @@ import { LogOut, Mic, MicOff, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface MenuItem {
-  id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'settings' | 'smartwatch' | 'emergency' | 'analytics';
+  id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'faq' | 'settings' | 'smartwatch' | 'emergency' | 'analytics';
   label: string;
   icon: React.FC<any>;
 }

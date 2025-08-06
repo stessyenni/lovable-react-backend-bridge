@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import EditableCategoryCard from "@/components/enhanced/EditableCategoryCard";
 import { 
   X,
   Apple,
@@ -163,103 +164,13 @@ const ViewCategories = ({ onClose }: ViewCategoriesProps) => {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categories.map((category) => {
-                  const IconComponent = getCategoryIcon(category.name);
-                  const items = category.meal_items || [];
-                  const totals = calculateCategoryTotals(items);
-
-                  return (
-                    <Card key={category.id} className="hover:shadow-lg transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${category.color_class.split(' ')[0]} bg-opacity-20`}>
-                              <IconComponent className="h-6 w-6" />
-                            </div>
-                            <div>
-                              <Badge className={category.color_class}>
-                                {category.name}
-                              </Badge>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {items.length} items
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        {category.description && (
-                          <CardDescription className="mt-2">{category.description}</CardDescription>
-                        )}
-                      </CardHeader>
-                      
-                      <CardContent className="space-y-4">
-                        {/* Category Nutritional Summary */}
-                        {items.length > 0 && (
-                          <div className="space-y-3">
-                            <h4 className="font-medium text-sm text-muted-foreground">Nutritional Summary</h4>
-                            <div className="grid grid-cols-2 gap-2 text-sm">
-                              <div className="flex items-center">
-                                <span className="text-red-600 mr-1">🔥</span>
-                                <span className="font-medium">{Math.round(totals.totalCalories)}</span>
-                                <span className="text-muted-foreground ml-1">cal</span>
-                              </div>
-                              <div className="flex items-center">
-                                <span className="text-blue-600 mr-1">💪</span>
-                                <span className="font-medium">{Math.round(totals.totalProtein * 10) / 10}g</span>
-                                <span className="text-muted-foreground ml-1">protein</span>
-                              </div>
-                              <div className="flex items-center">
-                                <span className="text-orange-600 mr-1">🌾</span>
-                                <span className="font-medium">{Math.round(totals.totalCarbs * 10) / 10}g</span>
-                                <span className="text-muted-foreground ml-1">carbs</span>
-                              </div>
-                              <div className="flex items-center">
-                                <span className="text-green-600 mr-1">🥑</span>
-                                <span className="font-medium">{Math.round(totals.totalFat * 10) / 10}g</span>
-                                <span className="text-muted-foreground ml-1">fat</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Sample Items in Category */}
-                        {items.length > 0 ? (
-                          <div className="space-y-2">
-                            <h4 className="font-medium text-sm text-muted-foreground">Sample Items</h4>
-                            <div className="space-y-2">
-                              {items.slice(0, 3).map((item) => (
-                                <div 
-                                  key={item.id} 
-                                  className="p-2 bg-muted/50 rounded text-sm border"
-                                >
-                                  <div className="font-medium">{item.name}</div>
-                                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                                    {item.calories_per_serving && (
-                                      <span>{item.calories_per_serving} cal</span>
-                                    )}
-                                    <span>per {item.serving_size}</span>
-                                  </div>
-                                </div>
-                              ))}
-                              {items.length > 3 && (
-                                <div className="text-xs text-muted-foreground text-center py-1">
-                                  +{items.length - 3} more items
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-center py-4 text-muted-foreground border-2 border-dashed border-muted rounded-lg">
-                            <p className="text-sm">No items in this category yet</p>
-                          </div>
-                        )}
-
-                        <div className="text-xs text-muted-foreground">
-                          Created: {new Date(category.created_at).toLocaleDateString()}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+                {categories.map((category) => (
+                  <EditableCategoryCard 
+                    key={category.id} 
+                    category={category} 
+                    onUpdate={fetchCategories}
+                  />
+                ))}
               </div>
             )}
           </div>

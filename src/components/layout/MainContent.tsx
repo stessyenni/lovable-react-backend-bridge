@@ -10,6 +10,7 @@ import AppSettings from "@/components/AppSettings";
 import SmartWatchSync from "@/components/SmartWatchSync";
 import TrendsPage from "@/components/TrendsPage";
 import EmergencyPage from "@/components/EmergencyPage";
+import FAQPage from "@/components/enhanced/FAQPage";
 
 interface MainContentProps {
   activeSection: string;
@@ -41,6 +42,8 @@ const MainContent = ({ activeSection, brailleMode }: MainContentProps) => {
         return <TrendsPage />;
       case 'emergency':
         return <EmergencyPage />;
+      case 'faq':
+        return <FAQPage />;
       default:
         return <Dashboard />;
     }

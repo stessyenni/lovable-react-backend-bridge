@@ -93,6 +93,54 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
 
     setLoading(true);
     try {
+      // Check for existing meals with same name
+      const { data: existingMeals, error: checkError } = await supabase
+        .from('diet_entries')
+        .select('meal_name')
+        .eq('user_id', user.id)
+        .eq('meal_name', mealName.trim())
+        .neq('id', editMode ? existingEntry?.id : '');
+
+      if (checkError) {
+        console.error('Error checking existing meals:', checkError);
+      } else if (existingMeals && existingMeals.length > 0 && !editMode) {
+        const userChoice = window.confirm(
+          `A meal named "${mealName}" already exists. Do you want to:\n\n` +
+          `OK - Use existing meal info\n` +
+          `Cancel - Save with a different name`
+        );
+        
+        if (!userChoice) {
+          toast({
+            title: "Meal exists",
+            description: "Please use a different name for your meal or update the existing one.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Check for existing categories with same name
+      const { data: existingCategories, error: categoryCheckError } = await supabase
+        .from('meal_categories')
+        .select('name')
+        .eq('user_id', user.id)
+        .eq('name', newCategoryName.trim())
+        .limit(1);
+
+      if (categoryCheckError) {
+        console.error('Error checking existing categories:', categoryCheckError);
+      } else if (existingCategories && existingCategories.length > 0 && newCategoryName.trim()) {
+        toast({
+          title: "Category exists",
+          description: `Category "${newCategoryName}" already exists. Please choose a different name.`,
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       let imageUrl = null;
 
       // Upload image if selected
