@@ -1,5 +1,5 @@
 // Add this import at the top
-import logoImage from "@/assets/Hemapp Logo.png";
+import logoImage from "@/assets/Hemapp-Logo.png";
 
 // Replace the Heart icon section (lines 53-56) with:
 <div className="flex items-center space-x-2">
