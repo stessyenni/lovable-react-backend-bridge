@@ -1,3 +1,11 @@
+// Add this import at the top
+import logoImage from "@/assets/Hemapp Logo.png";
+
+// Replace the Heart icon section (lines 53-56) with:
+<div className="flex items-center space-x-2">
+  <img src={logoImage} alt="Hemapp Logo" className="h-8 w-8" />
+  <span className="text-xl font-bold">Hemapp</span>
+</div>
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
