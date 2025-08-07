@@ -19,21 +19,27 @@ const SmartWatchSync = () => {
     try {
       if ('bluetooth' in navigator) {
         const device = await (navigator as any).bluetooth.requestDevice({
-          filters: [
-            { services: ['heart_rate'] },
-            { services: ['battery_service'] },
-            { namePrefix: 'Apple Watch' },
-            { namePrefix: 'Galaxy Watch' },
-            { namePrefix: 'Fitbit' }
-          ],
-          optionalServices: ['device_information']
+          acceptAllDevices: true,
+          optionalServices: [
+            'heart_rate',
+            'battery_service', 
+            'device_information',
+            'generic_access',
+            'generic_attribute',
+            'health_thermometer',
+            'blood_pressure',
+            'glucose',
+            'running_speed_and_cadence',
+            'cycling_speed_and_cadence',
+            'body_composition'
+          ]
         });
         
         setIsConnected(true);
         setLastSync(new Date());
         toast({
-          title: "Watch Connected",
-          description: `Connected to ${device.name}`,
+          title: "Smartwatch Connected",
+          description: `Successfully connected to ${device.name || 'your smartwatch'}`,
         });
       } else {
         toast({
@@ -45,7 +51,7 @@ const SmartWatchSync = () => {
     } catch (error) {
       toast({
         title: "Connection Failed",
-        description: "Failed to connect to smartwatch. Please try again.",
+        description: "Failed to connect to smartwatch. Please ensure Bluetooth is enabled and try again.",
         variant: "destructive"
       });
     }
