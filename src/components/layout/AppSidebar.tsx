@@ -49,17 +49,17 @@ const AppSidebar = ({
   };
 
   return (
-    <Sidebar className={brailleMode ? "border-2 border-yellow-400" : ""}>
-      <SidebarHeader className="p-4">
+    <Sidebar className={`${brailleMode ? "border-2 border-yellow-400" : ""} min-w-fit`} collapsible="icon">
+      <SidebarHeader className="p-3 sm:p-4">
         <div className="flex items-center space-x-2">
-          <img src={AppLogo} alt="Hemapp Logo" className="h-8 w-8" />
-          <span className="text-xl font-bold">Hemapp</span>
+          <img src={AppLogo} alt="Hemapp Logo" className="h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0" />
+          <span className="text-lg sm:text-xl font-bold truncate">Hemapp</span>
         </div>
       </SidebarHeader>
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs sm:text-sm">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => {
@@ -69,10 +69,11 @@ const AppSidebar = ({
                     <SidebarMenuButton 
                       isActive={activeSection === item.id}
                       onClick={() => onSectionChange(item.id)}
-                      className={brailleMode ? "text-lg font-bold" : ""}
+                      className={`${brailleMode ? "text-base sm:text-lg font-bold" : ""} w-full justify-start`}
+                      tooltip={item.label}
                     >
-                      <IconComponent className="mr-2 h-4 w-4" />
-                      <span>{item.label}</span>
+                      <IconComponent className="mr-2 h-4 w-4 flex-shrink-0" />
+                      <span className="truncate">{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -82,23 +83,24 @@ const AppSidebar = ({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-3 sm:p-4">
         <div className="space-y-2">
           <Button
             variant="outline"
             size="sm"
             onClick={handleDoctorConsult}
-            className="w-full flex items-center space-x-2"
+            className="w-full flex items-center justify-center space-x-2 text-xs sm:text-sm"
           >
-            <Video className="h-4 w-4" />
-            <span>Consult Doctor</span>
+            <Video className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+            <span className="truncate">Consult Doctor</span>
           </Button>
           
-          <div className="flex items-center justify-between text-sm">
-            <span>Braille Mode</span>
+          <div className="flex items-center justify-between text-xs sm:text-sm">
+            <span className="truncate">Braille Mode</span>
             <Switch 
               checked={brailleMode}
               onCheckedChange={onBrailleToggle}
+              className="ml-2"
             />
           </div>
         </div>

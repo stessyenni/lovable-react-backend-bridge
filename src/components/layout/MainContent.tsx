@@ -51,12 +51,12 @@ const MainContent = ({ activeSection, brailleMode }: MainContentProps) => {
 
   return (
     <main 
-      className={`flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto ${
-        brailleMode ? 'font-mono text-lg' : ''
-      } max-w-full`}
-      style={{ maxHeight: 'calc(100vh - 80px)' }}
+      className={`flex-1 p-3 sm:p-4 lg:p-6 xl:p-8 overflow-y-auto ${
+        brailleMode ? 'font-mono text-base sm:text-lg' : ''
+      } w-full min-w-0`}
+      style={{ maxHeight: 'calc(100vh - 60px)' }}
     >
-      <div className="max-w-7xl mx-auto w-full">
+      <div className="max-w-7xl mx-auto w-full min-w-0">
         {renderContent()}
       </div>
     </main>

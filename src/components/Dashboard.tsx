@@ -58,14 +58,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-full">
-      <div className="responsive-padding">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Welcome back!</h1>
-        <p className="text-muted-foreground responsive-text">Here's your health overview for today</p>
+    <div className="space-y-4 sm:space-y-6 w-full">
+      <div className="px-1">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Welcome back!</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Here's your health overview for today</p>
       </div>
 
       {/* Today's Progress */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 responsive-padding">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-1">
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Steps Today</CardTitle>
@@ -116,7 +116,7 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <Card className="responsive-margin">
+      <Card className="mx-1">
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
           <CardDescription>Fast access to common health tracking features</CardDescription>
@@ -176,7 +176,7 @@ const Dashboard = () => {
       </Card>
 
       {/* Recent Activity */}
-      <Card className="responsive-margin">
+      <Card className="mx-1">
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
           <CardDescription>Your latest health and fitness activities</CardDescription>
