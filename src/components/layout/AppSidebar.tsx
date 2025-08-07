@@ -1,5 +1,5 @@
 // Hemapp logo import
-import logoImage from "@/assets/your-logo.png";
+import logoImage from "@/assets/Hemapp-Logo.png";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
