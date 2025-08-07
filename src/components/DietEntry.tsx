@@ -99,7 +99,7 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
         .select('meal_name')
         .eq('user_id', user.id)
         .eq('meal_name', mealName.trim())
-        .neq('id', editMode ? existingEntry?.id : '');
+        .neq('id', editMode && existingEntry?.id ? existingEntry.id : '00000000-0000-0000-0000-000000000000');
 
       if (checkError) {
         console.error('Error checking existing meals:', checkError);
@@ -161,9 +161,6 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
         imageUrl = publicUrl;
       }
 
-      // Get selected category name
-      const categoryName = categories.find(cat => cat.id === selectedCategory)?.name || null;
-
       const mealData = {
         user_id: user.id,
         meal_name: mealName,
@@ -171,10 +168,7 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
         calories: calories ? parseInt(calories) : null,
         protein: protein || null,
         fiber: fiber || null,
-        meal_content: mealContent || null,
-        image_url: imageUrl,
-        category: categoryName,
-        logged_at: editMode ? existingEntry.logged_at : new Date().toISOString(),
+        logged_at: editMode && existingEntry ? existingEntry.logged_at : new Date().toISOString(),
       };
 
       let error;
@@ -235,176 +229,167 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   };
 
   return (
-    <div className="w-full max-w-full h-full flex flex-col">
-      {/* Header with Save and Close buttons */}
-      <div className="flex items-center justify-between p-3 sm:p-4 border-b bg-background shrink-0">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-base sm:text-lg font-semibold truncate">
-            {editMode ? "Edit Meal Entry" : "Add Meal Entry"}
-          </h3>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            {editMode ? "Update your meal information" : "Log your meals to track your nutrition"}
-          </p>
-        </div>
-        <div className="flex gap-2 ml-2">
-          <Button 
-            onClick={handleSubmit} 
-            disabled={loading}
-            size="sm" 
-            className="bg-green-600 hover:bg-green-700 text-xs sm:text-sm"
-          >
-            <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            {loading ? (editMode ? "Updating..." : "Saving...") : (editMode ? "Update" : "Save")}
-          </Button>
-          {onClose && (
-            <Button onClick={onClose} variant="outline" size="sm" className="text-xs sm:text-sm">
-              <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
+      <div className="bg-background rounded-lg w-full max-w-md sm:max-w-lg max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b">
+          <h2 className="text-base sm:text-lg font-semibold">
+            {editMode ? 'Edit Meal' : 'Add New Meal'}
+          </h2>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleSubmit} 
+              disabled={loading || !mealName.trim()}
+              size="sm"
+              className="text-xs sm:text-sm"
+            >
+              {loading ? (editMode ? 'Updating...' : 'Saving...') : (editMode ? 'Update' : 'Save')}
+            </Button>
+            <Button variant="outline" onClick={onClose} size="sm" className="text-xs sm:text-sm">
               Close
             </Button>
-          )}
+          </div>
         </div>
-      </div>
-      
-      {/* Scrollable form content */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="mealName" className="text-xs sm:text-sm">Meal Name *</Label>
-            <Input
-              id="mealName"
-              placeholder="e.g., Grilled Chicken Salad"
-              value={mealName}
-              onChange={(e) => setMealName(e.target.value)}
-              required
-              className="text-xs sm:text-sm"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="mealType" className="text-xs sm:text-sm">Meal Type</Label>
-            <Select value={mealType} onValueChange={setMealType}>
-              <SelectTrigger className="text-xs sm:text-sm">
-                <SelectValue placeholder="Select meal type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="breakfast">Breakfast</SelectItem>
-                <SelectItem value="lunch">Lunch</SelectItem>
-                <SelectItem value="dinner">Dinner</SelectItem>
-                <SelectItem value="snack">Snack</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="mealCategory" className="text-xs sm:text-sm">Meal Category</Label>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="text-xs sm:text-sm">
-                <SelectValue placeholder="Select or add category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="flex space-x-2 mt-2">
+        
+        <div className="flex-1 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="p-3 sm:p-4 space-y-3 sm:space-y-4 pb-6">
+            <div className="space-y-2">
+              <Label htmlFor="mealName" className="text-xs sm:text-sm">Meal Name *</Label>
               <Input
-                placeholder="New category name"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && addNewCategory()}
+                id="mealName"
+                placeholder="e.g., Grilled Chicken Salad"
+                value={mealName}
+                onChange={(e) => setMealName(e.target.value)}
+                required
                 className="text-xs sm:text-sm"
               />
-              <Button type="button" onClick={addNewCategory} size="sm" variant="outline" className="shrink-0">
-                <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-              </Button>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="mealContent" className="text-xs sm:text-sm">Meal Content</Label>
-            <Textarea
-              id="mealContent"
-              placeholder="List the ingredients or components of your meal..."
-              value={mealContent}
-              onChange={(e) => setMealContent(e.target.value)}
-              rows={3}
-              className="text-xs sm:text-sm resize-none"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-xs sm:text-sm">Meal Image</Label>
-            <div className="flex gap-2">
-              <Input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleImageSelect}
-                className="flex-1 text-xs sm:text-sm"
-              />
-              <Button type="button" variant="outline" size="sm" className="shrink-0">
-                <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
-              </Button>
+            <div className="space-y-2">
+              <Label htmlFor="mealType" className="text-xs sm:text-sm">Meal Type</Label>
+              <Select value={mealType} onValueChange={setMealType}>
+                <SelectTrigger className="text-xs sm:text-sm">
+                  <SelectValue placeholder="Select meal type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="breakfast">Breakfast</SelectItem>
+                  <SelectItem value="lunch">Lunch</SelectItem>
+                  <SelectItem value="dinner">Dinner</SelectItem>
+                  <SelectItem value="snack">Snack</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            
-            {imagePreview && (
-              <div className="relative">
-                <img 
-                  src={imagePreview} 
-                  alt="Meal preview" 
-                  className="w-full h-32 object-cover rounded-lg"
+
+            <div className="space-y-2">
+              <Label htmlFor="mealCategory" className="text-xs sm:text-sm">Meal Category</Label>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="text-xs sm:text-sm">
+                  <SelectValue placeholder="Select or add category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex space-x-2 mt-2">
+                <Input
+                  placeholder="New category name"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addNewCategory()}
+                  className="text-xs sm:text-sm"
                 />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  className="absolute top-1 right-1 h-6 w-6 p-0"
-                  onClick={removeImage}
-                >
-                  <X className="h-3 w-3" />
+                <Button type="button" onClick={addNewCategory} size="sm" variant="outline" className="shrink-0">
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             <div className="space-y-2">
-              <Label htmlFor="calories" className="text-xs sm:text-sm">Calories</Label>
-              <Input
-                id="calories"
-                type="number"
-                placeholder="250"
-                value={calories}
-                onChange={(e) => setCalories(e.target.value)}
-                min="0"
-                className="text-xs sm:text-sm"
+              <Label htmlFor="mealContent" className="text-xs sm:text-sm">Meal Content</Label>
+              <Textarea
+                id="mealContent"
+                placeholder="List the ingredients or components of your meal..."
+                value={mealContent}
+                onChange={(e) => setMealContent(e.target.value)}
+                rows={3}
+                className="text-xs sm:text-sm resize-none"
               />
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="protein" className="text-xs sm:text-sm">Protein (g)</Label>
-              <Input
-                id="protein"
-                placeholder="20"
-                value={protein}
-                onChange={(e) => setProtein(e.target.value)}
-                className="text-xs sm:text-sm"
-              />
+              <Label className="text-xs sm:text-sm">Meal Image</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleImageSelect}
+                  className="flex-1 text-xs sm:text-sm"
+                />
+                <Button type="button" variant="outline" size="sm" className="shrink-0">
+                  <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
+                </Button>
+              </div>
+              
+              {imagePreview && (
+                <div className="relative mb-4">
+                  <img 
+                    src={imagePreview} 
+                    alt="Meal preview" 
+                    className="w-full h-48 sm:h-56 object-cover rounded-lg"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2 h-8 w-8 p-0"
+                    onClick={removeImage}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="fiber" className="text-xs sm:text-sm">Fiber (g)</Label>
-              <Input
-                id="fiber"
-                placeholder="5"
-                value={fiber}
-                onChange={(e) => setFiber(e.target.value)}
-                className="text-xs sm:text-sm"
-              />
+
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="calories" className="text-xs sm:text-sm">Calories</Label>
+                <Input
+                  id="calories"
+                  type="number"
+                  placeholder="250"
+                  value={calories}
+                  onChange={(e) => setCalories(e.target.value)}
+                  min="0"
+                  className="text-xs sm:text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="protein" className="text-xs sm:text-sm">Protein (g)</Label>
+                <Input
+                  id="protein"
+                  placeholder="20"
+                  value={protein}
+                  onChange={(e) => setProtein(e.target.value)}
+                  className="text-xs sm:text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fiber" className="text-xs sm:text-sm">Fiber (g)</Label>
+                <Input
+                  id="fiber"
+                  placeholder="5"
+                  value={fiber}
+                  onChange={(e) => setFiber(e.target.value)}
+                  className="text-xs sm:text-sm"
+                />
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
