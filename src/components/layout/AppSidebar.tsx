@@ -1,4 +1,5 @@
-
+// Hemapp logo import
+import logoImage from "@/assets/your-logo.png";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -51,10 +52,10 @@ const AppSidebar = ({
   return (
     <Sidebar className={`${brailleMode ? "border-2 border-yellow-400" : ""} min-w-fit`} collapsible="icon">
       <SidebarHeader className="p-3 sm:p-4">
-        <div className="flex items-center space-x-2">
-          <img src={AppLogo} alt="Hemapp Logo" className="h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0" />
-          <span className="text-lg sm:text-xl font-bold truncate">Hemapp</span>
-        </div>
+       <div className="flex items-center space-x-2">
+          <img src={logoImage} alt="Hemapp-Logo" className="h-8 w-8" />
+          <span className="text-xl font-bold">Hemapp</span>
+       </div>
       </SidebarHeader>
       
       <SidebarContent>
