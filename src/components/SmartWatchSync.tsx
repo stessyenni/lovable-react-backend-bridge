@@ -13,12 +13,13 @@ const SmartWatchSync = () => {
   const [syncEnabled, setSyncEnabled] = useState(true);
   const [batteryLevel, setBatteryLevel] = useState(85);
   const [lastSync, setLastSync] = useState<Date | null>(null);
+  const [device, setDevice] = useState<any>(null);
   const { toast } = useToast();
 
   const handleConnect = async () => {
     try {
       if ('bluetooth' in navigator) {
-        const device = await (navigator as any).bluetooth.requestDevice({
+        const selectedDevice = await (navigator as any).bluetooth.requestDevice({
           acceptAllDevices: true,
           optionalServices: [
             'heart_rate',
@@ -34,12 +35,26 @@ const SmartWatchSync = () => {
             'body_composition'
           ]
         });
+
+        // Listen for disconnect events
+        selectedDevice.addEventListener('gattserverdisconnected', (event: any) => {
+          console.log('Device disconnected:', event.target.name);
+          // Only disconnect if user hasn't manually turned off sync
+          if (syncEnabled) {
+            toast({
+              title: "Watch Disconnected",
+              description: "Smartwatch connection lost. Attempting to reconnect...",
+              variant: "destructive"
+            });
+          }
+        });
         
+        setDevice(selectedDevice);
         setIsConnected(true);
         setLastSync(new Date());
         toast({
           title: "Smartwatch Connected",
-          description: `Successfully connected to ${device.name || 'your smartwatch'}`,
+          description: `Successfully connected to ${selectedDevice.name || 'your smartwatch'}`,
         });
       } else {
         toast({
@@ -58,10 +73,14 @@ const SmartWatchSync = () => {
   };
 
   const handleDisconnect = () => {
+    if (device && device.gatt?.connected) {
+      device.gatt.disconnect();
+    }
     setIsConnected(false);
+    setDevice(null);
     toast({
       title: "Watch Disconnected",
-      description: "Smartwatch has been disconnected.",
+      description: "Smartwatch has been manually disconnected.",
     });
   };
 

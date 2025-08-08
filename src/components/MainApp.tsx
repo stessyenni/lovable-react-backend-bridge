@@ -5,6 +5,7 @@ import { useMainAppState } from "@/hooks/useMainAppState";
 import AppHeader from "./layout/AppHeader";
 import AppSidebar from "./layout/AppSidebar";
 import MainContent from "./layout/MainContent";
+import DemoDataCreator from "./DemoDataCreator";
 
 interface MenuItem {
   id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'faq' | 'settings' | 'smartwatch' | 'emergency' | 'analytics';
@@ -41,35 +42,38 @@ const MainApp = () => {
   ];
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AppSidebar
-          menuItems={menuItems}
-          activeSection={activeSection}
-          brailleMode={brailleMode}
-          onSectionChange={setActiveSection}
-          onBrailleToggle={handleBrailleToggle}
-        />
-
-        <SidebarInset>
-          <AppHeader
-            activeSection={activeSection}
+    <>
+      <DemoDataCreator />
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <AppSidebar
             menuItems={menuItems}
-            isOnline={isOnline}
-            speechEnabled={speechEnabled}
-            brailleMode={brailleMode}
-            onSignOut={handleSignOut}
-            onOnlineToggle={handleOnlineToggle}
-            onSpeechToggle={handleSpeechToggle}
-          />
-
-          <MainContent
             activeSection={activeSection}
             brailleMode={brailleMode}
+            onSectionChange={setActiveSection}
+            onBrailleToggle={handleBrailleToggle}
           />
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+
+          <SidebarInset>
+            <AppHeader
+              activeSection={activeSection}
+              menuItems={menuItems}
+              isOnline={isOnline}
+              speechEnabled={speechEnabled}
+              brailleMode={brailleMode}
+              onSignOut={handleSignOut}
+              onOnlineToggle={handleOnlineToggle}
+              onSpeechToggle={handleSpeechToggle}
+            />
+
+            <MainContent
+              activeSection={activeSection}
+              brailleMode={brailleMode}
+            />
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </>
   );
 };
 

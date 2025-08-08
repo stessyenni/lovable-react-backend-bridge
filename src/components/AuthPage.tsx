@@ -86,14 +86,25 @@ const AuthPage = () => {
         <CardHeader className="text-center space-y-4">
           {/* Logo Section */}
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-lg">
-              <Heart className="h-10 w-10 text-white" />
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+              <img 
+                src="/src/assets/Hemapp-Logo.png" 
+                alt="Hemapp Logo" 
+                className="w-full h-full object-contain p-1"
+                onError={(e) => {
+                  // Fallback to Heart icon if logo fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.setAttribute('style', 'display: block');
+                }}
+              />
+              <Heart className="h-6 w-6 sm:h-10 sm:w-10 text-white hidden" />
             </div>
             <div className="text-left">
-              <h1 className="text-3xl font-bold text-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
                 HEMAPP
               </h1>
-              <p className="text-sm text-muted-foreground">Your Hemapp Companion</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Your Health Companion</p>
             </div>
           </div>
 
