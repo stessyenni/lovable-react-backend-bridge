@@ -98,7 +98,7 @@ const AuthPage = () => {
                   target.nextElementSibling?.setAttribute('style', 'display: block');
                 }}
               />
-              <Heart className="h-6 w-6 sm:h-10 sm:w-10 text-white hidden" />
+              
             </div>
             <div className="text-left">
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
