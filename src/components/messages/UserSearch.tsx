@@ -88,12 +88,17 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
         conn.follower_id === currentUserId ? conn.following_id : conn.follower_id
       );
       
-      // Fetch users excluding current user and already connected users
-      const { data, error } = await supabase
+      let query = supabase
         .from('profiles')
         .select('id, first_name, last_name, username, profile_image_url, created_at')
-        .neq('id', currentUserId)
-        .not('id', 'in', `(${connectedUserIds.length > 0 ? connectedUserIds.join(',') : "''"})`)
+        .neq('id', currentUserId);
+
+      // Only apply the exclusion filter if there are connected users
+      if (connectedUserIds.length > 0) {
+        query = query.not('id', 'in', `(${connectedUserIds.join(',')})`);
+      }
+
+      const { data, error } = await query
         .order('created_at', { ascending: false })
         .limit(8);
 

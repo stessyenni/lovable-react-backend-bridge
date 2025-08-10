@@ -74,8 +74,75 @@ const DemoDataCreator = () => {
           console.log(`Created ${usersToCreate.length} demo users`);
         }
       }
+
+      // Create sample connections between all users
+      await createSampleConnections();
     } catch (error) {
       console.error('Error in demo data creation:', error);
+    }
+  };
+
+  const createSampleConnections = async () => {
+    try {
+      // Get all users from the database
+      const { data: allUsers, error: usersError } = await supabase
+        .from('profiles')
+        .select('id');
+
+      if (usersError || !allUsers || allUsers.length < 2) {
+        console.log('Not enough users to create connections');
+        return;
+      }
+
+      // Create connections between users
+      const connections = [];
+      const userIds = allUsers.map(u => u.id);
+      
+      // Create bidirectional connections between first few users
+      for (let i = 0; i < Math.min(userIds.length - 1, 5); i++) {
+        for (let j = i + 1; j < Math.min(userIds.length, i + 4); j++) {
+          connections.push({
+            follower_id: userIds[i],
+            following_id: userIds[j],
+            status: 'accepted'
+          });
+          // Add reverse connection for bidirectional relationship
+          connections.push({
+            follower_id: userIds[j],
+            following_id: userIds[i],
+            status: 'accepted'
+          });
+        }
+      }
+
+      if (connections.length > 0) {
+        // Check which connections already exist
+        const { data: existingConnections } = await supabase
+          .from('user_connections')
+          .select('follower_id, following_id');
+
+        // Filter out existing connections
+        const newConnections = connections.filter(conn => 
+          !existingConnections?.some(existing => 
+            existing.follower_id === conn.follower_id && 
+            existing.following_id === conn.following_id
+          )
+        );
+
+        if (newConnections.length > 0) {
+          const { error: connectionsError } = await supabase
+            .from('user_connections')
+            .insert(newConnections);
+
+          if (connectionsError) {
+            console.error('Error creating sample connections:', connectionsError);
+          } else {
+            console.log(`Created ${newConnections.length} sample connections`);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error creating sample connections:', error);
     }
   };
 
