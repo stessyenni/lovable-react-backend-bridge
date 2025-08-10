@@ -13,9 +13,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { AppLogo } from "@/assets";
 
 interface MenuItem {
@@ -40,6 +42,8 @@ const AppSidebar = ({
   onBrailleToggle,
 }: AppSidebarProps) => {
   const { toast } = useToast();
+  const { setOpenMobile } = useSidebar();
+  const isMobile = useIsMobile();
 
   const handleDoctorConsult = () => {
     toast({
@@ -69,7 +73,13 @@ const AppSidebar = ({
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton 
                       isActive={activeSection === item.id}
-                      onClick={() => onSectionChange(item.id)}
+                      onClick={() => {
+                        onSectionChange(item.id);
+                        // Auto-close sidebar on mobile when menu item is selected
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
                       className={`${brailleMode ? "text-base sm:text-lg font-bold" : ""} w-full justify-start`}
                       tooltip={item.label}
                     >

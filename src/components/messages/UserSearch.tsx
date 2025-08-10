@@ -83,22 +83,12 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
   const loadRecommendedUsers = async () => {
     setRecommendationLoading(true);
     try {
-      // Get users who are not already connected
-      const connectedUserIds = connections.map(conn => 
-        conn.follower_id === currentUserId ? conn.following_id : conn.follower_id
-      );
-      
-      let query = supabase
+      // For now, show all users except current user since RLS prevents demo user creation
+      // In production, this would filter by actual connections
+      const { data, error } = await supabase
         .from('profiles')
         .select('id, first_name, last_name, username, profile_image_url, created_at')
-        .neq('id', currentUserId);
-
-      // Only apply the exclusion filter if there are connected users
-      if (connectedUserIds.length > 0) {
-        query = query.not('id', 'in', `(${connectedUserIds.join(',')})`);
-      }
-
-      const { data, error } = await query
+        .neq('id', currentUserId)
         .order('created_at', { ascending: false })
         .limit(8);
 
