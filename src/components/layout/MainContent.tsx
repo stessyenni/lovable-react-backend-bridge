@@ -1,6 +1,6 @@
 
 import Dashboard from "@/components/Dashboard";
-import AIConsultation from "@/components/AIConsultation";
+import HemBot from "@/components/HemBot";
 import DietMonitoring from "@/components/DietMonitoring";
 import HealthGoals from "@/components/HealthGoals";
 import HealthFacilities from "@/components/HealthFacilities";
@@ -23,7 +23,7 @@ const MainContent = ({ activeSection, brailleMode }: MainContentProps) => {
       case 'dashboard':
         return <Dashboard />;
       case 'consultation':
-        return <AIConsultation />;
+        return <HemBot />;
       case 'diet':
         return <DietMonitoring />;
       case 'goals':

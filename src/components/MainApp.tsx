@@ -1,5 +1,5 @@
 
-import { BarChart3, Stethoscope, Apple, Target, MapPin, User, Settings, MessageCircle, Watch, AlertTriangle, TrendingUp, HelpCircle } from "lucide-react";
+import { BarChart3, Bot, Apple, Target, MapPin, User, Settings, MessageCircle, Watch, AlertTriangle, TrendingUp, HelpCircle } from "lucide-react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useMainAppState } from "@/hooks/useMainAppState";
 import AppHeader from "./layout/AppHeader";
@@ -28,7 +28,7 @@ const MainApp = () => {
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'consultation', label: 'AI Consultation', icon: Stethoscope },
+    { id: 'consultation', label: 'HemBot', icon: Bot },
     { id: 'diet', label: 'Diet Monitoring', icon: Apple },
     { id: 'goals', label: 'Health Goals', icon: Target },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
