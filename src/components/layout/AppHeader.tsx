@@ -3,11 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { LogOut, Mic, MicOff, Phone } from "lucide-react";
+import { LogOut, Mic, MicOff, Phone, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import AppSettings from "@/components/AppSettings";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 interface MenuItem {
-  id: 'dashboard' | 'consultation' | 'diet' | 'goals' | 'facilities' | 'messages' | 'account' | 'faq' | 'settings' | 'smartwatch' | 'emergency' | 'analytics';
+  id: 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
   label: string;
   icon: React.FC<any>;
 }
@@ -33,6 +36,7 @@ const AppHeader = ({
   onOnlineToggle,
   onSpeechToggle,
 }: AppHeaderProps) => {
+  const [settingsOpen, setSettingsOpen] = useState(false);
   return (
     <header className="border-b bg-card px-3 sm:px-4 py-3 sticky top-0 z-40">
       <div className="flex items-center justify-between w-full">
@@ -81,6 +85,23 @@ const AppHeader = ({
             <Phone className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="text-xs sm:text-sm hidden sm:inline">Emergency</span>
           </Button>
+
+          {/* App Settings */}
+          <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className={`flex items-center space-x-1 ${brailleMode ? "border-2 border-yellow-400" : ""} px-2 sm:px-3`}
+              >
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className={`text-xs sm:text-sm ${brailleMode ? "font-bold" : ""} hidden sm:inline`}>Settings</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <AppSettings />
+            </DialogContent>
+          </Dialog>
 
           {/* Sign Out - Icon only on mobile */}
           <Button

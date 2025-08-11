@@ -1,15 +1,11 @@
 
 import Dashboard from "@/components/Dashboard";
-import HemBot from "@/components/HemBot";
-import DietMonitoring from "@/components/DietMonitoring";
-import HealthGoals from "@/components/HealthGoals";
-import HealthFacilities from "@/components/HealthFacilities";
 import Messages from "@/components/Messages";
+import HealthMonitoring from "@/components/HealthMonitoring";
+import Facilities from "@/components/Facilities";
+import Connections from "@/components/Connections";
 import UserAccount from "@/components/UserAccount";
-import AppSettings from "@/components/AppSettings";
 import SmartWatchSync from "@/components/SmartWatchSync";
-import TrendsPage from "@/components/TrendsPage";
-import EmergencyPage from "@/components/EmergencyPage";
 import FAQPage from "@/components/enhanced/FAQPage";
 
 interface MainContentProps {
@@ -22,26 +18,18 @@ const MainContent = ({ activeSection, brailleMode }: MainContentProps) => {
     switch (activeSection) {
       case 'dashboard':
         return <Dashboard />;
-      case 'consultation':
-        return <HemBot />;
-      case 'diet':
-        return <DietMonitoring />;
-      case 'goals':
-        return <HealthGoals />;
-      case 'facilities':
-        return <HealthFacilities />;
       case 'messages':
         return <Messages />;
+      case 'health-monitoring':
+        return <HealthMonitoring />;
+      case 'facilities':
+        return <Facilities />;
+      case 'connections':
+        return <Connections />;
       case 'account':
         return <UserAccount />;
-      case 'settings':
-        return <AppSettings />;
       case 'smartwatch':
         return <SmartWatchSync />;
-      case 'analytics':
-        return <TrendsPage />;
-      case 'emergency':
-        return <EmergencyPage />;
       case 'faq':
         return <FAQPage />;
       default:

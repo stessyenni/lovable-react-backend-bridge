@@ -1,19 +1,21 @@
 
 import { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageCircle, Users, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Users, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useConnections } from "./messages/hooks/useConnections";
 import { useMessages } from "./messages/hooks/useMessages";
 import ConnectionsList from "./messages/ConnectionsList";
 import UserSearch from "./messages/UserSearch";
-import MessagesTab from "./messages/components/MessagesTab";
+import MessagesList from "./messages/MessagesList";
+import ChatWindow from "./messages/ChatWindow";
 import LoadingState from "./messages/components/LoadingState";
 
 const Messages = () => {
   const { user } = useAuth();
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("messages");
+  const [showConnections, setShowConnections] = useState(false);
   
   const { connections, fetchConnections } = useConnections(user?.id);
   const { messages, loading, fetchMessages, sendMessage } = useMessages(user?.id);
@@ -27,7 +29,7 @@ const Messages = () => {
 
   const handleMessageUser = (userId: string) => {
     setSelectedChat(userId);
-    setActiveTab("messages");
+    setShowConnections(false);
   };
 
   if (loading) {
@@ -35,55 +37,90 @@ const Messages = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Messages</h2>
-        <p className="text-muted-foreground">Connect with other users and stay in touch</p>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="messages" className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            Messages
-          </TabsTrigger>
-          <TabsTrigger value="connections" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Connections
-          </TabsTrigger>
-          <TabsTrigger value="discover" className="flex items-center gap-2">
-            <UserPlus className="h-4 w-4" />
-            Discover
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="messages" className="space-y-4">
-          <MessagesTab
+    <div className="flex h-full">
+      {/* Mini Sidebar */}
+      <div className="w-80 border-r bg-card">
+        <div className="p-4 border-b">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold">Messages</h3>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowConnections(!showConnections)}
+              className="flex items-center gap-2"
+            >
+              <Users className="h-4 w-4" />
+              Connections
+            </Button>
+          </div>
+        </div>
+        
+        {showConnections ? (
+          <div className="p-4 space-y-4">
+            <div className="space-y-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowConnections(false)}
+                className="w-full justify-start"
+              >
+                ← Back to Messages
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">My Connections</h4>
+                <ConnectionsList 
+                  connections={connections}
+                  currentUserId={user?.id || ''}
+                  onRefresh={fetchConnections}
+                  onMessageUser={handleMessageUser}
+                />
+              </div>
+              <div>
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  Discover People
+                </h4>
+                <UserSearch 
+                  currentUserId={user?.id || ''}
+                  connections={connections}
+                  onConnectionUpdate={fetchConnections}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <MessagesList 
             messages={messages}
             currentUserId={user?.id || ''}
-            selectedChat={selectedChat}
             onSelectChat={setSelectedChat}
+            selectedChat={selectedChat}
+          />
+        )}
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1">
+        {selectedChat ? (
+          <ChatWindow
+            recipientId={selectedChat}
+            messages={messages.filter(
+              m => (m.sender_id === selectedChat && m.recipient_id === user?.id) ||
+                   (m.sender_id === user?.id && m.recipient_id === selectedChat)
+            )}
             onSendMessage={sendMessage}
           />
-        </TabsContent>
-
-        <TabsContent value="connections" className="space-y-4">
-          <ConnectionsList 
-            connections={connections}
-            currentUserId={user?.id || ''}
-            onRefresh={fetchConnections}
-            onMessageUser={handleMessageUser}
-          />
-        </TabsContent>
-
-        <TabsContent value="discover" className="space-y-4">
-          <UserSearch 
-            currentUserId={user?.id || ''}
-            connections={connections}
-            onConnectionUpdate={fetchConnections}
-          />
-        </TabsContent>
-      </Tabs>
+        ) : (
+          <Card className="h-full">
+            <CardContent className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className="text-muted-foreground">Select a conversation to start messaging</div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };

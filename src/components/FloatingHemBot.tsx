@@ -1,0 +1,55 @@
+import { useState } from "react";
+import { Bot, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import HemBot from "@/components/HemBot";
+
+const FloatingHemBot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      {/* Floating Chat Button */}
+      {!isOpen && (
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-green-700 hover:bg-green-800 shadow-lg z-50"
+          size="icon"
+        >
+          <Bot className="h-6 w-6 text-white" />
+        </Button>
+      )}
+
+      {/* Chat Window */}
+      {isOpen && (
+        <div className="fixed bottom-6 right-6 w-96 h-[500px] z-50 shadow-2xl">
+          <Card className="h-full flex flex-col">
+            <CardHeader className="pb-3 bg-green-700 text-white rounded-t-lg">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                  <Bot className="h-5 w-5" />
+                  HemBot
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="text-white hover:bg-green-600 h-8 w-8"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1 p-0 overflow-hidden">
+              <div className="h-full">
+                <HemBot />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default FloatingHemBot;
