@@ -177,7 +177,7 @@ const HemBot = () => {
                       {isUserMessage && (
                         <Avatar className="w-8 h-8">
                           <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                            {user?.first_name?.[0] || user?.email?.[0] || 'U'}
+                            {user?.user_metadata?.first_name?.[0] || user?.email?.[0] || 'U'}
                           </AvatarFallback>
                         </Avatar>
                       )}
