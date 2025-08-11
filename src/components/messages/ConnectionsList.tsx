@@ -11,9 +11,10 @@ interface ConnectionsListProps {
   connections: Connection[];
   currentUserId: string;
   onRefresh: () => void;
+  onMessageUser: (userId: string) => void;
 }
 
-const ConnectionsList = ({ connections, currentUserId, onRefresh }: ConnectionsListProps) => {
+const ConnectionsList = ({ connections, currentUserId, onRefresh, onMessageUser }: ConnectionsListProps) => {
   const getDisplayName = (user: User | undefined) => {
     if (!user) return 'Unknown User';
     if (user.first_name && user.last_name) {
@@ -72,7 +73,11 @@ const ConnectionsList = ({ connections, currentUserId, onRefresh }: ConnectionsL
                 
                 <div className="flex items-center space-x-2">
                   <Badge variant="secondary">Connected</Badge>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => onMessageUser(otherUser?.id || '')}
+                  >
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Message
                   </Button>

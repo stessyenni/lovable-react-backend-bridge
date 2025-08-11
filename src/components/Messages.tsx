@@ -13,6 +13,7 @@ import LoadingState from "./messages/components/LoadingState";
 const Messages = () => {
   const { user } = useAuth();
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("messages");
   
   const { connections, fetchConnections } = useConnections(user?.id);
   const { messages, loading, fetchMessages, sendMessage } = useMessages(user?.id);
@@ -23,6 +24,11 @@ const Messages = () => {
       fetchMessages();
     }
   }, [user, fetchConnections, fetchMessages]);
+
+  const handleMessageUser = (userId: string) => {
+    setSelectedChat(userId);
+    setActiveTab("messages");
+  };
 
   if (loading) {
     return <LoadingState />;
@@ -35,7 +41,7 @@ const Messages = () => {
         <p className="text-muted-foreground">Connect with other users and stay in touch</p>
       </div>
 
-      <Tabs defaultValue="messages" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="messages" className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
@@ -66,6 +72,7 @@ const Messages = () => {
             connections={connections}
             currentUserId={user?.id || ''}
             onRefresh={fetchConnections}
+            onMessageUser={handleMessageUser}
           />
         </TabsContent>
 
