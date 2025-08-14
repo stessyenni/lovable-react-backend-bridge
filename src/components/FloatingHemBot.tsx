@@ -40,8 +40,8 @@ const FloatingHemBot = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="flex-1 p-0 overflow-hidden">
-              <div className="h-full">
+            <CardContent className="flex-1 p-4 overflow-hidden">
+              <div className="h-full overflow-hidden">
                 <HemBot />
               </div>
             </CardContent>

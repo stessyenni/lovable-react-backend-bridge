@@ -28,7 +28,7 @@ const MessagesList = ({ messages, currentUserId, onSelectChat, selectedChat }: M
     return acc;
   }, {} as Record<string, Message>);
 
-  // Always show HemBot at the top, even if no messages yet
+  // Always show HemBot, but at the bottom of the list
   const hemBotExists = conversations[HEMBOT_ID];
   if (!hemBotExists) {
     conversations[HEMBOT_ID] = {
@@ -36,7 +36,7 @@ const MessagesList = ({ messages, currentUserId, onSelectChat, selectedChat }: M
       sender_id: HEMBOT_ID,
       recipient_id: currentUserId,
       content: 'Start a conversation with HemBot',
-      created_at: new Date().toISOString(),
+      created_at: new Date('2020-01-01').toISOString(), // Old date to keep it at bottom
       read_at: null,
       sender: {
         id: HEMBOT_ID,
@@ -49,9 +49,14 @@ const MessagesList = ({ messages, currentUserId, onSelectChat, selectedChat }: M
   }
 
   const conversationList = Object.values(conversations).sort((a, b) => {
-    // Always put HemBot first
-    if (a.sender_id === HEMBOT_ID || a.recipient_id === HEMBOT_ID) return -1;
-    if (b.sender_id === HEMBOT_ID || b.recipient_id === HEMBOT_ID) return 1;
+    // Put HemBot at the bottom
+    const aIsBot = a.sender_id === HEMBOT_ID || a.recipient_id === HEMBOT_ID;
+    const bIsBot = b.sender_id === HEMBOT_ID || b.recipient_id === HEMBOT_ID;
+    
+    if (aIsBot && !bIsBot) return 1;
+    if (!aIsBot && bIsBot) return -1;
+    if (aIsBot && bIsBot) return 0; // Both are bot messages, keep order
+    
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
