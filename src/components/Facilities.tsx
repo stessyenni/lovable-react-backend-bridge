@@ -1,14 +1,11 @@
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, Phone, Clock, MapPin, Star, Navigation, MessageCircle, AlertTriangle } from "lucide-react";
+import { Building2, Phone, Clock, MapPin, Star, Navigation, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import EmergencyPage from "@/components/EmergencyPage";
 
 const Facilities = () => {
   const { toast } = useToast();
@@ -71,18 +68,9 @@ const Facilities = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Facilities & Emergency</h2>
-        <p className="text-muted-foreground">Healthcare facilities and emergency services</p>
+        <h2 className="text-2xl font-bold">Healthcare Facilities</h2>
+        <p className="text-muted-foreground">Find nearby hospitals, clinics, and health services</p>
       </div>
-
-      <Tabs defaultValue="facilities" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="facilities">Healthcare Facilities</TabsTrigger>
-          <TabsTrigger value="emergency">Emergency Center</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="facilities" className="space-y-4">
-          <div className="space-y-4">
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {facilities.map((facility) => (
@@ -169,24 +157,17 @@ const Facilities = () => {
         ))}
       </div>
 
-          {facilities.length === 0 && (
-            <Card>
-              <CardContent className="text-center py-12">
-                <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No facilities found</h3>
-                <p className="text-muted-foreground">
-                  We couldn't find any healthcare facilities in your area.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="emergency">
-          <EmergencyPage />
-        </TabsContent>
-      </Tabs>
+      {facilities.length === 0 && (
+        <Card>
+          <CardContent className="text-center py-12">
+            <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No facilities found</h3>
+            <p className="text-muted-foreground">
+              We couldn't find any healthcare facilities in your area.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

@@ -39,17 +39,11 @@ const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) =
 
   const getDisplayName = (user: User | undefined) => {
     if (!user) return 'Unknown User';
-    
-    // Handle the case where user data comes from messages with different structure
-    const userData = user as any;
-    if (userData.user_metadata?.first_name && userData.user_metadata?.last_name) {
-      return `${userData.user_metadata.first_name} ${userData.user_metadata.last_name}`;
+    if (user.first_name && user.last_name) {
+      return `${user.first_name} ${user.last_name}`;
     }
-    if (userData.first_name && userData.last_name) {
-      return `${userData.first_name} ${userData.last_name}`;
-    }
-    if (userData.username) return userData.username;
-    return userData.email || 'Unknown User';
+    if (user.username) return user.username;
+    return user.email || 'Unknown User';
   };
 
   const getInitials = (user: User | undefined) => {
