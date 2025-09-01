@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
@@ -292,6 +292,33 @@ export type Database = {
         }
         Relationships: []
       }
+      hembot_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_user_message: boolean
+          message: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_user_message?: boolean
+          message: string
+          session_id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_user_message?: boolean
+          message?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meal_categories: {
         Row: {
           color_class: string | null
@@ -428,6 +455,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       offline_sync: {
         Row: {
