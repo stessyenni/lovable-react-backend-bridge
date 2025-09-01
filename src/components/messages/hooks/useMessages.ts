@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "../types";
@@ -19,7 +19,8 @@ export const useMessages = (userId: string | undefined) => {
         .from('messages')
         .select(`
           *,
-          sender:profiles!messages_sender_id_fkey(id, first_name, last_name, username, email)
+          sender:profiles!messages_sender_id_fkey(id, first_name, last_name, username, email),
+          recipient:profiles!messages_recipient_id_fkey(id, first_name, last_name, username, email)
         `)
         .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`)
         .order('created_at', { ascending: false });
@@ -36,6 +37,37 @@ export const useMessages = (userId: string | undefined) => {
       setLoading(false);
     }
   }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchMessages();
+
+      // Set up realtime subscription for new messages
+      const channel = supabase
+        .channel('messages-updates')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `or(sender_id.eq.${userId},recipient_id.eq.${userId})`
+        }, () => {
+          fetchMessages();
+        })
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'messages',
+          filter: `or(sender_id.eq.${userId},recipient_id.eq.${userId})`
+        }, () => {
+          fetchMessages();
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [userId, fetchMessages]);
 
   const sendMessage = async (recipientId: string, content: string) => {
     if (!userId || !content.trim()) return;

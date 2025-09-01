@@ -66,6 +66,7 @@ const MainApp = () => {
             <MainContent
               activeSection={activeSection}
               brailleMode={brailleMode}
+              onSectionChange={setActiveSection}
             />
           </SidebarInset>
         </div>

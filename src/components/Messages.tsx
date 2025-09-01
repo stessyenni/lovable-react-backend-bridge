@@ -37,71 +37,27 @@ const Messages = () => {
   }
 
   return (
-    <div className="flex h-full">
-      {/* Mini Sidebar */}
-      <div className="w-80 border-r bg-card">
-        <div className="p-4 border-b">
+    <div className="flex h-full flex-col lg:flex-row">
+      {/* Mini Sidebar - Responsive */}
+      <div className="w-full lg:w-80 border-r bg-card flex-shrink-0">
+        <div className="p-3 lg:p-4 border-b">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Messages</h3>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowConnections(!showConnections)}
-              className="flex items-center gap-2"
-            >
-              <Users className="h-4 w-4" />
-              Connections
-            </Button>
+            <h3 className="text-lg font-semibold">Messages</h3>
           </div>
         </div>
         
-        {showConnections ? (
-          <div className="p-4 space-y-4">
-            <div className="space-y-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowConnections(false)}
-                className="w-full justify-start"
-              >
-                ← Back to Messages
-              </Button>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">My Connections</h4>
-                <ConnectionsList 
-                  connections={connections}
-                  currentUserId={user?.id || ''}
-                  onRefresh={fetchConnections}
-                  onMessageUser={handleMessageUser}
-                />
-              </div>
-              <div>
-                <h4 className="font-medium mb-2 flex items-center gap-2">
-                  <UserPlus className="h-4 w-4" />
-                  Discover People
-                </h4>
-                <UserSearch 
-                  currentUserId={user?.id || ''}
-                  connections={connections}
-                  onConnectionUpdate={fetchConnections}
-                />
-              </div>
-            </div>
-          </div>
-        ) : (
+        <div className="h-full overflow-y-auto">
           <MessagesList 
             messages={messages}
             currentUserId={user?.id || ''}
             onSelectChat={setSelectedChat}
             selectedChat={selectedChat}
           />
-        )}
+        </div>
       </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1">
+      {/* Main Chat Area - Responsive */}
+      <div className="flex-1 min-h-0">
         {selectedChat ? (
           <ChatWindow
             recipientId={selectedChat}
@@ -113,9 +69,14 @@ const Messages = () => {
           />
         ) : (
           <Card className="h-full">
-            <CardContent className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className="text-muted-foreground">Select a conversation to start messaging</div>
+            <CardContent className="flex items-center justify-center h-full p-4">
+              <div className="text-center space-y-4">
+                <div className="text-muted-foreground text-sm lg:text-base">
+                  Select a conversation to start messaging
+                </div>
+                <p className="text-xs text-muted-foreground max-w-md">
+                  Choose from your recent conversations or start a new chat with your connections
+                </p>
               </div>
             </CardContent>
           </Card>

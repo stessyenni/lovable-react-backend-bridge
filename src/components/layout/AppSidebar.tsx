@@ -2,6 +2,7 @@
 import logoImage from "@/assets/Hemapp-Logo.png";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +19,7 @@ import {
 import { Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { AppLogo } from "@/assets";
 
 interface MenuItem {
@@ -44,6 +46,7 @@ const AppSidebar = ({
   const { toast } = useToast();
   const { setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
+  const { unreadCount } = useUnreadMessages();
 
   const handleDoctorConsult = () => {
     toast({
@@ -71,7 +74,7 @@ const AppSidebar = ({
                 const IconComponent = item.icon;
                 return (
                   <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton 
+                     <SidebarMenuButton 
                       isActive={activeSection === item.id}
                       onClick={() => {
                         onSectionChange(item.id);
@@ -80,11 +83,19 @@ const AppSidebar = ({
                           setOpenMobile(false);
                         }
                       }}
-                      className={`${brailleMode ? "text-base sm:text-lg font-bold" : ""} w-full justify-start`}
+                      className={`${brailleMode ? "text-base sm:text-lg font-bold" : ""} w-full justify-start relative`}
                       tooltip={item.label}
                     >
                       <IconComponent className="mr-2 h-4 w-4 flex-shrink-0" />
                       <span className="truncate">{item.label}</span>
+                      {item.id === 'messages' && unreadCount > 0 && (
+                        <Badge 
+                          variant="destructive" 
+                          className="ml-auto h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                        >
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </Badge>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
