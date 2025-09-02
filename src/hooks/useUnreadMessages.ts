@@ -32,8 +32,13 @@ export const useUnreadMessages = () => {
       fetchUnreadCount();
 
       // Set up realtime subscription for new messages with unique channel name
-      channel = supabase
-        .channel(`unread-messages-${user.id}`)
+      const channelName = `unread-messages-${user.id}`;
+      
+      // Create channel with unique name
+      channel = supabase.channel(channelName);
+      
+      // Add event listeners
+      channel
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
@@ -49,12 +54,19 @@ export const useUnreadMessages = () => {
           filter: `recipient_id=eq.${user.id}`
         }, () => {
           fetchUnreadCount();
-        })
-        .subscribe();
+        });
+      
+      // Subscribe to the channel
+      channel.subscribe((status: string) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(`Unread messages subscription active for ${channelName}`);
+        }
+      });
     }
 
     return () => {
       if (channel) {
+        channel.unsubscribe();
         supabase.removeChannel(channel);
       }
     };

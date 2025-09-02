@@ -46,8 +46,12 @@ export const useMessages = (userId: string | undefined, component?: string) => {
 
       // Set up realtime subscription for new messages with unique channel name
       const channelName = component ? `messages-updates-${component}-${userId}` : `messages-updates-${userId}`;
-      channel = supabase
-        .channel(channelName)
+      
+      // Create channel with unique name
+      channel = supabase.channel(channelName);
+      
+      // Add event listeners
+      channel
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
@@ -63,16 +67,23 @@ export const useMessages = (userId: string | undefined, component?: string) => {
           filter: `or(sender_id.eq.${userId},recipient_id.eq.${userId})`
         }, () => {
           fetchMessages();
-        })
-        .subscribe();
+        });
+      
+      // Subscribe to the channel
+      channel.subscribe((status: string) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(`Messages subscription active for ${channelName}`);
+        }
+      });
     }
 
     return () => {
       if (channel) {
+        channel.unsubscribe();
         supabase.removeChannel(channel);
       }
     };
-  }, [userId]); // Remove fetchMessages from dependencies
+  }, [userId, component]); // Include component in dependencies
 
   const sendMessage = async (recipientId: string, content: string) => {
     if (!userId || !content.trim()) return;
