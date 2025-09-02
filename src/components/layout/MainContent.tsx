@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import Dashboard from "@/components/Dashboard";
 import Messages from "@/components/Messages";
 import HealthMonitoring from "@/components/HealthMonitoring";
@@ -15,18 +16,25 @@ interface MainContentProps {
 }
 
 const MainContent = ({ activeSection, brailleMode, onSectionChange }: MainContentProps) => {
+  const [selectedMessageUser, setSelectedMessageUser] = useState<string | null>(null);
+
+  const handleMessageUser = (userId: string) => {
+    setSelectedMessageUser(userId);
+    onSectionChange?.('messages');
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
         return <Dashboard />;
       case 'messages':
-        return <Messages />;
+        return <Messages selectedUserId={selectedMessageUser} />;
       case 'health-monitoring':
         return <HealthMonitoring />;
       case 'facilities':
         return <Facilities />;
       case 'connections':
-        return <Connections onSectionChange={onSectionChange} />;
+        return <Connections onSectionChange={onSectionChange} onMessageUser={handleMessageUser} />;
       case 'account':
         return <UserAccount />;
       case 'smartwatch':

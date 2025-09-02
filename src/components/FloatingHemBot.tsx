@@ -13,10 +13,10 @@ const FloatingHemBot = () => {
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-green-700 hover:bg-green-800 shadow-lg z-50"
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-green-700 hover:bg-green-800 shadow-lg z-50 animate-pulse"
           size="icon"
         >
-          <Bot className="h-6 w-6 text-white" />
+          <Bot className="h-6 w-6 text-white animate-bounce" />
         </Button>
       )}
 

@@ -3,13 +3,13 @@ import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "../types";
-import { useHemBot } from "./useHemBot";
+
 
 export const useMessages = (userId: string | undefined) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const { sendToHemBot, checkIfHemBotMessage } = useHemBot(userId);
+  
 
   const fetchMessages = useCallback(async () => {
     if (!userId) return;
@@ -95,10 +95,7 @@ export const useMessages = (userId: string | undefined) => {
         return;
       }
 
-      // Check if this is a message to HemBot and trigger AI response
-      if (checkIfHemBotMessage(recipientId)) {
-        sendToHemBot(content.trim());
-      }
+      // Regular messaging - no HemBot integration in messages page
 
       toast({
         title: "Message sent",

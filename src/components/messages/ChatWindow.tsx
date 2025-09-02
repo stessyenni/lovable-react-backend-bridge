@@ -17,7 +17,6 @@ interface ChatWindowProps {
 
 const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
-  const HEMBOT_ID = '99999999-9999-9999-9999-999999999999';
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -57,61 +56,40 @@ const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) =
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  const isHemBot = recipientId === HEMBOT_ID;
-  
-  // Get recipient info from the first message or create HemBot info
-  let recipientInfo;
-  if (isHemBot) {
-    recipientInfo = {
-      id: HEMBOT_ID,
-      first_name: 'Hem',
-      last_name: 'Bot',
-      username: 'hembot',
-      email: null
-    };
-  } else {
-    recipientInfo = sortedMessages.find(m => m.sender_id === recipientId)?.sender;
-  }
+  // Get recipient info from messages  
+  const recipientInfo = sortedMessages.find(m => {
+    if (m.sender_id === recipientId) return m.sender;
+    if (m.recipient_id === recipientId) return m.recipient;
+    return null;
+  })?.sender_id === recipientId 
+    ? sortedMessages.find(m => m.sender_id === recipientId)?.sender
+    : sortedMessages.find(m => m.recipient_id === recipientId)?.recipient;
 
   return (
-    <Card className="h-96 flex flex-col">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-3">
-          <Avatar>
-            {isHemBot ? (
-              <div className="w-full h-full bg-blue-100 flex items-center justify-center rounded-full">
-                <Bot className="w-6 h-6 text-blue-600" />
-              </div>
-            ) : (
-              <>
-                <AvatarImage src={UserAvatarPlaceholder} alt="Recipient Avatar" />
-                <AvatarFallback>{getInitials(recipientInfo)}</AvatarFallback>
-              </>
-            )}
+    <Card className="h-full flex flex-col">
+      <CardHeader className="pb-2 sm:pb-3">
+        <CardTitle className="flex items-center space-x-3 text-sm sm:text-base">
+          <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+            <AvatarImage src={UserAvatarPlaceholder} alt="Recipient Avatar" />
+            <AvatarFallback className="text-xs sm:text-sm">{getInitials(recipientInfo)}</AvatarFallback>
           </Avatar>
           <div>
-            <span className={isHemBot ? 'text-blue-600' : ''}>
-              {isHemBot ? 'HemBot' : getDisplayName(recipientInfo)}
+            <span className="font-medium">
+              {getDisplayName(recipientInfo)}
             </span>
-            {isHemBot && <span className="text-xs text-blue-500 block">AI Health Assistant</span>}
           </div>
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4 max-h-64">
-          {sortedMessages.length === 0 && isHemBot && (
-            <div className="flex justify-start">
-              <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-blue-50 border border-blue-200">
-                <p className="text-sm text-blue-800">
-                  Hello! I'm HemBot, your AI health assistant. How can I help you today?
-                </p>
-              </div>
+      <CardContent className="flex-1 flex flex-col p-2 sm:p-6">
+        <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-4 mb-4">
+          {sortedMessages.length === 0 && (
+            <div className="flex justify-center items-center h-32">
+              <p className="text-sm text-muted-foreground">Start your conversation</p>
             </div>
           )}
           {sortedMessages.map((message) => {
             const isOwnMessage = message.sender_id !== recipientId;
-            const isFromBot = message.sender_id === HEMBOT_ID;
             
             return (
               <div
@@ -119,11 +97,9 @@ const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) =
                 className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                  className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${
                     isOwnMessage
                       ? 'bg-primary text-primary-foreground'
-                      : isFromBot
-                      ? 'bg-blue-50 border border-blue-200 text-blue-800'
                       : 'bg-muted'
                   }`}
                 >
@@ -131,8 +107,6 @@ const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) =
                   <p className={`text-xs mt-1 ${
                     isOwnMessage 
                       ? 'text-primary-foreground/70' 
-                      : isFromBot 
-                      ? 'text-blue-600/70'
                       : 'text-muted-foreground'
                   }`}>
                     {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
@@ -148,11 +122,11 @@ const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) =
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={isHemBot ? "Ask HemBot about your health..." : "Type your message..."}
-            className="flex-1"
+            placeholder="Type your message..."
+            className="flex-1 text-sm"
           />
           <Button onClick={handleSendMessage} size="sm">
-            <Send className="h-4 w-4" />
+            <Send className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </div>
       </CardContent>

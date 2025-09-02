@@ -12,9 +12,13 @@ import MessagesList from "./messages/MessagesList";
 import ChatWindow from "./messages/ChatWindow";
 import LoadingState from "./messages/components/LoadingState";
 
-const Messages = () => {
+interface MessagesProps {
+  selectedUserId?: string | null;
+}
+
+const Messages = ({ selectedUserId }: MessagesProps = {}) => {
   const { user } = useAuth();
-  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [selectedChat, setSelectedChat] = useState<string | null>(selectedUserId || null);
   const [showConnections, setShowConnections] = useState(false);
   
   const { connections, fetchConnections } = useConnections(user?.id);
@@ -27,6 +31,12 @@ const Messages = () => {
     }
   }, [user, fetchConnections, fetchMessages]);
 
+  useEffect(() => {
+    if (selectedUserId) {
+      setSelectedChat(selectedUserId);
+    }
+  }, [selectedUserId]);
+
   const handleMessageUser = (userId: string) => {
     setSelectedChat(userId);
     setShowConnections(false);
@@ -37,12 +47,12 @@ const Messages = () => {
   }
 
   return (
-    <div className="flex h-full flex-col lg:flex-row">
-      {/* Mini Sidebar - Responsive */}
-      <div className="w-full lg:w-80 border-r bg-card flex-shrink-0">
-        <div className="p-3 lg:p-4 border-b">
+    <div className="flex h-full flex-col sm:flex-row">
+      {/* Messages Sidebar - Mobile responsive */}
+      <div className={`${selectedChat ? 'hidden sm:block' : 'block'} w-full sm:w-80 border-r bg-card flex-shrink-0`}>
+        <div className="p-3 sm:p-4 border-b">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Messages</h3>
+            <h3 className="text-base sm:text-lg font-semibold">Messages</h3>
           </div>
         </div>
         
@@ -56,22 +66,37 @@ const Messages = () => {
         </div>
       </div>
 
-      {/* Main Chat Area - Responsive */}
-      <div className="flex-1 min-h-0">
+      {/* Main Chat Area - Mobile responsive */}
+      <div className={`${selectedChat ? 'block' : 'hidden sm:block'} flex-1 min-h-0`}>
         {selectedChat ? (
-          <ChatWindow
-            recipientId={selectedChat}
-            messages={messages.filter(
-              m => (m.sender_id === selectedChat && m.recipient_id === user?.id) ||
-                   (m.sender_id === user?.id && m.recipient_id === selectedChat)
-            )}
-            onSendMessage={sendMessage}
-          />
+          <div className="h-full flex flex-col">
+            {/* Mobile back button */}
+            <div className="sm:hidden p-3 border-b">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedChat(null)}
+                className="text-xs"
+              >
+                ← Back to Messages
+              </Button>
+            </div>
+            <div className="flex-1">
+              <ChatWindow
+                recipientId={selectedChat}
+                messages={messages.filter(
+                  m => (m.sender_id === selectedChat && m.recipient_id === user?.id) ||
+                       (m.sender_id === user?.id && m.recipient_id === selectedChat)
+                )}
+                onSendMessage={sendMessage}
+              />
+            </div>
+          </div>
         ) : (
           <Card className="h-full">
             <CardContent className="flex items-center justify-center h-full p-4">
               <div className="text-center space-y-4">
-                <div className="text-muted-foreground text-sm lg:text-base">
+                <div className="text-muted-foreground text-sm sm:text-base">
                   Select a conversation to start messaging
                 </div>
                 <p className="text-xs text-muted-foreground max-w-md">

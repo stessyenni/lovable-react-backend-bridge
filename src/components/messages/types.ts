@@ -25,4 +25,5 @@ export interface Message {
   read_at: string | null;
   created_at: string;
   sender?: User;
+  recipient?: User;
 }
