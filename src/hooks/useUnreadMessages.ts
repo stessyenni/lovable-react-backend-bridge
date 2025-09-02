@@ -58,7 +58,7 @@ export const useUnreadMessages = () => {
         supabase.removeChannel(channel);
       }
     };
-  }, [user?.id, fetchUnreadCount]);
+  }, [user?.id]); // Remove fetchUnreadCount from dependencies
 
   const markAsRead = useCallback(async (messageId: string) => {
     if (!user?.id) return;

@@ -71,7 +71,7 @@ export const useMessages = (userId: string | undefined) => {
         supabase.removeChannel(channel);
       }
     };
-  }, [userId, fetchMessages]);
+  }, [userId]); // Remove fetchMessages from dependencies
 
   const sendMessage = async (recipientId: string, content: string) => {
     if (!userId || !content.trim()) return;
