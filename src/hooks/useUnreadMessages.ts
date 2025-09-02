@@ -26,12 +26,14 @@ export const useUnreadMessages = () => {
   }, [user?.id]);
 
   useEffect(() => {
+    let channel: any = null;
+
     if (user?.id) {
       fetchUnreadCount();
 
-      // Set up realtime subscription for new messages
-      const channel = supabase
-        .channel('unread-messages')
+      // Set up realtime subscription for new messages with unique channel name
+      channel = supabase
+        .channel(`unread-messages-${user.id}`)
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
@@ -49,11 +51,13 @@ export const useUnreadMessages = () => {
           fetchUnreadCount();
         })
         .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
     }
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [user?.id, fetchUnreadCount]);
 
   const markAsRead = useCallback(async (messageId: string) => {

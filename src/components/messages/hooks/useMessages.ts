@@ -39,12 +39,14 @@ export const useMessages = (userId: string | undefined) => {
   }, [userId]);
 
   useEffect(() => {
+    let channel: any = null;
+
     if (userId) {
       fetchMessages();
 
-      // Set up realtime subscription for new messages
-      const channel = supabase
-        .channel('messages-updates')
+      // Set up realtime subscription for new messages with unique channel name
+      channel = supabase
+        .channel(`messages-updates-${userId}`)
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
@@ -62,11 +64,13 @@ export const useMessages = (userId: string | undefined) => {
           fetchMessages();
         })
         .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
     }
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [userId, fetchMessages]);
 
   const sendMessage = async (recipientId: string, content: string) => {
