@@ -19,7 +19,7 @@ const HemBot = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   
   const { isResponding, HEMBOT_ID } = useHemBot(user?.id);
-  const { messages, fetchMessages, sendMessage } = useMessages(user?.id);
+  const { messages, fetchMessages, sendMessage } = useMessages(user?.id, 'hembot');
 
   // Filter messages to show only HemBot conversation
   const hemBotMessages = messages.filter(

@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Message } from "../types";
 
 
-export const useMessages = (userId: string | undefined) => {
+export const useMessages = (userId: string | undefined, component?: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -45,8 +45,9 @@ export const useMessages = (userId: string | undefined) => {
       fetchMessages();
 
       // Set up realtime subscription for new messages with unique channel name
+      const channelName = component ? `messages-updates-${component}-${userId}` : `messages-updates-${userId}`;
       channel = supabase
-        .channel(`messages-updates-${userId}`)
+        .channel(channelName)
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
