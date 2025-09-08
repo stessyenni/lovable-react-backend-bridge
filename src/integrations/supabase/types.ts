@@ -154,10 +154,13 @@ export type Database = {
           created_at: string
           fiber: string | null
           id: string
+          image_url: string | null
           logged_at: string
+          meal_content: string | null
           meal_name: string
           meal_type: string | null
           protein: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -165,10 +168,13 @@ export type Database = {
           created_at?: string
           fiber?: string | null
           id?: string
+          image_url?: string | null
           logged_at?: string
+          meal_content?: string | null
           meal_name: string
           meal_type?: string | null
           protein?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -176,10 +182,13 @@ export type Database = {
           created_at?: string
           fiber?: string | null
           id?: string
+          image_url?: string | null
           logged_at?: string
+          meal_content?: string | null
           meal_name?: string
           meal_type?: string | null
           protein?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
