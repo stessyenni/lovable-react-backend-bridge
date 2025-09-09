@@ -61,45 +61,28 @@ const DietUpload = ({ onSuccess, onClose }: DietUploadProps) => {
         .from('user-uploads')
         .getPublicUrl(fileName);
 
-      // Mock AI analysis result - in a real app, this would call an AI service
-      const mockAnalysis = {
-        detectedItems: [
-          "Grilled chicken breast (150g)",
-          "Mixed green salad (100g)",
-          "Cherry tomatoes (50g)",
-          "Olive oil dressing (15ml)"
-        ],
-        estimatedNutrition: {
-          calories: 320,
-          protein: "28g",
-          carbs: "8g",
-          fat: "18g",
-          fiber: "4g"
-        },
-        suggestions: [
-          "Great lean protein choice!",
-          "Consider adding some complex carbs like quinoa",
-          "Good portion of vegetables"
-        ]
-      };
+      // Call the photo analysis edge function
+      const { data, error } = await supabase.functions.invoke('photo-analysis', {
+        body: {
+          imageUrl: publicUrl,
+          userId: user.id
+        }
+      });
 
-      // Save to database
-      const { error: saveError } = await supabase
-        .from('diet_uploads')
-        .insert({
-          user_id: user.id,
-          image_url: publicUrl,
-          analysis_result: mockAnalysis,
-          ai_suggestions: mockAnalysis.suggestions
-        });
+      if (error) {
+        console.error('Error calling photo analysis:', error);
+        throw new Error('Failed to analyze image');
+      }
 
-      if (saveError) throw saveError;
+      if (!data.success) {
+        throw new Error(data.error || 'Analysis failed');
+      }
 
-      setAnalysisResult(mockAnalysis);
+      setAnalysisResult(data.analysis);
       
       toast({
         title: "Analysis Complete",
-        description: "Your meal has been analyzed successfully!",
+        description: "Your image has been analyzed successfully!",
       });
     } catch (error) {
       console.error('Error analyzing image:', error);
@@ -123,12 +106,13 @@ const DietUpload = ({ onSuccess, onClose }: DietUploadProps) => {
         .from('diet_entries')
         .insert({
           user_id: user.id,
-          meal_name: `AI Analyzed Meal - ${new Date().toLocaleDateString()}`,
-          meal_type: 'analyzed',
-          calories: analysisResult.estimatedNutrition.calories,
-          protein: analysisResult.estimatedNutrition.protein,
-          fiber: analysisResult.estimatedNutrition.fiber,
-          meal_content: analysisResult.detectedItems.join(', ') + (additionalNotes ? ` - ${additionalNotes}` : ''),
+          meal_name: `AI Analyzed Image - ${new Date().toLocaleDateString()}`,
+          meal_type: analysisResult.isFood ? 'analyzed' : 'other',
+          calories: analysisResult.isFood ? analysisResult.nutritionalInfo?.estimatedCalories : null,
+          protein: analysisResult.isFood ? analysisResult.nutritionalInfo?.protein : null,
+          fiber: analysisResult.isFood ? analysisResult.nutritionalInfo?.fiber : null,
+          meal_content: `${analysisResult.description} - Items: ${analysisResult.detectedItems?.join(', ')}` + (additionalNotes ? ` - Notes: ${additionalNotes}` : ''),
+          image_url: imagePreview,
           logged_at: new Date().toISOString(),
         });
 
@@ -269,28 +253,55 @@ const DietUpload = ({ onSuccess, onClose }: DietUploadProps) => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
+                  <h4 className="font-medium text-xs sm:text-sm mb-2">Image Description:</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2">
+                    {analysisResult.description}
+                  </p>
+                </div>
+
+                <div>
                   <h4 className="font-medium text-xs sm:text-sm mb-2">Detected Items:</h4>
                   <ul className="list-disc list-inside text-xs sm:text-sm space-y-1">
-                    {analysisResult.detectedItems.map((item: string, index: number) => (
+                    {analysisResult.detectedItems?.map((item: string, index: number) => (
                       <li key={index}>{item}</li>
                     ))}
                   </ul>
                 </div>
 
-                <div>
-                  <h4 className="font-medium text-xs sm:text-sm mb-2">Estimated Nutrition:</h4>
-                  <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
-                    <div>Calories: {analysisResult.estimatedNutrition.calories}</div>
-                    <div>Protein: {analysisResult.estimatedNutrition.protein}</div>
-                    <div>Carbs: {analysisResult.estimatedNutrition.carbs}</div>
-                    <div>Fat: {analysisResult.estimatedNutrition.fat}</div>
+                {analysisResult.colors && (
+                  <div>
+                    <h4 className="font-medium text-xs sm:text-sm mb-2">Colors:</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {analysisResult.colors.map((color: string, index: number) => (
+                        <span key={index} className="text-xs bg-muted px-2 py-1 rounded">{color}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {analysisResult.setting && (
+                  <div>
+                    <h4 className="font-medium text-xs sm:text-sm mb-2">Setting:</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{analysisResult.setting}</p>
+                  </div>
+                )}
+
+                {analysisResult.isFood && analysisResult.nutritionalInfo && (
+                  <div>
+                    <h4 className="font-medium text-xs sm:text-sm mb-2">Nutritional Information:</h4>
+                    <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
+                      <div>Calories: {analysisResult.nutritionalInfo.estimatedCalories}</div>
+                      <div>Protein: {analysisResult.nutritionalInfo.protein}</div>
+                      <div>Carbs: {analysisResult.nutritionalInfo.carbs}</div>
+                      <div>Fat: {analysisResult.nutritionalInfo.fat}</div>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <h4 className="font-medium text-xs sm:text-sm mb-2">AI Suggestions:</h4>
                   <ul className="list-disc list-inside text-xs sm:text-sm space-y-1">
-                    {analysisResult.suggestions.map((suggestion: string, index: number) => (
+                    {analysisResult.suggestions?.map((suggestion: string, index: number) => (
                       <li key={index}>{suggestion}</li>
                     ))}
                   </ul>

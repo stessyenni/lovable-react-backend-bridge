@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Apple, Target, TrendingUp } from "lucide-react";
+import { Apple, Target, TrendingUp, ChefHat } from "lucide-react";
 import DietMonitoring from "@/components/DietMonitoring";
 import HealthGoals from "@/components/HealthGoals";
 import TrendsPage from "@/components/TrendsPage";
+import DietRecommendations from "@/components/DietRecommendations";
 
 const HealthMonitoring = () => {
   const [activeTab, setActiveTab] = useState("diet");
@@ -16,10 +17,14 @@ const HealthMonitoring = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="diet" className="flex items-center gap-2">
             <Apple className="h-4 w-4" />
             Diet
+          </TabsTrigger>
+          <TabsTrigger value="recommendations" className="flex items-center gap-2">
+            <ChefHat className="h-4 w-4" />
+            Recommendations
           </TabsTrigger>
           <TabsTrigger value="goals" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
@@ -33,6 +38,10 @@ const HealthMonitoring = () => {
 
         <TabsContent value="diet" className="space-y-4">
           <DietMonitoring />
+        </TabsContent>
+
+        <TabsContent value="recommendations" className="space-y-4">
+          <DietRecommendations />
         </TabsContent>
 
         <TabsContent value="goals" className="space-y-4">

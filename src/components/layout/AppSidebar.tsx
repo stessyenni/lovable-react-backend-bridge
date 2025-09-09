@@ -85,6 +85,7 @@ const AppSidebar = ({
                       }}
                       className={`${brailleMode ? "text-base sm:text-lg font-bold" : ""} w-full justify-start relative`}
                       tooltip={item.label}
+                      data-nav="true"
                     >
                       <IconComponent className="mr-2 h-4 w-4 flex-shrink-0" />
                       <span className="truncate">{item.label}</span>

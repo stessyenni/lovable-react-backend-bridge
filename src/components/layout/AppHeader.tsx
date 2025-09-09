@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import SpeechInterface from "@/components/enhanced/SpeechInterface";
 import { LogOut, Mic, MicOff, Phone, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AppSettings from "@/components/AppSettings";
@@ -60,8 +61,17 @@ const AppHeader = ({
             />
           </div>
 
-          {/* Speech Toggle - Simplified on mobile */}
-          <div className="flex items-center">
+          {/* Speech Toggle with integrated SpeechInterface */}
+          <div className="flex items-center space-x-1">
+            <SpeechInterface 
+              enableTextToSpeech={speechEnabled}
+              autoReadText={speechEnabled}
+              onTextRecognized={(text) => {
+                // Handle recognized text - could be used to fill input fields
+                console.log('Speech recognized:', text);
+              }}
+            />
+            
             <Button
               variant="ghost"
               size="sm"

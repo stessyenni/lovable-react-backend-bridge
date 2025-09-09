@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useHemBot } from "./messages/hooks/useHemBot";
@@ -10,7 +9,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Bot, Send, Loader2, Heart, Activity } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 
 const HemBot = () => {
   const [message, setMessage] = useState("");
@@ -70,71 +68,85 @@ const HemBot = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="gradient-hemapp rounded-lg p-6 text-white">
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-            <Bot className="w-6 h-6" />
+    <div className="space-y-4">
+      {/* WhatsApp Meta AI Style Header */}
+      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-4 text-white shadow-lg">
+        <div className="flex items-center space-x-3 mb-3">
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center ring-2 ring-white/30">
+            <Bot className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold">HemBot</h2>
-            <p className="text-white/90">Your AI Health Assistant</p>
+            <h2 className="text-xl font-bold">HemBot AI</h2>
+            <div className="flex items-center space-x-1 text-green-100">
+              <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+              <p className="text-sm">Online • AI Health Assistant</p>
+            </div>
           </div>
         </div>
-        <div className="flex items-center space-x-6 text-sm">
-          <div className="flex items-center space-x-2">
-            <Heart className="w-4 h-4" />
+        <div className="flex items-center space-x-4 text-xs text-green-100">
+          <div className="flex items-center space-x-1">
+            <Heart className="w-3 h-3" />
             <span>Health Advice</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <Activity className="w-4 h-4" />
+          <div className="flex items-center space-x-1">
+            <Activity className="w-3 h-3" />
             <span>Nutrition Tips</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <Bot className="w-4 h-4" />
+          <div className="flex items-center space-x-1">
+            <Bot className="w-3 h-3" />
             <span>24/7 Available</span>
           </div>
         </div>
       </div>
 
-      <Card className="h-[600px] flex flex-col">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <Bot className="w-4 h-4 text-blue-600" />
+      {/* WhatsApp Style Chat Interface */}
+      <Card className="h-[500px] flex flex-col border-0 shadow-xl rounded-2xl overflow-hidden">
+        {/* Chat Header */}
+        <div className="bg-green-50 border-b px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <Bot className="w-4 h-4 text-green-600" />
             </div>
-            <span>Chat with HemBot</span>
-            {isResponding && (
-              <div className="flex items-center space-x-1 text-sm text-blue-600">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                <span>Typing...</span>
-              </div>
-            )}
-          </CardTitle>
-        </CardHeader>
+            <div>
+              <h3 className="font-semibold text-green-800">HemBot AI</h3>
+              {isResponding ? (
+                <div className="flex items-center space-x-1 text-xs text-green-600">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  <span>typing...</span>
+                </div>
+              ) : (
+                <p className="text-xs text-green-600">Online</p>
+              )}
+            </div>
+          </div>
+        </div>
         
-        <CardContent className="flex-1 flex flex-col space-y-4">
-          <ScrollArea className="flex-1 border rounded-lg p-4" ref={scrollAreaRef}>
+        {/* Chat Messages Area */}
+        <div className="flex-1 flex flex-col">
+          <ScrollArea className="flex-1 bg-green-50/30 p-4" ref={scrollAreaRef}>
             {hemBotMessages.length === 0 ? (
               <div className="space-y-4">
                 <div className="flex items-start space-x-2">
                   <Avatar className="w-8 h-8">
-                    <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                    <AvatarFallback className="bg-green-100 text-green-600 text-xs">
                       <Bot className="w-4 h-4" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 max-w-xs">
-                    <p className="text-sm text-blue-800">
-                      Hello! I'm HemBot, your AI health assistant. I'm here to help you with:
+                  <div className="bg-white rounded-2xl rounded-tl-sm p-3 max-w-xs shadow-sm border border-green-100">
+                    <p className="text-sm text-gray-800">
+                      👋 Hello! I'm HemBot, your AI health assistant.
                     </p>
-                    <ul className="text-xs text-blue-700 mt-2 space-y-1">
-                      <li>• Health and nutrition advice</li>
-                      <li>• Exercise recommendations</li>
-                      <li>• Symptom guidance</li>
-                      <li>• General wellness tips</li>
-                    </ul>
-                    <p className="text-xs text-blue-700 mt-2">
+                    <div className="mt-2 space-y-1 text-xs text-gray-600">
+                      <p>🩺 Health & nutrition advice</p>
+                      <p>💪 Exercise recommendations</p>
+                      <p>🔍 Symptom guidance</p>
+                      <p>🌟 General wellness tips</p>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-2 font-medium">
                       How can I help you today?
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                     </p>
                   </div>
                 </div>
@@ -147,36 +159,36 @@ const HemBot = () => {
                   return (
                     <div
                       key={msg.id}
-                      className={`flex items-start space-x-2 ${
+                      className={`flex items-end space-x-2 mb-4 ${
                         isUserMessage ? "justify-end" : "justify-start"
                       }`}
                     >
                       {!isUserMessage && (
-                        <Avatar className="w-8 h-8">
-                          <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                        <Avatar className="w-8 h-8 mb-1">
+                          <AvatarFallback className="bg-green-100 text-green-600 text-xs">
                             <Bot className="w-4 h-4" />
                           </AvatarFallback>
                         </Avatar>
                       )}
                       <div
-                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        className={`max-w-xs lg:max-w-md px-3 py-2 ${
                           isUserMessage
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-blue-50 border border-blue-200 text-blue-800"
+                            ? "bg-green-500 text-white rounded-2xl rounded-br-sm"
+                            : "bg-white text-gray-800 rounded-2xl rounded-bl-sm shadow-sm border border-green-100"
                         }`}
                       >
-                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                        <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                         <p className={`text-xs mt-1 ${
                           isUserMessage 
-                            ? 'text-primary-foreground/70' 
-                            : 'text-blue-600/70'
+                            ? 'text-green-100' 
+                            : 'text-gray-400'
                         }`}>
-                          {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
+                          {new Date(msg.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                         </p>
                       </div>
                       {isUserMessage && (
-                        <Avatar className="w-8 h-8">
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        <Avatar className="w-8 h-8 mb-1">
+                          <AvatarFallback className="bg-green-100 text-green-600 text-xs">
                             {user?.user_metadata?.first_name?.[0] || user?.email?.[0] || 'U'}
                           </AvatarFallback>
                         </Avatar>
@@ -185,16 +197,19 @@ const HemBot = () => {
                   );
                 })}
                 {isResponding && (
-                  <div className="flex items-start space-x-2">
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                  <div className="flex items-end space-x-2 mb-4">
+                    <Avatar className="w-8 h-8 mb-1">
+                      <AvatarFallback className="bg-green-100 text-green-600 text-xs">
                         <Bot className="w-4 h-4" />
                       </AvatarFallback>
                     </Avatar>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="bg-white rounded-2xl rounded-bl-sm p-3 shadow-sm border border-green-100">
                       <div className="flex items-center space-x-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                        <span className="text-sm text-blue-600">HemBot is thinking...</span>
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -203,34 +218,39 @@ const HemBot = () => {
             )}
           </ScrollArea>
 
-          <form onSubmit={handleSendMessage} className="flex space-x-2">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask about your health, nutrition, symptoms, or wellness..."
-              disabled={isResponding}
-              className="flex-1"
-            />
-            <Button
-              type="submit"
-              disabled={isResponding || !message.trim()}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              {isResponding ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
-          </form>
-
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-            <p className="text-xs text-yellow-800">
-              <strong>Disclaimer:</strong> HemBot provides general health information only and should not replace professional medical advice. Always consult healthcare providers for medical concerns.
-            </p>
+          {/* WhatsApp Style Input */}
+          <div className="bg-white border-t px-4 py-3">
+            <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+              <Input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type a message..."
+                disabled={isResponding}
+                className="flex-1 rounded-full border-green-200 focus:border-green-400 focus:ring-green-400"
+              />
+              <Button
+                type="submit"
+                disabled={isResponding || !message.trim()}
+                size="icon"
+                className="rounded-full bg-green-500 hover:bg-green-600 w-10 h-10 shrink-0"
+              >
+                {isResponding ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </form>
+            
+            {/* Disclaimer */}
+            <div className="mt-2">
+              <p className="text-xs text-gray-500 text-center">
+                HemBot provides general health info. Consult healthcare providers for medical concerns.
+              </p>
+            </div>
           </div>
-        </CardContent>
+        </div>
       </Card>
     </div>
   );

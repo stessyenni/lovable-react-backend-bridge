@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bot, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +6,26 @@ import HemBot from "@/components/HemBot";
 
 const FloatingHemBot = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Auto-close when clicking on menu items
+  useEffect(() => {
+    const handleMenuClick = (event: MouseEvent) => {
+      const target = event.target as Element;
+      // Check if clicked element is a menu item or sidebar item
+      if (target.closest('[data-sidebar]') || 
+          target.closest('nav') || 
+          target.closest('.sidebar') ||
+          target.closest('[role="menuitem"]') ||
+          target.closest('button[data-nav]')) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('click', handleMenuClick);
+      return () => document.removeEventListener('click', handleMenuClick);
+    }
+  }, [isOpen]);
 
   return (
     <>
