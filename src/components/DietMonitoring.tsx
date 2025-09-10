@@ -17,7 +17,6 @@ const DietMonitoring = () => {
   const { entries, loading, fetchDietEntries, handleDeleteEntry, getTodayStats, getWeeklyStats } = useDietData();
   const { isOnline, pendingSync } = useOfflineSync();
   const [showDietEntry, setShowDietEntry] = useState(false);
-  const [showDietUpload, setShowDietUpload] = useState(false);
   const [showViewMeals, setShowViewMeals] = useState(false);
   const [showViewCategories, setShowViewCategories] = useState(false);
   const [showTrends, setShowTrends] = useState(false);
@@ -34,9 +33,6 @@ const DietMonitoring = () => {
       case 'add-meal':
         setEditingEntry(null);
         setShowDietEntry(true);
-        break;
-      case 'photo-analysis':
-        setShowDietUpload(true);
         break;
       case 'view-trends':
         setShowTrends(true);
@@ -57,7 +53,6 @@ const DietMonitoring = () => {
 
   const handleSuccess = () => {
     setShowDietEntry(false);
-    setShowDietUpload(false);
     setEditingEntry(null);
     fetchDietEntries();
   };
@@ -110,10 +105,8 @@ const DietMonitoring = () => {
 
       <DietModals
         showDietEntry={showDietEntry}
-        showDietUpload={showDietUpload}
         editingEntry={editingEntry}
         onCloseDietEntry={handleCloseDietEntry}
-        onCloseDietUpload={() => setShowDietUpload(false)}
         onSuccess={handleSuccess}
       />
 

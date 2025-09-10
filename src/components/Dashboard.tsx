@@ -3,45 +3,37 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, Heart, Utensils, Calendar, TrendingUp, Camera, Plus, Apple, Bookmark, Eye } from "lucide-react";
+import { Activity, Heart, Utensils, Calendar, TrendingUp, Plus, Apple, Bookmark, Eye } from "lucide-react";
 import DietModals from "./diet/DietModals";
+import EnhancedMealCategories from "./enhanced/EnhancedMealCategories";
+import ViewCategories from "./ViewCategories";
+import NutritionGoalsPage from "./NutritionGoalsPage";
+import TrendsPage from "./TrendsPage";
 
 const Dashboard = () => {
   const { toast } = useToast();
   const [showDietEntry, setShowDietEntry] = useState(false);
-  const [showDietUpload, setShowDietUpload] = useState(false);
+  const [showMealCategories, setShowMealCategories] = useState(false);
+  const [showViewCategories, setShowViewCategories] = useState(false);
+  const [showNutritionGoals, setShowNutritionGoals] = useState(false);
+  const [showTrends, setShowTrends] = useState(false);
 
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'add-meal':
         setShowDietEntry(true);
         break;
-      case 'photo-analysis':
-        setShowDietUpload(true);
-        break;
       case 'view-trends':
-        toast({
-          title: "Trends",
-          description: "Opening nutrition trends analysis...",
-        });
+        setShowTrends(true);
         break;
       case 'nutrition-goals':
-        toast({
-          title: "Nutrition Goals",
-          description: "Opening goal setting interface...",
-        });
+        setShowNutritionGoals(true);
         break;
       case 'meal-categories':
-        toast({
-          title: "Meal Categories",
-          description: "Opening meal categories interface...",
-        });
+        setShowMealCategories(true);
         break;
       case 'view-meal-categories':
-        toast({
-          title: "View Categories",
-          description: "Opening categories view...",
-        });
+        setShowViewCategories(true);
         break;
       default:
         break;
@@ -50,7 +42,6 @@ const Dashboard = () => {
 
   const handleSuccess = () => {
     setShowDietEntry(false);
-    setShowDietUpload(false);
     toast({
       title: "Success",
       description: "Action completed successfully!",
@@ -122,7 +113,7 @@ const Dashboard = () => {
           <CardDescription>Fast access to common health tracking features</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             <Button 
               variant="outline" 
               className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
@@ -130,14 +121,6 @@ const Dashboard = () => {
             >
               <Plus className="h-4 w-4 sm:h-6 sm:w-6" />
               <span>Add Meal</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-16 sm:h-20 flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm"
-              onClick={() => handleQuickAction('photo-analysis')}
-            >
-              <Camera className="h-4 w-4 sm:h-6 sm:w-6" />
-              <span>AI Photo Analysis</span>
             </Button>
             <Button 
               variant="outline" 
@@ -216,12 +199,46 @@ const Dashboard = () => {
 
       <DietModals
         showDietEntry={showDietEntry}
-        showDietUpload={showDietUpload}
         editingEntry={null}
         onCloseDietEntry={() => setShowDietEntry(false)}
-        onCloseDietUpload={() => setShowDietUpload(false)}
         onSuccess={handleSuccess}
       />
+
+      {/* Meal Categories Modal */}
+      {showMealCategories && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg w-full max-w-6xl h-[90vh] flex flex-col">
+            <EnhancedMealCategories onClose={() => setShowMealCategories(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* View Categories Modal */}
+      {showViewCategories && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg w-full max-w-4xl h-[90vh] flex flex-col">
+            <ViewCategories onClose={() => setShowViewCategories(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* Nutrition Goals Modal */}
+      {showNutritionGoals && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg w-full max-w-2xl h-[90vh] flex flex-col">
+            <NutritionGoalsPage onClose={() => setShowNutritionGoals(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* Trends Modal */}
+      {showTrends && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg w-full max-w-6xl h-[90vh] flex flex-col">
+            <TrendsPage onClose={() => setShowTrends(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
