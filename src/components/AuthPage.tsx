@@ -87,7 +87,7 @@ const AuthPage = () => {
           {/* Logo Section */}
           <div className="flex items-center justify-center space-x-3 mb-4">
             <img 
-              src="/src/assets/Hemapp-Logo.png" 
+              src="/src/assets/HemappLogo.png" 
               alt="Hemapp Logo" 
               className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
             />
