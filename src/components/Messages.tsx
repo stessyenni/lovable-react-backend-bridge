@@ -22,7 +22,7 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
   const [showConnections, setShowConnections] = useState(false);
   
   const { connections, fetchConnections } = useConnections(user?.id);
-  const { messages, loading, fetchMessages, sendMessage } = useMessages(user?.id, 'messages');
+  const { messages, loading, fetchMessages, sendMessage, markMessagesAsRead } = useMessages(user?.id, 'messages');
 
   useEffect(() => {
     if (user) {
@@ -89,6 +89,7 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
                        (m.sender_id === user?.id && m.recipient_id === selectedChat)
                 )}
                 onSendMessage={sendMessage}
+                markMessagesAsRead={markMessagesAsRead}
               />
             </div>
           </div>

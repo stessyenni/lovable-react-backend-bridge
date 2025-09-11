@@ -5,12 +5,14 @@ import { Mic, MicOff, Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 interface SpeechInterfaceProps {
   onTextRecognized?: (text: string) => void;
+  onNavigate?: (page: string) => void;
   enableTextToSpeech?: boolean;
   autoReadText?: boolean;
 }
 
 const SpeechInterface = ({ 
   onTextRecognized, 
+  onNavigate,
   enableTextToSpeech = true, 
   autoReadText = false 
 }: SpeechInterfaceProps) => {
@@ -48,6 +50,11 @@ const SpeechInterface = ({
 
         if (finalTranscript && onTextRecognized) {
           onTextRecognized(finalTranscript);
+        }
+        
+        // Process voice commands for navigation
+        if (finalTranscript) {
+          processVoiceCommand(finalTranscript);
         }
       };
 
@@ -163,14 +170,37 @@ const SpeechInterface = ({
     }
   };
 
-  const readPageContent = () => {
-    const content = document.body.innerText;
-    const cleanContent = content
-      .replace(/\s+/g, ' ')
-      .trim()
-      .substring(0, 500); // Limit to first 500 characters
+  const processVoiceCommand = (command: string) => {
+    const lowerCommand = command.toLowerCase();
     
-    speakText(`Reading page content: ${cleanContent}`);
+    // Navigation commands
+    if (lowerCommand.includes('dashboard') || lowerCommand.includes('home')) {
+      onNavigate?.('dashboard');
+      speakText("Opening dashboard");
+    } else if (lowerCommand.includes('diet') || lowerCommand.includes('food')) {
+      onNavigate?.('diet');
+      speakText("Opening diet monitoring");
+    } else if (lowerCommand.includes('health') || lowerCommand.includes('monitoring')) {
+      onNavigate?.('health');
+      speakText("Opening health monitoring");
+    } else if (lowerCommand.includes('goals')) {
+      onNavigate?.('goals');
+      speakText("Opening health goals");
+    } else if (lowerCommand.includes('emergency')) {
+      onNavigate?.('emergency');
+      speakText("Opening emergency page");
+    } else if (lowerCommand.includes('messages') || lowerCommand.includes('chat')) {
+      onNavigate?.('messages');
+      speakText("Opening messages");
+    } else if (lowerCommand.includes('profile') || lowerCommand.includes('account')) {
+      onNavigate?.('profile');
+      speakText("Opening user profile");
+    } else if (lowerCommand.includes('facilities') || lowerCommand.includes('hospital')) {
+      onNavigate?.('facilities');
+      speakText("Opening health facilities");
+    } else {
+      speakText("Command not recognized. Try saying 'dashboard', 'diet', 'health', 'goals', 'emergency', 'messages', 'profile', or 'facilities'");
+    }
   };
 
   return (
@@ -195,7 +225,7 @@ const SpeechInterface = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={isSpeaking ? stopSpeaking : readPageContent}
+            onClick={isSpeaking ? stopSpeaking : () => processVoiceCommand("read page")}
             className="flex items-center gap-1"
           >
             {isSpeaking ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}

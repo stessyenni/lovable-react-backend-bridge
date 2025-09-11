@@ -154,7 +154,7 @@ const ViewMeals = ({ onClose, onEditMeal }: ViewMealsProps) => {
   const groupedMeals = groupMealsByDate(meals);
 
   return (
-    <div className="h-full max-h-[90vh] flex flex-col w-full">
+    <div className="h-full max-h-[90vh] flex flex-col w-full relative z-10">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-background shrink-0">
         <div className="flex-1 min-w-0">

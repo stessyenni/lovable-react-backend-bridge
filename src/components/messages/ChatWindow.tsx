@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,10 +13,18 @@ interface ChatWindowProps {
   recipientId: string;
   messages: Message[];
   onSendMessage: (recipientId: string, content: string) => void;
+  markMessagesAsRead?: (recipientId: string) => void;
 }
 
-const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) => {
+const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
+
+  useEffect(() => {
+    if (recipientId && markMessagesAsRead) {
+      // Mark messages as read when chat window is opened
+      markMessagesAsRead(recipientId);
+    }
+  }, [recipientId, markMessagesAsRead]);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -125,6 +133,30 @@ const ChatWindow = ({ recipientId, messages, onSendMessage }: ChatWindowProps) =
             placeholder="Type your message..."
             className="flex-1 text-sm"
           />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // Add speech-to-text functionality
+              if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = (event: any) => {
+                  const transcript = event.results[0][0].transcript;
+                  setNewMessage(prev => prev + transcript);
+                };
+                
+                recognition.start();
+              }
+            }}
+          >
+            <span className="sr-only">Voice input</span>
+            🎤
+          </Button>
           <Button onClick={handleSendMessage} size="sm">
             <Send className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>

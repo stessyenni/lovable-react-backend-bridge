@@ -18,6 +18,7 @@ interface MenuItem {
 
 interface AppHeaderProps {
   activeSection: MenuItem['id'];
+  setActiveComponent?: (component: string) => void;
   menuItems: MenuItem[];
   isOnline: boolean;
   speechEnabled: boolean;
@@ -29,6 +30,7 @@ interface AppHeaderProps {
 
 const AppHeader = ({
   activeSection,
+  setActiveComponent,
   menuItems,
   isOnline,
   speechEnabled,
@@ -66,6 +68,18 @@ const AppHeader = ({
             <SpeechInterface 
               enableTextToSpeech={speechEnabled}
               autoReadText={speechEnabled}
+              onNavigate={(page) => {
+                if (setActiveComponent) {
+                  if (page === 'dashboard') setActiveComponent('dashboard');
+                  else if (page === 'diet') setActiveComponent('diet-monitoring');
+                  else if (page === 'health') setActiveComponent('health-monitoring');
+                  else if (page === 'goals') setActiveComponent('goals');
+                  else if (page === 'emergency') setActiveComponent('emergency');
+                  else if (page === 'messages') setActiveComponent('messages');
+                  else if (page === 'profile') setActiveComponent('account');
+                  else if (page === 'facilities') setActiveComponent('facilities');
+                }
+              }}
               onTextRecognized={(text) => {
                 // Handle recognized text - could be used to fill input fields
                 console.log('Speech recognized:', text);

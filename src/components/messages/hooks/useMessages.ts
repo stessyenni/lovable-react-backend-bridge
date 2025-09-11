@@ -125,5 +125,24 @@ export const useMessages = (userId: string | undefined, component?: string) => {
     }
   };
 
-  return { messages, loading, fetchMessages, sendMessage };
+  const markMessagesAsRead = async (recipientId: string) => {
+    if (!userId) return;
+
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .update({ read_at: new Date().toISOString() })
+        .eq('recipient_id', userId)
+        .eq('sender_id', recipientId)
+        .is('read_at', null);
+
+      if (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+    }
+  };
+
+  return { messages, loading, fetchMessages, sendMessage, markMessagesAsRead };
 };

@@ -54,6 +54,23 @@ const MainApp = () => {
           <SidebarInset>
             <AppHeader
               activeSection={activeSection}
+              setActiveComponent={(component: string) => {
+                // Map string to proper section type
+                const sectionMap: { [key: string]: MenuItem['id'] } = {
+                  'dashboard': 'dashboard',
+                  'diet-monitoring': 'health-monitoring',
+                  'health-monitoring': 'health-monitoring',
+                  'goals': 'health-monitoring',
+                  'emergency': 'dashboard',
+                  'messages': 'messages',
+                  'account': 'account',
+                  'facilities': 'facilities'
+                };
+                const section = sectionMap[component];
+                if (section) {
+                  setActiveSection(section);
+                }
+              }}
               menuItems={menuItems}
               isOnline={isOnline}
               speechEnabled={speechEnabled}
