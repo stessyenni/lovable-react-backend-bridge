@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Heart, Loader2, Shield, Smartphone, Brain } from "lucide-react";
+import hemappLogo from "@/assets/Hemapp-Logo.png";
 
 const AuthPage = () => {
   const [loading, setLoading] = useState(false);
@@ -87,8 +88,8 @@ const AuthPage = () => {
           {/* Logo Section */}
           <div className="flex items-center justify-center space-x-3 mb-4">
             <img 
-              src="/src/assets/Hemapp-Logo.png" 
-              alt="Hemapp Logo" 
+              src={hemappLogo}
+              alt="HemApp logo"
               className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
             />
             <div className="text-left">
