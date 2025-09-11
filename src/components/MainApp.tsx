@@ -5,7 +5,7 @@ import { useMainAppState } from "@/hooks/useMainAppState";
 import AppHeader from "./layout/AppHeader";
 import AppSidebar from "./layout/AppSidebar";
 import MainContent from "./layout/MainContent";
-import FloatingHemBot from "./FloatingHemBot";
+import WelcomePage from "./WelcomePage";
 import DemoDataCreator from "./DemoDataCreator";
 
 interface MenuItem {
@@ -21,10 +21,12 @@ const MainApp = () => {
     isOnline,
     speechEnabled,
     brailleMode,
+    showWelcome,
     handleSignOut,
     handleOnlineToggle,
     handleBrailleToggle,
     handleSpeechToggle,
+    handleWelcomeComplete,
   } = useMainAppState();
 
   const menuItems: MenuItem[] = [
@@ -37,6 +39,11 @@ const MainApp = () => {
     { id: 'account', label: 'User Account', icon: User },
     { id: 'faq', label: 'FAQ & Help', icon: HelpCircle },
   ];
+
+  // Show welcome page first for new users
+  if (showWelcome) {
+    return <WelcomePage onGetStarted={handleWelcomeComplete} />;
+  }
 
   return (
     <>
@@ -87,9 +94,6 @@ const MainApp = () => {
             />
           </SidebarInset>
         </div>
-        
-        {/* Floating HemBot */}
-        <FloatingHemBot />
       </SidebarProvider>
     </>
   );

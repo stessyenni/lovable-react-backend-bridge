@@ -17,6 +17,7 @@ export const useMainAppState = () => {
   const { toast } = useToast();
   const { isOffline, toggleOfflineMode, syncOfflineData } = useOfflineMode();
   const [activeSection, setActiveSection] = useState<MenuItem['id']>('dashboard');
+  const [showWelcome, setShowWelcome] = useState(true);
   const [speechEnabled, setSpeechEnabled] = useState(false);
   const [brailleMode, setBrailleMode] = useState(false);
 
@@ -64,6 +65,10 @@ export const useMainAppState = () => {
     setSpeechEnabled(!speechEnabled);
   };
 
+  const handleWelcomeComplete = () => {
+    setShowWelcome(false);
+  };
+
   return {
     user,
     activeSection,
@@ -71,9 +76,11 @@ export const useMainAppState = () => {
     isOnline: !isOffline,
     speechEnabled,
     brailleMode,
+    showWelcome,
     handleSignOut,
     handleOnlineToggle,
     handleBrailleToggle,
     handleSpeechToggle,
+    handleWelcomeComplete,
   };
 };
