@@ -363,7 +363,7 @@ const FAQPage = ({ onClose }: FAQPageProps) => {
                   </Button>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  <p>Support Hours: Monday - Friday, 9:00 AM - 6:00 PM</p>
+                  <p>Support Hours: Monday - Friday, 9:00 AM - 7:00 PM</p>
                   <p>Response Time: Within 24 hours</p>
                 </div>
               </CardContent>
