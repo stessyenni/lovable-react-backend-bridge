@@ -12,7 +12,7 @@ import FAQPage from "@/components/enhanced/FAQPage";
 interface MainContentProps {
   activeSection: string;
   brailleMode: boolean;
-  onSectionChange?: (section: 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch') => void;
+  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch') => void;
 }
 
 const MainContent = ({ activeSection, brailleMode, onSectionChange }: MainContentProps) => {
@@ -26,7 +26,7 @@ const MainContent = ({ activeSection, brailleMode, onSectionChange }: MainConten
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onGoHome={() => onSectionChange?.('home')} />;
       case 'messages':
         return <Messages selectedUserId={selectedMessageUser} />;
       case 'health-monitoring':
