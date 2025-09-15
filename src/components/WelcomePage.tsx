@@ -96,10 +96,9 @@ const WelcomePage = ({
       </div>
 
       <SpeechInterface 
-        isListening={false}
-        autoReadText={autoReadText}
+        autoReadText={speechEnabled}
         enableTextToSpeech={speechEnabled}
-        onListeningChange={() => {}}
+        onNavigate={() => {}}
       />
 
       <div className="container mx-auto px-4 py-8">
