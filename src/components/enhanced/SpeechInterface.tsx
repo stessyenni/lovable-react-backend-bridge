@@ -141,32 +141,99 @@ const SpeechInterface = ({
   const speakText = (text: string) => {
     if (!enableTextToSpeech || !speechSynthesisRef.current) return;
 
-    // Cancel any ongoing speech
-    speechSynthesisRef.current.cancel();
+    try {
+      // Cancel any ongoing speech
+      speechSynthesisRef.current.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
-    utterance.volume = 0.8;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
 
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => {
+      // Use a stored voice setting if available
+      const voices = speechSynthesisRef.current.getVoices();
+      const preferredVoice = localStorage.getItem('preferred-voice');
+      if (preferredVoice && voices.length > 0) {
+        const voice = voices.find(v => v.voiceURI === preferredVoice);
+        if (voice) {
+          utterance.voice = voice;
+        }
+      }
+
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+        setIsSpeaking(false);
+        toast({
+          title: "Speech Error",
+          description: "Failed to read text aloud. Please check your browser's speech settings.",
+          variant: "destructive"
+        });
+      };
+
+      speechSynthesisRef.current.speak(utterance);
+    } catch (error) {
+      console.error('Speech synthesis error:', error);
       setIsSpeaking(false);
       toast({
         title: "Speech Error",
-        description: "Failed to read text aloud",
+        description: "Speech synthesis is not available in your browser.",
         variant: "destructive"
       });
-    };
-
-    speechSynthesisRef.current.speak(utterance);
+    }
   };
 
   const stopSpeaking = () => {
     if (speechSynthesisRef.current) {
       speechSynthesisRef.current.cancel();
       setIsSpeaking(false);
+    }
+  };
+
+  const readPageContent = () => {
+    try {
+      // Get main content text from the page
+      const mainContent = document.querySelector('main') || document.body;
+      let textContent = '';
+      
+      // Extract text from headings and paragraphs
+      const headings = mainContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      const paragraphs = mainContent.querySelectorAll('p');
+      const buttons = mainContent.querySelectorAll('button');
+      
+      // Read headings first
+      headings.forEach(heading => {
+        if (heading.textContent?.trim()) {
+          textContent += heading.textContent.trim() + '. ';
+        }
+      });
+      
+      // Then read paragraph content
+      paragraphs.forEach(paragraph => {
+        if (paragraph.textContent?.trim() && paragraph.textContent.length > 10) {
+          textContent += paragraph.textContent.trim() + '. ';
+        }
+      });
+      
+      // If no significant content, try to read button labels
+      if (textContent.length < 20) {
+        buttons.forEach(button => {
+          if (button.textContent?.trim() && button.textContent.length > 2) {
+            textContent += button.textContent.trim() + '. ';
+          }
+        });
+      }
+      
+      // Fallback message if no content found
+      if (!textContent.trim()) {
+        textContent = "This page contains visual content that cannot be read aloud. Please navigate to other sections for audio content.";
+      }
+      
+      speakText(textContent);
+    } catch (error) {
+      console.error('Error reading page content:', error);
+      speakText("Sorry, I cannot read this page content right now.");
     }
   };
 
@@ -223,14 +290,14 @@ const SpeechInterface = ({
       {enableTextToSpeech && (
         <>
           <Button
-            variant="outline"
+            variant="outline"  
             size="sm"
-            onClick={isSpeaking ? stopSpeaking : () => processVoiceCommand("read page")}
+            onClick={isSpeaking ? stopSpeaking : () => readPageContent()}
             className="flex items-center gap-1"
           >
             {isSpeaking ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             <span className="hidden sm:inline">
-              {isSpeaking ? "Stop" : "Read"}
+              {isSpeaking ? "Stop" : "Read Page"}
             </span>
           </Button>
         </>
