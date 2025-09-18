@@ -23,7 +23,7 @@ import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { AppLogo } from "@/assets";
 
 interface MenuItem {
-  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
+  id: 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
   label: string;
   icon: React.FC<any>;
 }

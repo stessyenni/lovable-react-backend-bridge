@@ -90,15 +90,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .from('profiles')
           .select('email')
           .eq('username', emailOrUsername)
-          .maybeSingle();
+          .single();
 
-        if (profileError) {
-          console.error('Error searching username:', profileError);
-          return { error: { message: 'Invalid username or password' } };
-        }
-        
-        if (!profile?.email) {
-          console.error('Username not found');
+        if (profileError || !profile?.email) {
+          console.error('Username not found:', profileError);
           return { error: { message: 'Invalid username or password' } };
         }
         

@@ -9,7 +9,7 @@ import WelcomePage from "./WelcomePage";
 import DemoDataCreator from "./DemoDataCreator";
 
 interface MenuItem {
-  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
+  id: 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
   label: string;
   icon: React.FC<any>;
 }
@@ -27,7 +27,6 @@ const MainApp = () => {
     handleBrailleToggle,
     handleSpeechToggle,
     handleWelcomeComplete,
-    handleGetStarted,
   } = useMainAppState();
 
   const menuItems: MenuItem[] = [
@@ -43,15 +42,7 @@ const MainApp = () => {
 
   // Show welcome page first for new users
   if (showWelcome) {
-    return (
-      <WelcomePage 
-        onGetStarted={handleGetStarted}
-        speechEnabled={speechEnabled}
-        brailleMode={brailleMode}
-        onSpeechToggle={handleSpeechToggle}
-        onBrailleToggle={handleBrailleToggle}
-      />
-    );
+    return <WelcomePage onGetStarted={handleWelcomeComplete} />;
   }
 
   return (

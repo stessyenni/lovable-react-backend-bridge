@@ -11,31 +11,15 @@ import {
   MapPin, 
   Users,
   ArrowRight,
-  Check,
-  VolumeX,
-  Volume2
+  Check
 } from "lucide-react";
 import hemappLogo from "@/assets/Hemapp-Logo.png";
-import VoiceCommands from "@/components/VoiceCommands";
-import SpeechInterface from "@/components/enhanced/SpeechInterface";
-import { useState } from "react";
 
 interface WelcomePageProps {
   onGetStarted: () => void;
-  brailleMode?: boolean;
-  speechEnabled?: boolean;
-  onSpeechToggle?: () => void;
-  onBrailleToggle?: () => void;
 }
 
-const WelcomePage = ({ 
-  onGetStarted, 
-  brailleMode = false, 
-  speechEnabled = false, 
-  onSpeechToggle, 
-  onBrailleToggle 
-}: WelcomePageProps) => {
-  const [autoReadText, setAutoReadText] = useState("");
+const WelcomePage = ({ onGetStarted }: WelcomePageProps) => {
   const features = [
     {
       icon: Brain,
@@ -85,22 +69,7 @@ const WelcomePage = ({
   ];
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-background via-muted/20 to-background ${brailleMode ? 'font-mono text-lg' : ''}`}>
-      {/* Assistive Features - Top */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
-        <VoiceCommands 
-          onNavigate={() => {}}
-          speechEnabled={speechEnabled}
-          onSpeechToggle={onSpeechToggle}
-        />
-      </div>
-
-      <SpeechInterface 
-        autoReadText={speechEnabled}
-        enableTextToSpeech={speechEnabled}
-        onNavigate={() => {}}
-      />
-
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -201,32 +170,6 @@ const WelcomePage = ({
           <p className="text-muted-foreground">
             © 2024 HemApp. All rights reserved. • Built with ❤️ for better health outcomes
           </p>
-        </div>
-      </div>
-
-      {/* Assistive Features - Bottom */}
-      <div className="fixed bottom-4 left-4 right-4 z-40 flex justify-center">
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-2 flex items-center gap-2 shadow-lg">
-          <Button
-            size="sm"
-            variant={brailleMode ? "default" : "outline"}
-            onClick={onBrailleToggle}
-            className="text-xs"
-          >
-            {brailleMode ? "Braille On" : "Braille Off"}
-          </Button>
-          <Button
-            size="sm"
-            variant={speechEnabled ? "default" : "outline"}
-            onClick={() => {
-              setAutoReadText("Welcome to HemApp. Your complete health management companion. Ready to transform your health journey?");
-              onSpeechToggle?.();
-            }}
-            className="text-xs flex items-center gap-1"
-          >
-            {speechEnabled ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
-            Read Page
-          </Button>
         </div>
       </div>
     </div>

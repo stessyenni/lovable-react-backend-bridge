@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useOfflineMode } from "./useOfflineMode";
 
 interface MenuItem {
-  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
+  id: 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
   label: string;
   icon: React.FC<any>;
 }
@@ -18,11 +18,6 @@ export const useMainAppState = () => {
   const { isOffline, toggleOfflineMode, syncOfflineData } = useOfflineMode();
   const [activeSection, setActiveSection] = useState<MenuItem['id']>('dashboard');
   const [showWelcome, setShowWelcome] = useState(true);
-
-  const handleGetStarted = () => {
-    setShowWelcome(false);
-    setActiveSection('dashboard');
-  };
   const [speechEnabled, setSpeechEnabled] = useState(false);
   const [brailleMode, setBrailleMode] = useState(false);
 
@@ -74,18 +69,10 @@ export const useMainAppState = () => {
     setShowWelcome(false);
   };
 
-  const handleSectionChange = (section: MenuItem['id']) => {
-    if (section === 'home') {
-      setShowWelcome(true);
-    } else {
-      setActiveSection(section);
-    }
-  };
-
   return {
     user,
     activeSection,
-    setActiveSection: handleSectionChange,
+    setActiveSection,
     isOnline: !isOffline,
     speechEnabled,
     brailleMode,
@@ -95,6 +82,5 @@ export const useMainAppState = () => {
     handleBrailleToggle,
     handleSpeechToggle,
     handleWelcomeComplete,
-    handleGetStarted,
   };
 };

@@ -3,18 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, Heart, Utensils, Calendar, TrendingUp, Plus, Apple, Bookmark, Eye, Home } from "lucide-react";
+import { Activity, Heart, Utensils, Calendar, TrendingUp, Plus, Apple, Bookmark, Eye } from "lucide-react";
 import DietModals from "./diet/DietModals";
 import EnhancedMealCategories from "./enhanced/EnhancedMealCategories";
 import ViewCategories from "./ViewCategories";
 import NutritionGoalsPage from "./NutritionGoalsPage";
 import TrendsPage from "./TrendsPage";
 
-interface DashboardProps {
-  onGoHome?: () => void;
-}
-
-const Dashboard = ({ onGoHome }: DashboardProps) => {
+const Dashboard = () => {
   const { toast } = useToast();
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showMealCategories, setShowMealCategories] = useState(false);
@@ -54,21 +50,9 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
 
   return (
     <div className="space-y-4 sm:space-y-6 w-full">
-      <div className="px-1 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Welcome back!</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">Here's your health overview for today</p>
-        </div>
-        {onGoHome && (
-          <Button 
-            variant="outline" 
-            onClick={onGoHome}
-            className="flex items-center gap-2"
-          >
-            <Home className="h-4 w-4" />
-            Home
-          </Button>
-        )}
+      <div className="px-1">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Welcome back!</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Here's your health overview for today</p>
       </div>
 
       {/* Today's Progress */}
