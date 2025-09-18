@@ -6,15 +6,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import MealDetailsModal from "@/components/MealDetailsModal";
 import { 
   Trash2, 
   Edit2,
   X,
   Utensils,
   Calendar,
-  ChefHat,
-  Eye
+  ChefHat
 } from "lucide-react";
 
 interface DietEntry {
@@ -38,8 +36,6 @@ interface ViewMealsProps {
 const ViewMeals = ({ onClose, onEditMeal }: ViewMealsProps) => {
   const [meals, setMeals] = useState<DietEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMeal, setSelectedMeal] = useState<DietEntry | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -75,16 +71,6 @@ const ViewMeals = ({ onClose, onEditMeal }: ViewMealsProps) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleViewMeal = (meal: DietEntry) => {
-    setSelectedMeal(meal);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedMeal(null);
   };
 
   const deleteMeal = async (mealId: string) => {
@@ -218,12 +204,11 @@ const ViewMeals = ({ onClose, onEditMeal }: ViewMealsProps) => {
                     {dateMeals.map((meal) => (
                       <div 
                         key={meal.id} 
-                        className="flex items-start justify-between p-4 bg-muted/50 rounded-lg border hover:bg-muted/70 transition-colors cursor-pointer"
-                        onClick={() => handleViewMeal(meal)}
+                        className="flex items-start justify-between p-4 bg-muted/50 rounded-lg border hover:bg-muted/70 transition-colors"
                       >
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h4 className="font-semibold text-base truncate">{meal.meal_name}</h4>
+                            <h4 className="font-semibold text-base">{meal.meal_name}</h4>
                             {meal.meal_type && (
                               <Badge className={getMealTypeColor(meal.meal_type)}>
                                 {meal.meal_type}
@@ -284,26 +269,12 @@ const ViewMeals = ({ onClose, onEditMeal }: ViewMealsProps) => {
                           )}
                         </div>
 
-                        <div className="flex flex-col gap-2 ml-4 shrink-0">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewMeal(meal);
-                            }}
-                            className="text-primary hover:text-primary/80"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                        <div className="flex flex-col gap-2 ml-4">
                           {onEditMeal && (
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onEditMeal(meal);
-                              }}
+                              onClick={() => onEditMeal(meal)}
                             >
                               <Edit2 className="h-4 w-4" />
                             </Button>
@@ -311,10 +282,7 @@ const ViewMeals = ({ onClose, onEditMeal }: ViewMealsProps) => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteMeal(meal.id);
-                            }}
+                            onClick={() => deleteMeal(meal.id)}
                             className="text-red-500 hover:text-red-700"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -329,15 +297,6 @@ const ViewMeals = ({ onClose, onEditMeal }: ViewMealsProps) => {
           </div>
         </ScrollArea>
       </div>
-
-      {/* Meal Details Modal */}
-      <MealDetailsModal
-        meal={selectedMeal}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onEdit={onEditMeal}
-        onDelete={deleteMeal}
-      />
     </div>
   );
 };

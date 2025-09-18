@@ -18,7 +18,6 @@ import {
 import hemappLogo from "@/assets/Hemapp-Logo.png";
 import VoiceCommands from "@/components/VoiceCommands";
 import SpeechInterface from "@/components/enhanced/SpeechInterface";
-import VoiceCommandsSidebar from "@/components/VoiceCommandsSidebar";
 import { useState } from "react";
 
 interface WelcomePageProps {
@@ -100,12 +99,6 @@ const WelcomePage = ({
         autoReadText={speechEnabled}
         enableTextToSpeech={speechEnabled}
         onNavigate={() => {}}
-      />
-
-      {/* Voice Commands Sidebar */}
-      <VoiceCommandsSidebar 
-        speechEnabled={speechEnabled}
-        onSpeechToggle={onSpeechToggle}
       />
 
       <div className="container mx-auto px-4 py-8">

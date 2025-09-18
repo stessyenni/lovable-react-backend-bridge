@@ -96,12 +96,9 @@ const MainApp = () => {
               onSpeechToggle={handleSpeechToggle}
             />
 
-            <MainContent 
+            <MainContent
               activeSection={activeSection}
               brailleMode={brailleMode}
-              speechEnabled={speechEnabled}
-              onSpeechToggle={handleSpeechToggle}
-              onBrailleToggle={handleBrailleToggle}
               onSectionChange={setActiveSection}
             />
           </SidebarInset>
