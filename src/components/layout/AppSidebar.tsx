@@ -16,7 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Video } from "lucide-react";
+import { Video, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -108,24 +108,31 @@ const AppSidebar = ({
 
       <SidebarFooter className="p-3 sm:p-4">
         <div className="space-y-2">
-          <Button
-            variant="outline"
-            size="sm"
+          <SidebarMenuButton
             onClick={handleDoctorConsult}
-            className="w-full flex items-center justify-center space-x-2 text-xs sm:text-sm"
+            className="w-full flex items-center justify-start gap-2"
+            tooltip="Consult Doctor"
           >
-            <Video className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+            <Video className="h-4 w-4 flex-shrink-0" />
             <span className="truncate">Consult Doctor</span>
-          </Button>
+          </SidebarMenuButton>
           
-          <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span className="truncate">Braille Mode</span>
+          <SidebarMenuButton
+            onClick={onBrailleToggle}
+            className="w-full flex items-center justify-between"
+            tooltip="Braille Mode"
+          >
+            <div className="flex items-center gap-2">
+              <Settings className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">Braille Mode</span>
+            </div>
             <Switch 
               checked={brailleMode}
               onCheckedChange={onBrailleToggle}
-              className="ml-2"
+              className="ml-auto"
+              onClick={(e) => e.stopPropagation()}
             />
-          </div>
+          </SidebarMenuButton>
         </div>
       </SidebarFooter>
     </Sidebar>

@@ -16,8 +16,6 @@ import {
   Volume2
 } from "lucide-react";
 import hemappLogo from "@/assets/Hemapp-Logo.png";
-import VoiceCommands from "@/components/VoiceCommands";
-import SpeechInterface from "@/components/enhanced/SpeechInterface";
 import VoiceCommandsSidebar from "@/components/VoiceCommandsSidebar";
 import { useState } from "react";
 
@@ -37,6 +35,60 @@ const WelcomePage = ({
   onBrailleToggle 
 }: WelcomePageProps) => {
   const [autoReadText, setAutoReadText] = useState("");
+  
+  // Function to read page content
+  const readWelcomePageContent = () => {
+    if (!speechEnabled) return;
+    
+    const textContent = `
+      Welcome to HemApp. Your Complete Health Management Companion.
+      Welcome to the future of healthcare management. 
+      HemApp combines cutting-edge AI technology with intuitive design to help you take control of your health journey.
+      
+      Our key features include:
+      AI-Powered Health Insights. Get personalized health recommendations powered by advanced AI technology.
+      Health Monitoring. Track your vital signs, diet, and overall health progress in real-time.
+      HemBot AI Consultation. Chat with our intelligent health assistant for instant medical guidance.
+      Health Facilities Locator. Find nearby hospitals, clinics, and healthcare providers.
+      Connect with Healthcare. Stay connected with your doctors and healthcare team.
+      Mobile-First Design. Access your health data anywhere, anytime with our responsive design.
+      
+      Why Choose HemApp?
+      Personalized health recommendations.
+      Real-time health monitoring.
+      AI-powered medical consultations.
+      Secure and private health data.
+      Integration with wearable devices.
+      Emergency health alerts.
+      
+      Ready to Transform Your Health Journey?
+      Join thousands of users who trust HemApp for their daily health management needs.
+      Click Get Started Now to begin.
+    `.trim();
+    
+    // Use speech synthesis to read the content
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); // Cancel any ongoing speech
+      
+      const utterance = new SpeechSynthesisUtterance(textContent);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      
+      // Use saved voice preference if available
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = localStorage.getItem('preferred-voice');
+      if (preferredVoice && voices.length > 0) {
+        const voice = voices.find(v => v.voiceURI === preferredVoice);
+        if (voice) {
+          utterance.voice = voice;
+        }
+      }
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   const features = [
     {
       icon: Brain,
@@ -87,22 +139,7 @@ const WelcomePage = ({
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-background via-muted/20 to-background ${brailleMode ? 'font-mono text-lg' : ''}`}>
-      {/* Assistive Features - Top */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
-        <VoiceCommands 
-          onNavigate={() => {}}
-          speechEnabled={speechEnabled}
-          onSpeechToggle={onSpeechToggle}
-        />
-      </div>
-
-      <SpeechInterface 
-        autoReadText={speechEnabled}
-        enableTextToSpeech={speechEnabled}
-        onNavigate={() => {}}
-      />
-
-      {/* Voice Commands Sidebar */}
+      {/* Voice Commands Sidebar - Only on Welcome Page */}
       <VoiceCommandsSidebar 
         speechEnabled={speechEnabled}
         onSpeechToggle={onSpeechToggle}
@@ -226,8 +263,13 @@ const WelcomePage = ({
             size="sm"
             variant={speechEnabled ? "default" : "outline"}
             onClick={() => {
-              setAutoReadText("Welcome to HemApp. Your complete health management companion. Ready to transform your health journey?");
-              onSpeechToggle?.();
+              if (!speechEnabled) {
+                onSpeechToggle?.();
+                // Wait a moment for speech to be enabled before reading
+                setTimeout(readWelcomePageContent, 100);
+              } else {
+                readWelcomePageContent();
+              }
             }}
             className="text-xs flex items-center gap-1"
           >
