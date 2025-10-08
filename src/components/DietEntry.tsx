@@ -41,12 +41,36 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load categories from localStorage
-    const savedCategories = localStorage.getItem('mealCategories');
-    if (savedCategories) {
-      setCategories(JSON.parse(savedCategories));
-    }
-  }, []);
+    // Load categories from Supabase
+    const loadCategories = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('meal_categories')
+          .select('id, name, color_class')
+          .eq('user_id', user.id);
+        
+        if (error) {
+          console.error('Error loading categories:', error);
+          return;
+        }
+        
+        const formattedCategories = (data || []).map(cat => ({
+          id: cat.id,
+          name: cat.name,
+          color: cat.color_class,
+          meals: []
+        }));
+        
+        setCategories(formattedCategories);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    
+    loadCategories();
+  }, [user]);
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -65,26 +89,63 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
     setImagePreview(null);
   };
 
-  const addNewCategory = () => {
-    if (!newCategoryName.trim()) return;
+  const addNewCategory = async () => {
+    if (!newCategoryName.trim() || !user) return;
 
-    const newCategory: MealCategory = {
-      id: Date.now().toString(),
-      name: newCategoryName,
-      color: 'bg-purple-100 text-purple-800',
-      meals: []
-    };
+    try {
+      // Check if category already exists
+      const { data: existing } = await supabase
+        .from('meal_categories')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('name', newCategoryName.trim())
+        .maybeSingle();
+      
+      if (existing) {
+        toast({
+          title: "Category exists",
+          description: `Category "${newCategoryName}" already exists.`,
+          variant: "destructive",
+        });
+        return;
+      }
 
-    const updatedCategories = [...categories, newCategory];
-    setCategories(updatedCategories);
-    localStorage.setItem('mealCategories', JSON.stringify(updatedCategories));
-    setSelectedCategory(newCategory.id);
-    setNewCategoryName("");
-    
-    toast({
-      title: "Category Added",
-      description: `"${newCategoryName}" category has been created.`,
-    });
+      const { data, error } = await supabase
+        .from('meal_categories')
+        .insert({
+          user_id: user.id,
+          name: newCategoryName.trim(),
+          description: '',
+          color_class: 'bg-purple-100 text-purple-800'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newCategory: MealCategory = {
+        id: data.id,
+        name: data.name,
+        color: data.color_class,
+        meals: []
+      };
+
+      setCategories([...categories, newCategory]);
+      setSelectedCategory(newCategory.id);
+      setNewCategoryName("");
+      
+      toast({
+        title: "Category Added",
+        description: `"${newCategoryName}" category has been created.`,
+      });
+    } catch (error) {
+      console.error('Error adding category:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create category",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,25 +182,6 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
         }
       }
 
-      // Check for existing categories with same name
-      const { data: existingCategories, error: categoryCheckError } = await supabase
-        .from('meal_categories')
-        .select('name')
-        .eq('user_id', user.id)
-        .eq('name', newCategoryName.trim())
-        .limit(1);
-
-      if (categoryCheckError) {
-        console.error('Error checking existing categories:', categoryCheckError);
-      } else if (existingCategories && existingCategories.length > 0 && newCategoryName.trim()) {
-        toast({
-          title: "Category exists",
-          description: `Category "${newCategoryName}" already exists. Please choose a different name.`,
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
 
       let imageUrl = null;
 

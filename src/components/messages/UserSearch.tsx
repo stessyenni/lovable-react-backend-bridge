@@ -130,6 +130,31 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
     }
   };
 
+  const acceptConnectionRequest = async (connectionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('user_connections')
+        .update({ status: 'accepted' })
+        .eq('id', connectionId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Connection request accepted!",
+      });
+
+      await onConnectionUpdate();
+    } catch (error) {
+      console.error('Error accepting connection:', error);
+      toast({
+        title: "Error",
+        description: "Failed to accept connection request",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getConnectionStatus = (userId: string) => {
     return connections.find(
       conn => (conn.follower_id === currentUserId && conn.following_id === userId) ||
@@ -171,18 +196,27 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
         
         <div className="flex items-center gap-2">
           {connectionStatus ? (
-            <Badge variant={connectionStatus.status === 'accepted' ? 'default' : 'secondary'}>
-              {connectionStatus.status === 'accepted' ? (
-                <>
-                  <Users className="h-3 w-3 mr-1" />
-                  Connected
-                </>
-              ) : connectionStatus.status === 'pending' ? (
-                'Pending'
-              ) : (
-                connectionStatus.status
-              )}
-            </Badge>
+            connectionStatus.status === 'accepted' ? (
+              <Badge variant="default">
+                <Users className="h-3 w-3 mr-1" />
+                Connected
+              </Badge>
+            ) : connectionStatus.status === 'pending' && connectionStatus.follower_id === currentUserId ? (
+              <Badge variant="secondary">
+                <Clock className="h-3 w-3 mr-1" />
+                Connection Requested
+              </Badge>
+            ) : connectionStatus.status === 'pending' && connectionStatus.following_id === currentUserId ? (
+              <Button
+                size="sm"
+                onClick={() => acceptConnectionRequest(connectionStatus.id)}
+              >
+                <UserPlus className="h-4 w-4 mr-1" />
+                Accept Connection
+              </Button>
+            ) : (
+              <Badge variant="secondary">{connectionStatus.status}</Badge>
+            )
           ) : (
             <Button
               size="sm"

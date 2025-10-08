@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Activity, Heart, Utensils, Calendar, TrendingUp, Plus, Apple, Bookmark, Eye, Home } from "lucide-react";
 import DietModals from "./diet/DietModals";
 import EnhancedMealCategories from "./enhanced/EnhancedMealCategories";
 import ViewCategories from "./ViewCategories";
 import NutritionGoalsPage from "./NutritionGoalsPage";
 import TrendsPage from "./TrendsPage";
+import { useDietData } from "./diet/hooks/useDietData";
 
 interface DashboardProps {
   onGoHome?: () => void;
@@ -16,11 +18,21 @@ interface DashboardProps {
 
 const Dashboard = ({ onGoHome }: DashboardProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { getTodayStats } = useDietData();
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showMealCategories, setShowMealCategories] = useState(false);
   const [showViewCategories, setShowViewCategories] = useState(false);
   const [showNutritionGoals, setShowNutritionGoals] = useState(false);
   const [showTrends, setShowTrends] = useState(false);
+  const [todayStats, setTodayStats] = useState({ meals: 0, calories: 0, protein: 0, fiber: 0 });
+
+  useEffect(() => {
+    if (user) {
+      const stats = getTodayStats();
+      setTodayStats(stats);
+    }
+  }, [user]);
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -46,6 +58,9 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
 
   const handleSuccess = () => {
     setShowDietEntry(false);
+    // Refresh stats after meal is added
+    const stats = getTodayStats();
+    setTodayStats(stats);
     toast({
       title: "Success",
       description: "Action completed successfully!",
@@ -75,49 +90,49 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-1">
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Steps Today</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Meals Today</CardTitle>
+            <Utensils className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">8,542</div>
-            <p className="text-xs text-muted-foreground">+2.5% from yesterday</p>
-            <Progress value={85} className="mt-2" />
-          </CardContent>
-        </Card>
-
-        <Card className="w-full">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Heart Rate</CardTitle>
-            <Heart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">72 bpm</div>
-            <p className="text-xs text-muted-foreground">Resting rate</p>
-            <Progress value={60} className="mt-2" />
+            <div className="text-xl sm:text-2xl font-bold">{todayStats.meals}</div>
+            <p className="text-xs text-muted-foreground">Meals logged</p>
+            <Progress value={todayStats.meals > 0 ? Math.min((todayStats.meals / 3) * 100, 100) : 0} className="mt-2" />
           </CardContent>
         </Card>
 
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Calories</CardTitle>
-            <Utensils className="h-4 w-4 text-muted-foreground" />
+            <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">1,247</div>
+            <div className="text-xl sm:text-2xl font-bold">{todayStats.calories}</div>
             <p className="text-xs text-muted-foreground">Goal: 2,000</p>
-            <Progress value={62} className="mt-2" />
+            <Progress value={todayStats.calories > 0 ? Math.min((todayStats.calories / 2000) * 100, 100) : 0} className="mt-2" />
           </CardContent>
         </Card>
 
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sleep</CardTitle>
+            <CardTitle className="text-sm font-medium">Protein</CardTitle>
+            <Heart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl sm:text-2xl font-bold">{todayStats.protein}g</div>
+            <p className="text-xs text-muted-foreground">Daily intake</p>
+            <Progress value={todayStats.protein > 0 ? Math.min((todayStats.protein / 50) * 100, 100) : 0} className="mt-2" />
+          </CardContent>
+        </Card>
+
+        <Card className="w-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Fiber</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">7.5h</div>
-            <p className="text-xs text-muted-foreground">Last night</p>
-            <Progress value={94} className="mt-2" />
+            <div className="text-xl sm:text-2xl font-bold">{todayStats.fiber}g</div>
+            <p className="text-xs text-muted-foreground">Daily intake</p>
+            <Progress value={todayStats.fiber > 0 ? Math.min((todayStats.fiber / 25) * 100, 100) : 0} className="mt-2" />
           </CardContent>
         </Card>
       </div>
@@ -181,35 +196,54 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
           <CardDescription>Your latest health and fitness activities</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="bg-blue-100 p-2 rounded-full">
-                <Activity className="h-4 w-4 text-blue-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">Morning workout completed</p>
-                <p className="text-sm text-muted-foreground">45 minutes ago</p>
-              </div>
+          {todayStats.meals === 0 ? (
+            <div className="text-center py-8">
+              <Utensils className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No activity yet today</p>
+              <p className="text-sm text-muted-foreground mt-1">Start by logging your first meal!</p>
+              <Button 
+                className="mt-4"
+                onClick={() => setShowDietEntry(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Meal
+              </Button>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="bg-green-100 p-2 rounded-full">
-                <Utensils className="h-4 w-4 text-green-600" />
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <Utensils className="h-4 w-4 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{todayStats.meals} meals logged today</p>
+                  <p className="text-sm text-muted-foreground">{todayStats.calories} calories tracked</p>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">Breakfast logged</p>
-                <p className="text-sm text-muted-foreground">2 hours ago</p>
-              </div>
+              {todayStats.protein > 0 && (
+                <div className="flex items-center space-x-4">
+                  <div className="bg-blue-100 p-2 rounded-full">
+                    <Heart className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Protein intake: {todayStats.protein}g</p>
+                    <p className="text-sm text-muted-foreground">Keep up the good work!</p>
+                  </div>
+                </div>
+              )}
+              {todayStats.fiber > 0 && (
+                <div className="flex items-center space-x-4">
+                  <div className="bg-red-100 p-2 rounded-full">
+                    <Activity className="h-4 w-4 text-red-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Fiber intake: {todayStats.fiber}g</p>
+                    <p className="text-sm text-muted-foreground">Great for digestion!</p>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="bg-red-100 p-2 rounded-full">
-                <Heart className="h-4 w-4 text-red-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">Heart rate checked</p>
-                <p className="text-sm text-muted-foreground">3 hours ago</p>
-              </div>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
