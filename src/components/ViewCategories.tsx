@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useMealCategories } from "@/hooks/useMealCategories";
 import EditableCategoryCard from "@/components/enhanced/EditableCategoryCard";
 import { 
   X,
@@ -44,48 +45,9 @@ interface ViewCategoriesProps {
 }
 
 const ViewCategories = ({ onClose }: ViewCategoriesProps) => {
-  const [categories, setCategories] = useState<MealCategory[]>([]);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { user } = useAuth();
-
-  useEffect(() => {
-    if (user) {
-      fetchCategories();
-    }
-  }, [user]);
-
-  const fetchCategories = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch categories with their meal items
-      const { data: categoriesData, error: categoriesError } = await (supabase as any)
-        .from('meal_categories')
-        .select(`
-          *,
-          meal_items (*)
-        `)
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (categoriesError) {
-        console.error('Error fetching categories:', categoriesError);
-        toast({
-          title: "Error",
-          description: "Failed to load meal categories",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setCategories(categoriesData || []);
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { categories, loading, fetchCategories } = useMealCategories();
 
   const getCategoryIcon = (categoryName: string) => {
     const name = categoryName.toLowerCase();

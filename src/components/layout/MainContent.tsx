@@ -80,12 +80,6 @@ const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle
         </div>
       </div>
 
-      {/* Voice Commands Sidebar */}
-      <VoiceCommandsSidebar 
-        onNavigate={onSectionChange}
-        speechEnabled={speechEnabled}
-        onSpeechToggle={onSpeechToggle}
-      />
 
       <main 
         className={`flex-1 p-3 sm:p-4 lg:p-6 xl:p-8 overflow-y-auto ${

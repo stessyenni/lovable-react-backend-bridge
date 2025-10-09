@@ -8,13 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useMealCategories } from "@/hooks/useMealCategories";
 import { Plus, Camera, X, Save } from "lucide-react";
 
 interface MealCategory {
   id: string;
   name: string;
-  color: string;
-  meals: string[];
+  color_class: string;
+  description?: string;
+  image_url?: string;
+  created_at: string;
+  updated_at: string;
+  meal_items?: any[];
 }
 
 interface DietEntryProps {
@@ -33,44 +38,12 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   const [mealContent, setMealContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(existingEntry?.category || "");
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [categories, setCategories] = useState<MealCategory[]>([]);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Load categories from Supabase
-    const loadCategories = async () => {
-      if (!user) return;
-      
-      try {
-        const { data, error } = await supabase
-          .from('meal_categories')
-          .select('id, name, color_class')
-          .eq('user_id', user.id);
-        
-        if (error) {
-          console.error('Error loading categories:', error);
-          return;
-        }
-        
-        const formattedCategories = (data || []).map(cat => ({
-          id: cat.id,
-          name: cat.name,
-          color: cat.color_class,
-          meals: []
-        }));
-        
-        setCategories(formattedCategories);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-    
-    loadCategories();
-  }, [user]);
+  const { categories, addCategory } = useMealCategories();
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -90,61 +63,12 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   };
 
   const addNewCategory = async () => {
-    if (!newCategoryName.trim() || !user) return;
+    if (!newCategoryName.trim()) return;
 
-    try {
-      // Check if category already exists
-      const { data: existing } = await supabase
-        .from('meal_categories')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('name', newCategoryName.trim())
-        .maybeSingle();
-      
-      if (existing) {
-        toast({
-          title: "Category exists",
-          description: `Category "${newCategoryName}" already exists.`,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('meal_categories')
-        .insert({
-          user_id: user.id,
-          name: newCategoryName.trim(),
-          description: '',
-          color_class: 'bg-purple-100 text-purple-800'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      const newCategory: MealCategory = {
-        id: data.id,
-        name: data.name,
-        color: data.color_class,
-        meals: []
-      };
-
-      setCategories([...categories, newCategory]);
+    const newCategory = await addCategory(newCategoryName.trim());
+    if (newCategory) {
       setSelectedCategory(newCategory.id);
       setNewCategoryName("");
-      
-      toast({
-        title: "Category Added",
-        description: `"${newCategoryName}" category has been created.`,
-      });
-    } catch (error) {
-      console.error('Error adding category:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create category",
-        variant: "destructive",
-      });
     }
   };
 

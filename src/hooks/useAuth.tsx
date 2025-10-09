@@ -87,26 +87,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!emailOrUsername.includes('@')) {
         console.log('Attempting to find email by username:', emailOrUsername);
         
-        // Use service role to bypass RLS for this query
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('email')
-          .eq('username', emailOrUsername.toLowerCase().trim())
-          .maybeSingle();
+        // Use secure RPC function to get email by username
+        const { data: userEmail, error: rpcError } = await supabase
+          .rpc('get_email_by_username', { p_username: emailOrUsername.toLowerCase().trim() });
 
-        console.log('Profile lookup result:', { profile, error: profileError });
+        console.log('Username lookup result:', { userEmail, error: rpcError });
 
-        if (profileError) {
-          console.error('Error searching username:', profileError);
+        if (rpcError) {
+          console.error('Error searching username:', rpcError);
           return { error: { message: 'Invalid username or password' } };
         }
         
-        if (!profile?.email) {
-          console.error('Username not found or no email associated');
+        if (!userEmail) {
+          console.error('Username not found');
           return { error: { message: 'Invalid username or password' } };
         }
         
-        email = profile.email;
+        email = userEmail;
         console.log('Found email for username:', email);
       }
 
