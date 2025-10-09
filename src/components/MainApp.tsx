@@ -57,8 +57,8 @@ const MainApp = () => {
   return (
     <>
       <DemoDataCreator />
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full">
+      <SidebarProvider defaultOpen={true}>
+        <div className="min-h-screen flex w-full bg-background">
           <AppSidebar
             menuItems={menuItems}
             activeSection={activeSection}
@@ -67,7 +67,7 @@ const MainApp = () => {
             onBrailleToggle={handleBrailleToggle}
           />
 
-          <SidebarInset>
+          <SidebarInset className="flex-1 w-full">
             <AppHeader
               activeSection={activeSection}
               setActiveComponent={(component: string) => {

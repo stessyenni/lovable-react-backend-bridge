@@ -56,12 +56,16 @@ const AppSidebar = ({
     // In a real app, this would open video call or booking interface
   };
 
+  const { state } = useSidebar();
+
   return (
-    <Sidebar className={`${brailleMode ? "border-2 border-yellow-400" : ""} min-w-fit`} collapsible="icon">
+    <Sidebar className={brailleMode ? "border-2 border-yellow-400" : ""} collapsible="icon">
       <SidebarHeader className="p-3 sm:p-4">
-       <div className="flex items-center space-x-2">
-          <img src={logoImage} alt="Hemapp-Logo" className="h-8 w-8" />
-          <span className="text-xl font-bold">Hemapp</span>
+       <div className="flex items-center gap-2">
+          <img src={logoImage} alt="Hemapp-Logo" className="h-8 w-8 flex-shrink-0" />
+          <span className={`text-xl font-bold transition-opacity ${state === 'collapsed' ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
+            Hemapp
+          </span>
        </div>
       </SidebarHeader>
       
