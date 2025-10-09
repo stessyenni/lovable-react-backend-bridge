@@ -38,6 +38,7 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
   const [recommendedUsers, setRecommendedUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(false);
   const [recommendationLoading, setRecommendationLoading] = useState(false);
+  const [pendingConnections, setPendingConnections] = useState<Connection[]>([]);
 
   const searchUsers = async () => {
     if (!searchTerm.trim()) {
@@ -78,6 +79,7 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
   // Load recommended users on mount
   useEffect(() => {
     loadRecommendedUsers();
+    loadPendingConnections();
   }, [currentUserId, connections]);
 
   const loadRecommendedUsers = async () => {
@@ -102,23 +104,52 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
     }
   };
 
+  const loadPendingConnections = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_connections')
+        .select('id, follower_id, following_id, status')
+        .or(`follower_id.eq.${currentUserId},following_id.eq.${currentUserId}`)
+        .eq('status', 'pending');
+      if (error) throw error;
+      setPendingConnections(data || []);
+    } catch (error) {
+      console.error('Error loading pending connections:', error);
+    }
+  };
+
   const sendConnectionRequest = async (userId: string) => {
     try {
       const { error } = await supabase
         .from('user_connections')
-        .insert({
-          follower_id: currentUserId,
-          following_id: userId,
-          status: 'pending'
+        .upsert(
+          [
+            {
+              follower_id: currentUserId,
+              following_id: userId,
+              status: 'pending',
+            },
+          ],
+          { onConflict: 'follower_id,following_id', ignoreDuplicates: true }
+        );
+
+      if (error) {
+        if ((error as any).code === '23505') {
+          toast({
+            title: "Already requested",
+            description: "You have already sent a connection request.",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({
+          title: "Success",
+          description: "Connection request sent!",
         });
+      }
 
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Connection request sent!",
-      });
-
+      await loadPendingConnections();
       await onConnectionUpdate();
     } catch (error) {
       console.error('Error sending connection request:', error);
@@ -144,6 +175,7 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
         description: "Connection request accepted!",
       });
 
+      await loadPendingConnections();
       await onConnectionUpdate();
     } catch (error) {
       console.error('Error accepting connection:', error);
@@ -156,7 +188,8 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
   };
 
   const getConnectionStatus = (userId: string) => {
-    return connections.find(
+    const allConnections = [...connections, ...pendingConnections];
+    return allConnections.find(
       conn => (conn.follower_id === currentUserId && conn.following_id === userId) ||
               (conn.follower_id === userId && conn.following_id === currentUserId)
     );

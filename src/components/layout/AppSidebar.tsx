@@ -60,13 +60,13 @@ const AppSidebar = ({
 
   return (
     <Sidebar className={brailleMode ? "border-2 border-yellow-400" : ""} collapsible="icon">
-      <SidebarHeader className="p-3 sm:p-4">
-       <div className="flex items-center gap-2 min-w-[3rem]">
-          <img src={logoImage} alt="Hemapp-Logo" className="h-10 w-10 flex-shrink-0" />
-          <span className={`text-xl font-bold transition-opacity ${state === 'collapsed' ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
-            Hemapp
-          </span>
-       </div>
+      <SidebarHeader className={state === 'collapsed' ? 'p-2' : 'p-3 sm:p-4'}>
+        <div className={`flex items-center min-w-[3.5rem] ${state === 'collapsed' ? 'justify-center gap-0' : 'gap-2'}`}>
+          <img src={logoImage} alt="Hemapp logo" className="h-10 w-10 flex-shrink-0 object-contain" />
+          {state !== 'collapsed' && (
+            <span className="text-xl font-bold">Hemapp</span>
+          )}
+        </div>
       </SidebarHeader>
       
       <SidebarContent>
