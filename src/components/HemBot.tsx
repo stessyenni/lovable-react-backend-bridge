@@ -1,11 +1,7 @@
-import AIConsultation from "@/components/AIConsultation";
+import HemBotChat from "@/components/HemBotChat";
 
 const HemBot = () => {
-  return (
-    <div className="space-y-4">
-      <AIConsultation />
-    </div>
-  );
+  return <HemBotChat />;
 };
 
 export default HemBot;
