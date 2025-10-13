@@ -7,6 +7,7 @@ import AppSidebar from "./layout/AppSidebar";
 import MainContent from "./layout/MainContent";
 import WelcomePage from "./WelcomePage";
 import DemoDataCreator from "./DemoDataCreator";
+import FloatingHemBot from "./FloatingHemBot";
 
 interface MenuItem {
   id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
@@ -57,6 +58,7 @@ const MainApp = () => {
   return (
     <>
       <DemoDataCreator />
+      <FloatingHemBot />
       <SidebarProvider defaultOpen={true}>
         <div className="min-h-screen flex w-full bg-background">
           <AppSidebar

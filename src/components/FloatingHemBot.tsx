@@ -42,7 +42,7 @@ const FloatingHemBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-96 h-[500px] z-50 shadow-2xl">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[calc(100vw-2rem)] sm:w-96 h-[calc(100vh-8rem)] sm:h-[500px] max-w-md z-50 shadow-2xl">
           <Card className="h-full flex flex-col">
             <CardHeader className="pb-3 bg-green-700 text-white rounded-t-lg">
               <div className="flex items-center justify-between">
