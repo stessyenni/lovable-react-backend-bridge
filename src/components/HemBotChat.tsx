@@ -15,7 +15,7 @@ const HemBotChat = () => {
   const { sendToHemBot, isResponding, HEMBOT_ID } = useHemBot(user?.id);
 
   // Fetch messages between user and HemBot
-  const { data: messages = [] } = useQuery({
+  const { data: messages = [], refetch } = useQuery({
     queryKey: ["hembot-messages", user?.id],
     queryFn: async () => {
       if (!user) return [];
@@ -29,6 +29,7 @@ const HemBotChat = () => {
       return data;
     },
     enabled: !!user,
+    refetchInterval: 2000, // Poll every 2 seconds for new messages
   });
 
   // Auto-scroll to bottom when messages change
@@ -44,6 +45,9 @@ const HemBotChat = () => {
     const userMessage = message;
     setMessage("");
     await sendToHemBot(userMessage);
+    
+    // Refetch messages after sending
+    setTimeout(() => refetch(), 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

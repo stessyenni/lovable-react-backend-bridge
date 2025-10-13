@@ -14,12 +14,12 @@ serve(async (req) => {
   }
 
   try {
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
 
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not set');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not set');
     }
 
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
@@ -74,26 +74,27 @@ serve(async (req) => {
 
     Current conversation context: The user is using the Hemapp mobile health application.`;
 
-    // Call OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Call Lovable AI Gateway
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message }
         ],
         max_tokens: 150,
-        temperature: 0.7,
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('AI Gateway error:', response.status, errorText);
+      throw new Error(`AI Gateway error: ${response.statusText}`);
     }
 
     const data = await response.json();
