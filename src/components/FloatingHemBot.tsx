@@ -3,6 +3,7 @@ import { Bot, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import HemBot from "@/components/HemBot";
+import hemappLogo from "@/assets/Hemapp-Logo.png";
 
 const FloatingHemBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,17 +45,17 @@ const FloatingHemBot = () => {
       {isOpen && (
         <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[calc(100vw-2rem)] sm:w-96 h-[calc(100vh-8rem)] sm:h-[500px] max-w-md z-50 shadow-2xl">
           <Card className="h-full flex flex-col">
-            <CardHeader className="pb-3 bg-green-700 text-white rounded-t-lg">
+            <CardHeader className="pb-3 bg-primary text-primary-foreground rounded-t-lg">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <Bot className="h-5 w-5" />
+                  <img src={hemappLogo} alt="Hemapp logo" className="h-5 w-auto" />
                   HemBot
                 </CardTitle>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsOpen(false)}
-                  className="text-white hover:bg-green-600 h-8 w-8"
+                  className="text-primary-foreground hover:bg-primary/80 h-8 w-8"
                 >
                   <X className="h-4 w-4" />
                 </Button>

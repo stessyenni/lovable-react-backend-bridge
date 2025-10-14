@@ -151,6 +151,20 @@ const cameroonRecommendations: DietRecommendation[] = [
   }
 ];
 
+// Suggested quantity per item for diet management
+const quantitySuggestions: Record<string, string> = {
+  'Ndolé with Lean Fish': '1 cup ndolé (~200g) + 1 small fufu ball (about 100g)',
+  'African Plum (Safou)': '3–4 plums (medium size)',
+  'Okra Soup (Gombo)': '1.5 cups soup (~300g) + 1 small fufu ball',
+  'Koki with Palm Oil': '1 slice (~150g)',
+  'Plantain with Groundnut Sauce': '1 medium plantain + 2 tbsp groundnut sauce',
+  'Avocado (Local Variety)': '1/2 large avocado',
+  'Bitter Kola': '1–2 nuts',
+  'Eru with Stockfish': '1 cup eru (~200g) + small portion garri or fufu',
+  'Fufu with Light Vegetable Soup': '1 small fufu ball + 1 cup soup',
+  'Garden Egg with Groundnut Paste': '3 small garden eggs + 2 tbsp paste'
+};
+
 const DietRecommendations = () => {
   const [activeGoal, setActiveGoal] = useState<'weight-loss' | 'weight-gain' | 'maintain' | 'health'>('maintain');
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -317,6 +331,14 @@ const DietRecommendations = () => {
                           <span className="text-muted-foreground ml-1">fiber</span>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Suggested Quantity per Item */}
+                    <div>
+                      <h4 className="font-medium text-sm mb-2">Suggested Quantity (per meal):</h4>
+                      <p className="text-sm">
+                        {quantitySuggestions[recommendation.name] ?? 'Adjust portion to your goals; combine with vegetables or lean protein as needed.'}
+                      </p>
                     </div>
 
                     {/* Suggested Serving Sizes for Diet Management */}

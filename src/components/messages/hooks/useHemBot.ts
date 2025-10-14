@@ -13,33 +13,46 @@ export const useHemBot = (userId: string | undefined) => {
 
     setIsResponding(true);
     try {
-      // Call the hembot edge function
-      const { data, error } = await supabase.functions.invoke('hembot-ai', {
-        body: {
-          message: userMessage,
-          userId: userId
-        }
+      // 1) Save the user's message so it appears in the chat immediately
+      const { error: insertError } = await supabase.from('messages').insert({
+        sender_id: userId,
+        recipient_id: HEMBOT_ID,
+        content: userMessage,
+        message_type: 'text'
+      });
+
+      if (insertError) {
+        console.error('Error saving user message:', insertError);
+        toast({
+          title: 'Message not sent',
+          description: 'Could not save your message. Please try again.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // 2) Call the HemBot edge function (it will save the bot reply)
+      const { error } = await supabase.functions.invoke('hembot-ai', {
+        body: { message: userMessage, userId }
       });
 
       if (error) {
         console.error('Error calling HemBot:', error);
         toast({
-          title: "HemBot Error",
-          description: "Failed to get response from HemBot. Please try again.",
-          variant: "destructive",
+          title: 'HemBot Error',
+          description: 'Failed to get response from HemBot. Please try again.',
+          variant: 'destructive',
         });
         return;
       }
 
-      // HemBot response is handled by the edge function
-      // which automatically saves the response message to the database
-      
+      // Bot response will be inserted by the edge function
     } catch (error) {
       console.error('Unexpected error:', error);
       toast({
-        title: "Error",
-        description: "An unexpected error occurred with HemBot.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'An unexpected error occurred with HemBot.',
+        variant: 'destructive',
       });
     } finally {
       setIsResponding(false);
