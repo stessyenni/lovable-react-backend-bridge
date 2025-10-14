@@ -319,6 +319,24 @@ const DietRecommendations = () => {
                       </div>
                     </div>
 
+                    {/* Suggested Serving Sizes for Diet Management */}
+                    <div>
+                      <h4 className="font-medium text-sm mb-2">Suggested Serving Sizes:</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                        <div className="p-2 bg-muted/50 rounded">
+                          <p className="font-medium">Regular Meal Portion:</p>
+                          <p className="text-muted-foreground">150-200g per serving</p>
+                        </div>
+                        <div className="p-2 bg-muted/50 rounded">
+                          <p className="font-medium">Snack Portion:</p>
+                          <p className="text-muted-foreground">50-100g per serving</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        💡 Tip: Adjust portions based on your daily caloric needs and health goals
+                      </p>
+                    </div>
+
                     {/* Preparation */}
                     {recommendation.preparation && (
                       <div>
