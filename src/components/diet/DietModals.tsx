@@ -21,7 +21,7 @@ const DietModals = ({
   return (
     <>
       {showDietEntry && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-[60]">
           <div className="bg-background rounded-lg w-full max-w-md sm:max-w-lg max-h-[90vh] flex flex-col">
             <DietEntry 
               editMode={!!editingEntry}
