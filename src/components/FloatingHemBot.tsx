@@ -45,7 +45,7 @@ const FloatingHemBot = () => {
       {isOpen && (
         <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[calc(100vw-2rem)] sm:w-96 h-[calc(100vh-8rem)] sm:h-[500px] max-w-md z-50 shadow-2xl">
           <Card className="h-full flex flex-col">
-            <CardHeader className="pb-3 bg-gradient-to-r from-blue-500 via-pink-500 to-red-600 text-white rounded-t-lg shadow-lg">
+            <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 via-pink-500 to-red-600 text-white rounded-t-lg shadow-lg">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
                   <img src={hemappLogo} alt="Hemapp logo" className="h-6 w-auto" />
