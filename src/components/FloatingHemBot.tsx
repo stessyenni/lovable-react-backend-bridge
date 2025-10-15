@@ -34,18 +34,18 @@ const FloatingHemBot = () => {
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-green-700 hover:bg-green-800 shadow-lg z-50 animate-pulse"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-green-700 hover:bg-green-800 shadow-lg z-50 animate-pulse"
           size="icon"
         >
-          <Bot className="h-6 w-6 text-white animate-bounce" />
+          <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-white animate-bounce" />
         </Button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[calc(100vw-2rem)] sm:w-96 h-[calc(100vh-8rem)] sm:h-[500px] max-w-md z-50 shadow-2xl">
-          <Card className="h-full flex flex-col">
-            <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 via-pink-500 to-red-600 text-white rounded-t-lg shadow-lg">
+        <div className="fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6 sm:w-96 sm:h-[500px] sm:max-w-md z-50 sm:shadow-2xl">
+          <Card className="h-full flex flex-col sm:rounded-lg rounded-none">
+            <CardHeader className="pb-3 bg-gradient-to-r from-red-500 via-pink-500 to-red-600 text-white sm:rounded-t-lg shadow-lg">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
                   <img src={hemappLogo} alt="Hemapp logo" className="h-6 w-auto" />

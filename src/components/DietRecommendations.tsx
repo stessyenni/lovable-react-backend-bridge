@@ -215,63 +215,63 @@ const DietRecommendations = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Diet Recommendations</h2>
-        <p className="text-muted-foreground">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="px-1">
+        <h2 className="text-xl sm:text-2xl font-bold">Diet Recommendations</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Personalized food recommendations featuring Cameroonian delicacies and local ingredients
         </p>
       </div>
 
       <Tabs value={activeGoal} onValueChange={(value) => setActiveGoal(value as any)} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="weight-loss" className="flex items-center gap-2">
-            <TrendingDown className="h-4 w-4" />
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+          <TabsTrigger value="weight-loss" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+            <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Lose Weight</span>
             <span className="sm:hidden">Lose</span>
           </TabsTrigger>
-          <TabsTrigger value="weight-gain" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
+          <TabsTrigger value="weight-gain" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Gain Weight</span>
             <span className="sm:hidden">Gain</span>
           </TabsTrigger>
-          <TabsTrigger value="maintain" className="flex items-center gap-2">
-            <Target className="h-4 w-4" />
+          <TabsTrigger value="maintain" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+            <Target className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Maintain</span>
             <span className="sm:hidden">Keep</span>
           </TabsTrigger>
-          <TabsTrigger value="health" className="flex items-center gap-2">
-            <Leaf className="h-4 w-4" />
+          <TabsTrigger value="health" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+            <Leaf className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Health</span>
             <span className="sm:hidden">Health</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value={activeGoal} className="space-y-4">
+        <TabsContent value={activeGoal} className="space-y-3 sm:space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 {getGoalIcon(activeGoal)}
                 {activeGoal === 'weight-loss' && 'Weight Loss Recommendations'}
                 {activeGoal === 'weight-gain' && 'Weight Gain Recommendations'}
                 {activeGoal === 'maintain' && 'Weight Maintenance Recommendations'}
                 {activeGoal === 'health' && 'Health Management Recommendations'}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 Local Cameroonian foods and delicacies to help you achieve your goals
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <ScrollArea className="h-[600px]">
-            <div className="grid gap-4">
+          <ScrollArea className="h-[400px] sm:h-[500px] md:h-[600px]">
+            <div className="grid gap-3 sm:gap-4 p-1">
               {filteredRecommendations.map((recommendation) => (
                 <Card key={recommendation.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
+                  <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <CardTitle className="text-lg">{recommendation.name}</CardTitle>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1 sm:gap-2 mb-2 flex-wrap">
+                          <CardTitle className="text-sm sm:text-base md:text-lg">{recommendation.name}</CardTitle>
                           {recommendation.isLocal && (
                             <Badge variant="secondary" className="text-xs">
                               <Star className="h-3 w-3 mr-1" />
@@ -283,15 +283,15 @@ const DietRecommendations = () => {
                             <span className="ml-1 capitalize">{recommendation.type}</span>
                           </Badge>
                         </div>
-                        <CardDescription>{recommendation.description}</CardDescription>
+                        <CardDescription className="text-xs sm:text-sm">{recommendation.description}</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6">
                     {/* Benefits */}
                     <div>
-                      <h4 className="font-medium text-sm mb-2">Benefits:</h4>
+                      <h4 className="font-medium text-xs sm:text-sm mb-1 sm:mb-2">Benefits:</h4>
                       <div className="flex flex-wrap gap-1">
                         {recommendation.benefits.map((benefit, index) => (
                           <Badge key={index} variant="secondary" className="text-xs">
@@ -303,8 +303,8 @@ const DietRecommendations = () => {
 
                     {/* Nutritional Info */}
                     <div>
-                      <h4 className="font-medium text-sm mb-2">Nutritional Information (per 100g):</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+                      <h4 className="font-medium text-xs sm:text-sm mb-1 sm:mb-2">Nutritional Information (per 100g):</h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 text-xs sm:text-sm">
                         <div className="flex items-center">
                           <span className="text-red-600 mr-1">🔥</span>
                           <span className="font-medium">{recommendation.nutritionalInfo.calories}</span>
@@ -335,16 +335,16 @@ const DietRecommendations = () => {
 
                     {/* Suggested Quantity per Item */}
                     <div>
-                      <h4 className="font-medium text-sm mb-2">Suggested Quantity (per meal):</h4>
-                      <p className="text-sm">
+                      <h4 className="font-medium text-xs sm:text-sm mb-1 sm:mb-2">Suggested Quantity (per meal):</h4>
+                      <p className="text-xs sm:text-sm">
                         {quantitySuggestions[recommendation.name] ?? 'Adjust portion to your goals; combine with vegetables or lean protein as needed.'}
                       </p>
                     </div>
 
                     {/* Suggested Serving Sizes for Diet Management */}
                     <div>
-                      <h4 className="font-medium text-sm mb-2">Suggested Serving Sizes:</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                      <h4 className="font-medium text-xs sm:text-sm mb-1 sm:mb-2">Suggested Serving Sizes:</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
                         <div className="p-2 bg-muted/50 rounded">
                           <p className="font-medium">Regular Meal Portion:</p>
                           <p className="text-muted-foreground">150-200g per serving</p>
@@ -362,8 +362,8 @@ const DietRecommendations = () => {
                     {/* Preparation */}
                     {recommendation.preparation && (
                       <div>
-                        <h4 className="font-medium text-sm mb-2">Preparation Tips:</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-medium text-xs sm:text-sm mb-1 sm:mb-2">Preparation Tips:</h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {recommendation.preparation}
                         </p>
                       </div>
