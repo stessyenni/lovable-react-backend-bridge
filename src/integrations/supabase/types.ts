@@ -722,14 +722,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_email_by_username: {
-        Args: { p_username: string }
-        Returns: string
-      }
-      get_unread_message_count: {
-        Args: { user_uuid: string }
-        Returns: number
-      }
+      get_email_by_username: { Args: { p_username: string }; Returns: string }
+      get_unread_message_count: { Args: { user_uuid: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never
