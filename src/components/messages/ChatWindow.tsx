@@ -14,17 +14,25 @@ interface ChatWindowProps {
   messages: Message[];
   onSendMessage: (recipientId: string, content: string) => void;
   markMessagesAsRead?: (recipientId: string) => void;
+  onMessagesRead?: () => void;
 }
 
-const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead }: ChatWindowProps) => {
+const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead, onMessagesRead }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
-    if (recipientId && markMessagesAsRead) {
-      // Mark messages as read when chat window is opened
-      markMessagesAsRead(recipientId);
-    }
-  }, [recipientId, markMessagesAsRead]);
+    const markAsRead = async () => {
+      if (recipientId && markMessagesAsRead) {
+        // Mark messages as read when chat window is opened
+        await markMessagesAsRead(recipientId);
+        // Immediately update the unread count
+        if (onMessagesRead) {
+          onMessagesRead();
+        }
+      }
+    };
+    markAsRead();
+  }, [recipientId, markMessagesAsRead, onMessagesRead]);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {

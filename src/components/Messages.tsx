@@ -6,6 +6,7 @@ import { Users, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useConnections } from "./messages/hooks/useConnections";
 import { useMessages } from "./messages/hooks/useMessages";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import ConnectionsList from "./messages/ConnectionsList";
 import UserSearch from "./messages/UserSearch";
 import MessagesList from "./messages/MessagesList";
@@ -23,6 +24,7 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
   
   const { connections, fetchConnections } = useConnections(user?.id);
   const { messages, loading, fetchMessages, sendMessage, markMessagesAsRead } = useMessages(user?.id, 'messages');
+  const { fetchUnreadCount } = useUnreadMessages();
 
   useEffect(() => {
     if (user) {
@@ -90,6 +92,7 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
                 )}
                 onSendMessage={sendMessage}
                 markMessagesAsRead={markMessagesAsRead}
+                onMessagesRead={fetchUnreadCount}
               />
             </div>
           </div>

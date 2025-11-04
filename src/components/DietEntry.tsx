@@ -67,8 +67,15 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
 
     const newCategory = await addCategory(newCategoryName.trim());
     if (newCategory) {
+      // Set the newly created category as selected
+      // The categories list will update via the hook's fetchCategories call
       setSelectedCategory(newCategory.id);
       setNewCategoryName("");
+      
+      toast({
+        title: "Category Added",
+        description: `"${newCategory.name}" is now available for selection.`,
+      });
     }
   };
 
