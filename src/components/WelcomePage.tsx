@@ -99,7 +99,7 @@ const WelcomePage = ({
     {
       icon: Activity,
       title: "Health Monitoring",
-      description: "Track your vital signs, diet, and overall health progress in real-time",
+      description: "Track your vital signs, diet, and overall health progress in real-time. Organize meals by categories like Breakfast, Lunch, Dinner, Snacks, and more",
       color: "bg-green-500"
     },
     {
