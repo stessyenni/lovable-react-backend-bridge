@@ -89,9 +89,9 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
   return (
     <div className="space-y-4 sm:space-y-6 w-full">
       <div className="px-1 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Welcome back!</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">Here's your health overview for today</p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold mb-1 sm:mb-2 truncate">Welcome back!</h1>
+          <p className="text-xs sm:text-sm lg:text-base text-muted-foreground">Here's your health overview for today</p>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Total meals recorded: <span className="font-semibold text-primary">{totalMealCount}</span>
           </p>

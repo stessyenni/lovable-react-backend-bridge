@@ -1,0 +1,59 @@
+{
+  "welcome": {
+    "title": "Bienvenue sur HemApp",
+    "subtitle": "Votre Compagnon Santé Personnel pour une Vie Meilleure",
+    "description": "Suivez votre santé, surveillez votre alimentation et obtenez des recommandations personnalisées alimentées par l'IA pour gérer les niveaux d'hémoglobine et le bien-être général.",
+    "getStarted": "Commencer Maintenant",
+    "securityBadge": "Sécurisé et Privé",
+    "features": {
+      "title": "Fonctionnalités Clés",
+      "aiConsultation": {
+        "title": "Consultation Santé IA",
+        "description": "Obtenez des conseils de santé instantanés et personnalisés de notre assistant IA à tout moment."
+      },
+      "dietMonitoring": {
+        "title": "Surveillance Alimentaire",
+        "description": "Suivez vos repas et votre apport nutritionnel avec des recommandations intelligentes. Exemples: Petit-déjeuner, Déjeuner, Dîner, Collations, et plus."
+      },
+      "healthTracking": {
+        "title": "Suivi de la Santé",
+        "description": "Surveillez les signes vitaux, les symptômes et les mesures de santé en un seul endroit."
+      },
+      "emergency": {
+        "title": "Assistance d'Urgence",
+        "description": "Accès rapide aux contacts d'urgence et aux établissements de santé à proximité."
+      }
+    },
+    "benefits": {
+      "title": "Pourquoi Choisir HemApp?",
+      "items": [
+        "Informations de santé personnalisées alimentées par l'IA",
+        "Interface facile à utiliser en plusieurs langues",
+        "Support hors ligne pour les zones éloignées",
+        "Commandes vocales et fonctionnalités d'accessibilité",
+        "Gestion sécurisée et privée des données de santé",
+        "Connectez-vous avec des professionnels de santé"
+      ]
+    },
+    "cta": {
+      "title": "Commencez Votre Parcours Santé Aujourd'hui",
+      "description": "Rejoignez des milliers d'utilisateurs qui prennent le contrôle de leur santé avec HemApp"
+    }
+  },
+  "dashboard": {
+    "welcomeBack": "Bon retour!",
+    "healthOverview": "Voici votre aperçu de santé pour aujourd'hui",
+    "totalMeals": "Total des repas enregistrés"
+  },
+  "languages": {
+    "english": "Anglais",
+    "french": "Français",
+    "pidgin": "Pidgin Anglais"
+  },
+  "common": {
+    "language": "Langue",
+    "selectLanguage": "Sélectionner la Langue",
+    "braille": "Braille",
+    "readPage": "Lire la Page"
+  }
+}

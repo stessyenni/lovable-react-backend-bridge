@@ -1,0 +1,59 @@
+{
+  "welcome": {
+    "title": "Welcome for HemApp",
+    "subtitle": "Your Own Health Padi wey go Help You Live Better",
+    "description": "Check your health, watch your food, and get your own advice wey AI go give you for manage hemoglobin levels and your overall wellness.",
+    "getStarted": "Make We Start Now",
+    "securityBadge": "E Safe & Private",
+    "features": {
+      "title": "Main Features",
+      "aiConsultation": {
+        "title": "AI Health Talk",
+        "description": "Get quick health advice wey AI go give you anytime you want am."
+      },
+      "dietMonitoring": {
+        "title": "Food Monitoring",
+        "description": "Watch your chop and nutrition with smart advice. Example: Morning chop, Afternoon chop, Night chop, Snacks, and more."
+      },
+      "healthTracking": {
+        "title": "Health Tracking",
+        "description": "Watch your body signs, sickness signs, and health measure for one place."
+      },
+      "emergency": {
+        "title": "Emergency Help",
+        "description": "Quick way to find emergency contacts and hospital wey dey near you."
+      }
+    },
+    "benefits": {
+      "title": "Why You Go Choose HemApp?",
+      "items": [
+        "Your own health advice wey AI go power",
+        "Easy to use interface for plenty languages",
+        "E dey work even when no network for remote areas",
+        "Voice commands and accessibility features",
+        "Your health data safe and private",
+        "Connect with healthcare people"
+      ]
+    },
+    "cta": {
+      "title": "Start Your Health Journey Today",
+      "description": "Join thousands of people wey dey use HemApp take control their health"
+    }
+  },
+  "dashboard": {
+    "welcomeBack": "You don come back!",
+    "healthOverview": "Na your health overview for today be dis",
+    "totalMeals": "Total food wey you don record"
+  },
+  "languages": {
+    "english": "English",
+    "french": "Français",
+    "pidgin": "Pidgin English"
+  },
+  "common": {
+    "language": "Language",
+    "selectLanguage": "Choose Language",
+    "braille": "Braille",
+    "readPage": "Read Page"
+  }
+}

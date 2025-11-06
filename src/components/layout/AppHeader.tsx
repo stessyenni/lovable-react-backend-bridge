@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import SpeechInterface from "@/components/enhanced/SpeechInterface";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { LogOut, Mic, MicOff, Phone, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AppSettings from "@/components/AppSettings";
@@ -51,6 +52,9 @@ const AppHeader = ({
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+
           {/* Connection Status - Hidden on mobile */}
           <div className="hidden sm:flex items-center space-x-2">
             <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>

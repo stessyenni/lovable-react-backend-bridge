@@ -1,0 +1,59 @@
+{
+  "welcome": {
+    "title": "Welcome to HemApp",
+    "subtitle": "Your Personal Health Companion for Better Living",
+    "description": "Track your health, monitor your diet, and get personalized AI-powered recommendations for managing hemoglobin levels and overall wellness.",
+    "getStarted": "Get Started Now",
+    "securityBadge": "Secure & Private",
+    "features": {
+      "title": "Key Features",
+      "aiConsultation": {
+        "title": "AI Health Consultation",
+        "description": "Get instant, personalized health advice from our AI assistant anytime."
+      },
+      "dietMonitoring": {
+        "title": "Diet Monitoring",
+        "description": "Track your meals and nutritional intake with smart recommendations. Examples: Breakfast, Lunch, Dinner, Snacks, and more."
+      },
+      "healthTracking": {
+        "title": "Health Tracking",
+        "description": "Monitor vital signs, symptoms, and health metrics in one place."
+      },
+      "emergency": {
+        "title": "Emergency Support",
+        "description": "Quick access to emergency contacts and nearby health facilities."
+      }
+    },
+    "benefits": {
+      "title": "Why Choose HemApp?",
+      "items": [
+        "Personalized health insights powered by AI",
+        "Easy-to-use interface in multiple languages",
+        "Offline support for remote areas",
+        "Voice commands and accessibility features",
+        "Secure and private health data management",
+        "Connect with healthcare providers"
+      ]
+    },
+    "cta": {
+      "title": "Start Your Health Journey Today",
+      "description": "Join thousands of users taking control of their health with HemApp"
+    }
+  },
+  "dashboard": {
+    "welcomeBack": "Welcome back!",
+    "healthOverview": "Here's your health overview for today",
+    "totalMeals": "Total meals recorded"
+  },
+  "languages": {
+    "english": "English",
+    "french": "Français",
+    "pidgin": "Pidgin English"
+  },
+  "common": {
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "braille": "Braille",
+    "readPage": "Read Page"
+  }
+}
