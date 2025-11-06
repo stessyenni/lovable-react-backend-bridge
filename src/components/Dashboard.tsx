@@ -11,6 +11,7 @@ import ViewCategories from "./ViewCategories";
 import NutritionGoalsPage from "./NutritionGoalsPage";
 import TrendsPage from "./TrendsPage";
 import { useDietData } from "./diet/hooks/useDietData";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardProps {
   onGoHome?: () => void;
@@ -26,6 +27,7 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
   const [showNutritionGoals, setShowNutritionGoals] = useState(false);
   const [showTrends, setShowTrends] = useState(false);
   const [todayStats, setTodayStats] = useState({ meals: 0, calories: 0, protein: 0, fiber: 0 });
+  const [totalMealCount, setTotalMealCount] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -33,6 +35,23 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
       setTodayStats(stats);
     }
   }, [user]);
+
+  useEffect(() => {
+    const fetchTotalMealCount = async () => {
+      if (!user) return;
+      
+      const { count, error } = await supabase
+        .from('diet_entries')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      
+      if (!error && count !== null) {
+        setTotalMealCount(count);
+      }
+    };
+    
+    fetchTotalMealCount();
+  }, [user, todayStats]);
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -73,6 +92,9 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Welcome back!</h1>
           <p className="text-sm sm:text-base text-muted-foreground">Here's your health overview for today</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Total meals recorded: <span className="font-semibold text-primary">{totalMealCount}</span>
+          </p>
         </div>
         {onGoHome && (
           <Button 

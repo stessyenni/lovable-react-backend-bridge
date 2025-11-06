@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useMealCategories } from "@/hooks/useMealCategories";
 import { Plus, Camera, X, Save } from "lucide-react";
+import MealDetailsModal from "@/components/MealDetailsModal";
 
 interface MealCategory {
   id: string;
@@ -41,6 +42,8 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [createdMeal, setCreatedMeal] = useState<any | null>(null);
+  const [showMealDetails, setShowMealDetails] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const { categories, addCategory } = useMealCategories();
@@ -142,9 +145,12 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
         protein: protein || null,
         fiber: fiber || null,
         logged_at: editMode && existingEntry ? existingEntry.logged_at : new Date().toISOString(),
+        image_url: imageUrl,
+        meal_content: mealContent || null,
       };
 
       let error;
+      let createdEntry = null;
       if (editMode && existingEntry) {
         const { error: updateError } = await supabase
           .from('diet_entries')
@@ -152,10 +158,13 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
           .eq('id', existingEntry.id);
         error = updateError;
       } else {
-        const { error: insertError } = await supabase
+        const { data: insertedData, error: insertError } = await supabase
           .from('diet_entries')
-          .insert(mealData);
+          .insert(mealData)
+          .select()
+          .single();
         error = insertError;
+        createdEntry = insertedData;
       }
 
       if (error) {
@@ -173,8 +182,10 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
         description: editMode ? "Meal updated successfully!" : "Meal added successfully!",
       });
 
-      // Reset form if not in edit mode
-      if (!editMode) {
+      // Reset form and show meal details if not in edit mode
+      if (!editMode && createdEntry) {
+        setCreatedMeal(createdEntry);
+        setShowMealDetails(true);
         setMealName("");
         setMealType("");
         setCalories("");
@@ -202,8 +213,9 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
-      <div className="bg-background rounded-lg w-full max-w-md sm:max-w-lg max-h-[90vh] flex flex-col">
+    <>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
+        <div className="bg-background rounded-lg w-full max-w-md sm:max-w-lg max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-3 sm:p-4 border-b">
           <h2 className="text-base sm:text-lg font-semibold">
             {editMode ? 'Edit Meal' : 'Add New Meal'}
@@ -365,6 +377,18 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
         </div>
       </div>
     </div>
+
+    <MealDetailsModal
+      meal={createdMeal}
+      isOpen={showMealDetails}
+      onClose={() => {
+        setShowMealDetails(false);
+        setCreatedMeal(null);
+      }}
+      onEdit={() => {}}
+      onDelete={() => {}}
+    />
+    </>
   );
 };
 
