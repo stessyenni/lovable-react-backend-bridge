@@ -6,6 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 import { 
   Volume2, 
   VolumeX, 
@@ -36,51 +37,47 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
   const [volume, setVolume] = useState([0.8]);
   const [isTestingSpeech, setIsTestingSpeech] = useState(false);
   const { toast } = useToast();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const loadVoices = () => {
       if ('speechSynthesis' in window) {
         const availableVoices = window.speechSynthesis.getVoices();
+        const currentLang = i18n.language;
         
-        // Filter for African and International voices with good African representation
-        const africanVoices: Voice[] = availableVoices
-          .filter(voice => {
-            const name = voice.name.toLowerCase();
-            const lang = voice.lang.toLowerCase();
-            
-            // Look for African languages and accents
-            return lang.includes('af-') || // Afrikaans
-                   lang.includes('am-') || // Amharic
-                   lang.includes('ar-') || // Arabic (North Africa)
-                   lang.includes('sw-') || // Swahili
-                   lang.includes('zu-') || // Zulu
-                   lang.includes('xh-') || // Xhosa
-                   lang.includes('en-za') || // South African English
-                   lang.includes('en-ng') || // Nigerian English
-                   lang.includes('en-ke') || // Kenyan English
-                   lang.includes('fr-sn') || // Senegalese French
-                   lang.includes('fr-ci') || // Ivorian French
-                   lang.includes('pt-ao') || // Angolan Portuguese
-                   name.includes('zira') || // Microsoft Zira (often used for African accents)
-                   name.includes('david') || // Microsoft David
-                   name.includes('mark') ||  // Microsoft Mark
-                   name.includes('hazel') || // Microsoft Hazel
-                   (lang.includes('en-') && (name.includes('african') || name.includes('south')));
-          })
-          .map(voice => ({
-            name: voice.name,
-            lang: voice.lang,
-            gender: (voice.name.toLowerCase().includes('male') || 
-                   voice.name.toLowerCase().includes('david') || 
-                   voice.name.toLowerCase().includes('mark')) ? 'male' as const : 'female' as const,
-            voiceURI: voice.voiceURI
-          }));
-
-        // If no specific African voices found, add some good international voices that work well
-        if (africanVoices.length === 0) {
-          const fallbackVoices = availableVoices
-            .filter(voice => voice.lang.startsWith('en-'))
-            .slice(0, 6)
+        // Filter voices based on current language
+        let filteredVoices: Voice[] = [];
+        
+        if (currentLang === 'fr') {
+          // French voices - prioritize African French
+          filteredVoices = availableVoices
+            .filter(voice => {
+              const lang = voice.lang.toLowerCase();
+              return lang.includes('fr-') || lang.startsWith('fr');
+            })
+            .map(voice => ({
+              name: voice.name,
+              lang: voice.lang,
+              gender: voice.name.toLowerCase().includes('male') ? 'male' as const : 'female' as const,
+              voiceURI: voice.voiceURI
+            }));
+        } else if (currentLang === 'pdc' || currentLang === 'en') {
+          // English/Pidgin voices - prioritize African English
+          filteredVoices = availableVoices
+            .filter(voice => {
+              const name = voice.name.toLowerCase();
+              const lang = voice.lang.toLowerCase();
+              
+              return lang.includes('en-za') || // South African English
+                     lang.includes('en-ng') || // Nigerian English
+                     lang.includes('en-ke') || // Kenyan English
+                     lang.includes('en-cm') || // Cameroon English
+                     lang.startsWith('en-') ||
+                     name.includes('zira') ||
+                     name.includes('david') ||
+                     name.includes('mark') ||
+                     name.includes('hazel');
+            })
             .map(voice => ({
               name: voice.name,
               lang: voice.lang,
@@ -89,16 +86,25 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
                      voice.name.toLowerCase().includes('mark')) ? 'male' as const : 'female' as const,
               voiceURI: voice.voiceURI
             }));
-          
-          setVoices(fallbackVoices);
-        } else {
-          setVoices(africanVoices);
         }
 
-        // Set default voice (prefer female African voice)
-        const defaultVoice = africanVoices.find(v => v.gender === 'female') || 
-                           africanVoices[0] || 
-                           availableVoices[0];
+        // Fallback to any available voices if no language-specific voices found
+        if (filteredVoices.length === 0) {
+          filteredVoices = availableVoices
+            .slice(0, 10)
+            .map(voice => ({
+              name: voice.name,
+              lang: voice.lang,
+              gender: voice.name.toLowerCase().includes('male') ? 'male' as const : 'female' as const,
+              voiceURI: voice.voiceURI
+            }));
+        }
+
+        setVoices(filteredVoices);
+
+        // Set default voice
+        const defaultVoice = filteredVoices.find(v => v.gender === 'female') || 
+                           filteredVoices[0];
         if (defaultVoice) {
           setSelectedVoice(defaultVoice.voiceURI);
         }
@@ -111,13 +117,19 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
     if ('speechSynthesis' in window) {
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
-  }, []);
+  }, [i18n.language]);
 
   const testVoice = () => {
     if (!speechEnabled || !selectedVoice) {
+      const messages: { [key: string]: { title: string; description: string } } = {
+        'en': { title: "Speech Disabled", description: "Please enable speech to test voices" },
+        'fr': { title: "Parole Désactivée", description: "Veuillez activer la parole pour tester les voix" },
+        'pdc': { title: "Speech Disabled", description: "Enable speech first to test voices" }
+      };
+      const msg = messages[i18n.language] || messages['en'];
       toast({
-        title: "Speech Disabled",
-        description: "Please enable speech to test voices",
+        title: msg.title,
+        description: msg.description,
         variant: "destructive"
       });
       return;
@@ -125,7 +137,12 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
 
     setIsTestingSpeech(true);
     
-    const testText = "Hello! I am your voice assistant. I can help you navigate the app and read content aloud.";
+    const testTexts: { [key: string]: string } = {
+      'en': "Hello! I am your voice assistant. I can help you navigate the app and read content aloud.",
+      'fr': "Bonjour! Je suis votre assistant vocal. Je peux vous aider à naviguer dans l'application et lire le contenu à haute voix.",
+      'pdc': "Hello! I be your voice assistant. I fit help you move for the app and read content loud."
+    };
+    const testText = testTexts[i18n.language] || testTexts['en'];
     const utterance = new SpeechSynthesisUtterance(testText);
     
     // Find the selected voice
@@ -141,9 +158,15 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
     utterance.onend = () => setIsTestingSpeech(false);
     utterance.onerror = () => {
       setIsTestingSpeech(false);
+      const messages: { [key: string]: { title: string; description: string } } = {
+        'en': { title: "Speech Error", description: "Failed to test voice. Please try a different voice." },
+        'fr': { title: "Erreur de Parole", description: "Échec du test vocal. Essayez une autre voix." },
+        'pdc': { title: "Speech Error", description: "Voice test no work. Try another voice." }
+      };
+      const msg = messages[i18n.language] || messages['en'];
       toast({
-        title: "Speech Error",
-        description: "Failed to test voice. Please try a different voice.",
+        title: msg.title,
+        description: msg.description,
         variant: "destructive"
       });
     };

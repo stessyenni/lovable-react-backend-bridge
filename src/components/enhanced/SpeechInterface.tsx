@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Mic, MicOff, Volume2, VolumeX, Play, Pause } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface SpeechInterfaceProps {
   onTextRecognized?: (text: string) => void;
@@ -21,7 +22,18 @@ const SpeechInterface = ({
   const [transcript, setTranscript] = useState("");
   const [recognition, setRecognition] = useState<any>(null);
   const { toast } = useToast();
+  const { i18n } = useTranslation();
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
+
+  // Map i18n language codes to speech recognition codes
+  const getSpeechLangCode = (langCode: string) => {
+    const langMap: { [key: string]: string } = {
+      'en': 'en-US',
+      'fr': 'fr-FR',
+      'pdc': 'en-CM', // Pidgin - fallback to Cameroon English
+    };
+    return langMap[langCode] || 'en-US';
+  };
 
   useEffect(() => {
     // Initialize speech recognition
@@ -31,7 +43,7 @@ const SpeechInterface = ({
       
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
-      recognitionInstance.lang = 'en-US';
+      recognitionInstance.lang = getSpeechLangCode(i18n.language);
 
       recognitionInstance.onresult = (event: any) => {
         let finalTranscript = '';
@@ -60,9 +72,15 @@ const SpeechInterface = ({
 
       recognitionInstance.onstart = () => {
         setIsListening(true);
+        const messages: { [key: string]: { title: string; description: string } } = {
+          'en': { title: "Listening Started", description: "Speak now, your voice is being recorded..." },
+          'fr': { title: "Écoute Démarrée", description: "Parlez maintenant, votre voix est enregistrée..." },
+          'pdc': { title: "I Don Start Listening", description: "Talk now, I dey record your voice..." }
+        };
+        const msg = messages[i18n.language] || messages['en'];
         toast({
-          title: "Listening Started",
-          description: "Speak now, your voice is being recorded...",
+          title: msg.title,
+          description: msg.description,
         });
       };
 
@@ -73,9 +91,15 @@ const SpeechInterface = ({
       recognitionInstance.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
+        const messages: { [key: string]: { title: string; description: string } } = {
+          'en': { title: "Voice Recognition Error", description: `Error: ${event.error}. Please check your microphone permissions.` },
+          'fr': { title: "Erreur de Reconnaissance Vocale", description: `Erreur: ${event.error}. Vérifiez les autorisations du microphone.` },
+          'pdc': { title: "Voice Recognition Error", description: `Error: ${event.error}. Check your microphone permission.` }
+        };
+        const msg = messages[i18n.language] || messages['en'];
         toast({
-          title: "Voice Recognition Error",
-          description: `Error: ${event.error}. Please check your microphone permissions.`,
+          title: msg.title,
+          description: msg.description,
           variant: "destructive"
         });
       };
@@ -150,13 +174,21 @@ const SpeechInterface = ({
       utterance.pitch = 1;
       utterance.volume = 0.8;
 
-      // Use a stored voice setting if available
+      // Use a stored voice setting or select based on current language
       const voices = speechSynthesisRef.current.getVoices();
       const preferredVoice = localStorage.getItem('preferred-voice');
       if (preferredVoice && voices.length > 0) {
         const voice = voices.find(v => v.voiceURI === preferredVoice);
         if (voice) {
           utterance.voice = voice;
+        }
+      } else {
+        // Auto-select voice based on current language
+        const langCode = i18n.language;
+        const matchingVoice = voices.find(v => v.lang.startsWith(langCode)) || 
+                             voices.find(v => v.lang.startsWith('en'));
+        if (matchingVoice) {
+          utterance.voice = matchingVoice;
         }
       }
 
@@ -165,9 +197,15 @@ const SpeechInterface = ({
       utterance.onerror = (event) => {
         console.error('Speech synthesis error:', event);
         setIsSpeaking(false);
+        const messages: { [key: string]: { title: string; description: string } } = {
+          'en': { title: "Speech Error", description: "Failed to read text aloud. Please check your browser's speech settings." },
+          'fr': { title: "Erreur de Parole", description: "Échec de la lecture du texte. Vérifiez les paramètres de parole du navigateur." },
+          'pdc': { title: "Speech Error", description: "I no fit read the text. Check your browser speech settings." }
+        };
+        const msg = messages[i18n.language] || messages['en'];
         toast({
-          title: "Speech Error",
-          description: "Failed to read text aloud. Please check your browser's speech settings.",
+          title: msg.title,
+          description: msg.description,
           variant: "destructive"
         });
       };
