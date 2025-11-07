@@ -120,7 +120,7 @@ const SpeechInterface = ({
         speechSynthesisRef.current.cancel();
       }
     };
-  }, []);
+  }, [i18n.language]);
 
   // Auto-read text from page if enabled
   useEffect(() => {
