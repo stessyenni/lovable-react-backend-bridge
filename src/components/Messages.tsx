@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, UserPlus } from "lucide-react";
@@ -18,6 +19,7 @@ interface MessagesProps {
 }
 
 const Messages = ({ selectedUserId }: MessagesProps = {}) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [selectedChat, setSelectedChat] = useState<string | null>(selectedUserId || null);
   const [showConnections, setShowConnections] = useState(false);
@@ -49,12 +51,12 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
   }
 
   return (
-    <div className="flex h-full flex-col sm:flex-row">
+    <div className="flex h-[calc(100vh-8rem)] sm:h-full flex-col sm:flex-row">
       {/* Messages Sidebar - Mobile responsive */}
       <div className={`${selectedChat ? 'hidden sm:block' : 'block'} w-full sm:w-80 border-r bg-card flex-shrink-0`}>
         <div className="p-3 sm:p-4 border-b">
           <div className="flex items-center justify-between">
-            <h3 className="text-base sm:text-lg font-semibold">Messages</h3>
+            <h3 className="text-base sm:text-lg font-semibold">{t('messages.title')}</h3>
           </div>
         </div>
         
@@ -80,7 +82,7 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
                 onClick={() => setSelectedChat(null)}
                 className="text-xs"
               >
-                ← Back to Messages
+                ← {t('messages.backToMessages')}
               </Button>
             </div>
             <div className="flex-1">
@@ -101,10 +103,10 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
             <CardContent className="flex items-center justify-center h-full p-4">
               <div className="text-center space-y-4">
                 <div className="text-muted-foreground text-sm sm:text-base">
-                  Select a conversation to start messaging
+                  {t('messages.selectConversation')}
                 </div>
                 <p className="text-xs text-muted-foreground max-w-md">
-                  Choose from your recent conversations or start a new chat with your connections
+                  {t('messages.selectConversationDesc')}
                 </p>
               </div>
             </CardContent>

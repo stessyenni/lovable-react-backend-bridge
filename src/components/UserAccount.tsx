@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,7 @@ interface Profile {
 }
 
 const UserAccount = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -65,15 +67,15 @@ const UserAccount = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold">My Account</h2>
-          <p className="text-muted-foreground">Manage your profile and account settings</p>
+          <h2 className="text-xl sm:text-2xl font-bold">{t('userAccount.title')}</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">{t('userAccount.subtitle')}</p>
         </div>
-        <Button onClick={() => setShowEditDialog(true)}>
+        <Button onClick={() => setShowEditDialog(true)} className="w-full sm:w-auto">
           <Edit className="h-4 w-4 mr-2" />
-          Edit Profile
+          {t('userAccount.editProfile')}
         </Button>
       </div>
 

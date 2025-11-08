@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, UserPlus, MessageCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,6 +15,7 @@ interface ConnectionsProps {
 }
 
 const Connections = ({ onMessageUser, onSectionChange }: ConnectionsProps) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("connections");
@@ -38,11 +40,11 @@ const Connections = ({ onMessageUser, onSectionChange }: ConnectionsProps) => {
   };
 
   return (
-    <div className="space-y-4 lg:space-y-6 p-4 lg:p-6">
+    <div className="space-y-4 lg:space-y-6 p-2 sm:p-4 lg:p-6">
       <div className="space-y-2">
-        <h2 className="text-xl lg:text-2xl font-bold">Connections</h2>
+        <h2 className="text-xl lg:text-2xl font-bold">{t('connections.title')}</h2>
         <p className="text-sm lg:text-base text-muted-foreground">
-          Manage your connections and discover new people
+          {t('connections.subtitle')}
         </p>
       </div>
 

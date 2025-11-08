@@ -80,5 +80,32 @@
     "selectLanguage": "Select Language",
     "braille": "Braille",
     "readPage": "Read Page"
+  },
+  "healthMonitoring": {
+    "title": "Health Monitoring",
+    "subtitle": "Track your diet, goals, and health analytics",
+    "tabs": {
+      "diet": "Diet",
+      "recommendations": "Recommendations",
+      "recommendationsShort": "Rec.",
+      "goals": "Goals",
+      "analytics": "Analytics",
+      "analyticsShort": "Stats"
+    }
+  },
+  "userAccount": {
+    "title": "My Account",
+    "subtitle": "Manage your profile and account settings",
+    "editProfile": "Edit Profile"
+  },
+  "connections": {
+    "title": "Connections",
+    "subtitle": "Manage your connections and discover new people"
+  },
+  "messages": {
+    "title": "Messages",
+    "backToMessages": "Back to Messages",
+    "selectConversation": "Select a conversation to start messaging",
+    "selectConversationDesc": "Choose from your recent conversations or start a new chat with your connections"
   }
 }

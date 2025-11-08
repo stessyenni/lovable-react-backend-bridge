@@ -51,24 +51,12 @@ const AppHeader = ({
           </h1>
         </div>
 
-        <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
-          {/* Language Switcher */}
-          <LanguageSwitcher />
-
-          {/* Connection Status - Hidden on mobile */}
-          <div className="hidden sm:flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
-            <span className={`text-sm text-muted-foreground ${brailleMode ? "font-bold" : ""}`}>
-              {isOnline ? 'Online' : 'Offline'}
-            </span>
-            <Switch 
-              checked={isOnline}
-              onCheckedChange={onOnlineToggle}
-            />
-          </div>
-
-          {/* Speech Toggle with integrated SpeechInterface */}
-          <div className="flex items-center space-x-1">
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Voice and Language side by side */}
+          <div className="flex items-center gap-1">
+            <LanguageSwitcher />
+            
+            {/* Speech Toggle with integrated SpeechInterface */}
             <SpeechInterface 
               enableTextToSpeech={speechEnabled}
               autoReadText={speechEnabled}
@@ -85,22 +73,21 @@ const AppHeader = ({
                 }
               }}
               onTextRecognized={(text) => {
-                // Handle recognized text - could be used to fill input fields
                 console.log('Speech recognized:', text);
               }}
             />
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onSpeechToggle}
-              className={`flex items-center space-x-1 ${brailleMode ? "border border-yellow-400" : ""} px-2 sm:px-3`}
-            >
-              {speechEnabled ? <Mic className="h-3 w-3 sm:h-4 sm:w-4" /> : <MicOff className="h-3 w-3 sm:h-4 sm:w-4" />}
-              <span className={`text-xs sm:text-sm ${brailleMode ? "font-bold" : ""} hidden sm:inline`}>
-                {speechEnabled ? 'Speech On' : 'Speech Off'}
-              </span>
-            </Button>
+          </div>
+
+          {/* Connection Status - Hidden on mobile */}
+          <div className="hidden lg:flex items-center space-x-2">
+            <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <span className={`text-sm text-muted-foreground ${brailleMode ? "font-bold" : ""}`}>
+              {isOnline ? 'Online' : 'Offline'}
+            </span>
+            <Switch 
+              checked={isOnline}
+              onCheckedChange={onOnlineToggle}
+            />
           </div>
 
           {/* Emergency Contact - Icon only on mobile */}
