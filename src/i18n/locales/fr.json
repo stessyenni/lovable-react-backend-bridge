@@ -177,6 +177,25 @@
     "title": "Messages",
     "backToMessages": "Retour aux Messages",
     "selectConversation": "Sélectionnez une conversation pour commencer à envoyer des messages",
-    "selectConversationDesc": "Choisissez parmi vos conversations récentes ou commencez un nouveau chat avec vos connexions"
+    "selectConversationDesc": "Choisissez parmi vos conversations récentes ou commencez un nouveau chat avec vos connexions",
+    "typeMessage": "Écrivez votre message...",
+    "startConversation": "Commencez votre conversation"
+  },
+  "menu": {
+    "dashboard": "Tableau de bord",
+    "messages": "Messages",
+    "healthMonitoring": "Surveillance de la Santé",
+    "facilities": "Établissements",
+    "connections": "Connexions",
+    "smartwatch": "Montre Connectée",
+    "account": "Mon Compte",
+    "faq": "FAQ & Aide"
+  },
+  "header": {
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "emergency": "Urgence",
+    "settings": "Paramètres",
+    "signOut": "Se Déconnecter"
   }
 }

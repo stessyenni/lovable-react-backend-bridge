@@ -8,6 +8,7 @@ import MainContent from "./layout/MainContent";
 import WelcomePage from "./WelcomePage";
 import DemoDataCreator from "./DemoDataCreator";
 import FloatingHemBot from "./FloatingHemBot";
+import { useTranslation } from 'react-i18next';
 
 interface MenuItem {
   id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
@@ -30,16 +31,17 @@ const MainApp = () => {
     handleWelcomeComplete,
     handleGetStarted,
   } = useMainAppState();
+  const { t } = useTranslation();
 
   const menuItems: MenuItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'messages', label: 'Messages', icon: MessageCircle },
-    { id: 'health-monitoring', label: 'Health Monitoring', icon: Activity },
-    { id: 'facilities', label: 'Facilities', icon: MapPin },
-    { id: 'connections', label: 'Connections', icon: Users },
-    { id: 'smartwatch', label: 'SmartWatch', icon: Watch },
-    { id: 'account', label: 'User Account', icon: User },
-    { id: 'faq', label: 'FAQ & Help', icon: HelpCircle },
+    { id: 'dashboard', label: t('menu.dashboard'), icon: BarChart3 },
+    { id: 'messages', label: t('menu.messages'), icon: MessageCircle },
+    { id: 'health-monitoring', label: t('menu.healthMonitoring'), icon: Activity },
+    { id: 'facilities', label: t('menu.facilities'), icon: MapPin },
+    { id: 'connections', label: t('menu.connections'), icon: Users },
+    { id: 'smartwatch', label: t('menu.smartwatch'), icon: Watch },
+    { id: 'account', label: t('menu.account'), icon: User },
+    { id: 'faq', label: t('menu.faq'), icon: HelpCircle },
   ];
 
   // Show welcome page first for new users

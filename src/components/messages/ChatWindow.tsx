@@ -8,6 +8,7 @@ import { Send, Bot } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Message, User } from "./types";
 import { UserAvatarPlaceholder } from "@/assets";
+import { useTranslation } from "react-i18next";
 
 interface ChatWindowProps {
   recipientId: string;
@@ -19,6 +20,7 @@ interface ChatWindowProps {
 
 const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead, onMessagesRead }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
+  const { i18n, t } = useTranslation();
 
   useEffect(() => {
     const markAsRead = async () => {
@@ -48,9 +50,9 @@ const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead, 
     }
   };
 
-  const sortedMessages = messages.sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
+const sortedMessages = [...messages].sort(
+  (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+);
 
   const getDisplayName = (user: User | undefined) => {
     if (!user) return 'Unknown User';
@@ -101,7 +103,7 @@ const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead, 
         <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-4 mb-4 min-h-0">
           {sortedMessages.length === 0 && (
             <div className="flex justify-center items-center h-32">
-              <p className="text-sm text-muted-foreground">Start your conversation</p>
+              <p className="text-sm text-muted-foreground">{t('messages.startConversation')}</p>
             </div>
           )}
           {sortedMessages.map((message) => {
@@ -134,37 +136,36 @@ const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead, 
         </div>
         
         <div className="flex space-x-2">
-          <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            className="flex-1 text-sm"
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              // Add speech-to-text functionality
-              if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-                const recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.interimResults = false;
-                recognition.lang = 'en-US';
-                
-                recognition.onresult = (event: any) => {
-                  const transcript = event.results[0][0].transcript;
-                  setNewMessage(prev => prev + transcript);
-                };
-                
-                recognition.start();
-              }
-            }}
-          >
-            <span className="sr-only">Voice input</span>
-            🎤
-          </Button>
+<Input
+  value={newMessage}
+  onChange={(e) => setNewMessage(e.target.value)}
+  onKeyPress={handleKeyPress}
+  placeholder={t('messages.typeMessage')}
+  className="flex-1 text-sm"
+/>
+<Button
+  variant="outline"
+  size="sm"
+  onClick={() => {
+    // Add speech-to-text functionality
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      const langMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', pdc: 'en-CM' };
+      recognition.lang = langMap[i18n.language] || 'en-US';
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setNewMessage(prev => prev + transcript);
+      };
+      recognition.start();
+    }
+  }}
+>
+  <span className="sr-only">{t('common.readPage')}</span>
+  🎤
+</Button>
           <Button onClick={handleSendMessage} size="sm">
             <Send className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>

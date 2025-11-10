@@ -40,7 +40,7 @@ const Connections = ({ onMessageUser, onSectionChange }: ConnectionsProps) => {
   };
 
   return (
-    <div className="space-y-4 lg:space-y-6 p-2 sm:p-4 lg:p-6">
+    <div className="space-y-4 lg:space-y-6 w-full max-w-5xl mx-auto p-2 sm:p-4 lg:p-6 min-w-0">
       <div className="space-y-2">
         <h2 className="text-xl lg:text-2xl font-bold">{t('connections.title')}</h2>
         <p className="text-sm lg:text-base text-muted-foreground">

@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import AppSettings from "@/components/AppSettings";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useTranslation } from 'react-i18next';
 
 interface MenuItem {
   id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
@@ -41,6 +42,7 @@ const AppHeader = ({
   onSpeechToggle,
 }: AppHeaderProps) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { t } = useTranslation();
   return (
     <header className="border-b bg-card px-3 sm:px-4 py-3 sticky top-0 z-40">
       <div className="flex items-center justify-between w-full">
@@ -82,7 +84,7 @@ const AppHeader = ({
           <div className="hidden lg:flex items-center space-x-2">
             <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
             <span className={`text-sm text-muted-foreground ${brailleMode ? "font-bold" : ""}`}>
-              {isOnline ? 'Online' : 'Offline'}
+              {isOnline ? t('header.online') : t('header.offline')}
             </span>
             <Switch 
               checked={isOnline}
@@ -98,7 +100,7 @@ const AppHeader = ({
             className="flex items-center space-x-1 text-red-600 border-red-600 px-2 sm:px-3"
           >
             <Phone className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="text-xs sm:text-sm hidden sm:inline">Emergency</span>
+            <span className="text-xs sm:text-sm hidden sm:inline">{t('header.emergency')}</span>
           </Button>
 
           {/* App Settings */}
@@ -110,7 +112,7 @@ const AppHeader = ({
                 className={`flex items-center space-x-1 ${brailleMode ? "border-2 border-yellow-400" : ""} px-2 sm:px-3`}
               >
                 <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className={`text-xs sm:text-sm ${brailleMode ? "font-bold" : ""} hidden sm:inline`}>Settings</span>
+                <span className={`text-xs sm:text-sm ${brailleMode ? "font-bold" : ""} hidden sm:inline`}>{t('header.settings')}</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -126,7 +128,7 @@ const AppHeader = ({
             className={`flex items-center space-x-1 ${brailleMode ? "border-2 border-yellow-400" : ""} px-2 sm:px-3`}
           >
             <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className={`text-xs sm:text-sm ${brailleMode ? "font-bold" : ""} hidden sm:inline`}>Sign Out</span>
+            <span className={`text-xs sm:text-sm ${brailleMode ? "font-bold" : ""} hidden sm:inline`}>{t('header.signOut')}</span>
           </Button>
         </div>
       </div>

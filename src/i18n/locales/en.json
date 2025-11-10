@@ -177,6 +177,25 @@
     "title": "Messages",
     "backToMessages": "Back to Messages",
     "selectConversation": "Select a conversation to start messaging",
-    "selectConversationDesc": "Choose from your recent conversations or start a new chat with your connections"
+    "selectConversationDesc": "Choose from your recent conversations or start a new chat with your connections",
+    "typeMessage": "Type your message...",
+    "startConversation": "Start your conversation"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "messages": "Messages",
+    "healthMonitoring": "Health Monitoring",
+    "facilities": "Facilities",
+    "connections": "Connections",
+    "smartwatch": "SmartWatch",
+    "account": "User Account",
+    "faq": "FAQ & Help"
+  },
+  "header": {
+    "online": "Online",
+    "offline": "Offline",
+    "emergency": "Emergency",
+    "settings": "Settings",
+    "signOut": "Sign Out"
   }
 }

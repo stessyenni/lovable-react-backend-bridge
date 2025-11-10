@@ -51,7 +51,7 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] sm:h-[calc(100vh-4rem)] flex-col sm:flex-row overflow-hidden">
+    <div className="flex h-full flex-col sm:flex-row overflow-hidden min-h-0">
       {/* Messages Sidebar - Mobile responsive */}
       <div className={`${selectedChat ? 'hidden sm:block' : 'block'} w-full sm:w-80 lg:w-96 border-r bg-card flex-shrink-0 flex flex-col overflow-hidden`}>
         <div className="p-3 sm:p-4 lg:p-6 border-b flex-shrink-0">
