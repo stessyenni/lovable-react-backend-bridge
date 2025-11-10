@@ -130,11 +130,6 @@ const WelcomePage = ({
       />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Header with Language Switcher */}
-        <div className="flex justify-end mb-4">
-          <LanguageSwitcher />
-        </div>
-
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -238,7 +233,8 @@ const WelcomePage = ({
 
       {/* Assistive Features - Bottom */}
       <div className="fixed bottom-4 left-2 right-2 sm:left-4 sm:right-4 z-40 flex justify-center">
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-2 flex items-center gap-2 shadow-lg">
+        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-2 flex flex-wrap items-center justify-center gap-2 shadow-lg">
+          <LanguageSwitcher />
           <Button
             size="sm"
             variant={brailleMode ? "default" : "outline"}

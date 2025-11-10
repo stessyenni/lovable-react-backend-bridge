@@ -81,6 +81,77 @@
     "braille": "Braille",
     "readPage": "Lire la Page"
   },
+  "sidebar": {
+    "navigation": "Navigation",
+    "consultDoctor": "Consulter un Médecin",
+    "brailleMode": "Mode Braille"
+  },
+  "appSettings": {
+    "title": "Paramètres de l'Application",
+    "subtitle": "Personnalisez votre expérience Hemapp",
+    "smartWatch": {
+      "title": "Intégration Montre Connectée",
+      "description": "Connectez et synchronisez avec votre montre connectée"
+    },
+    "voiceCommands": {
+      "title": "Commandes Vocales",
+      "description": "Contrôlez l'application avec des commandes vocales"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Contrôlez quand et comment vous recevez des notifications",
+      "pushNotifications": "Notifications Push",
+      "pushDescription": "Recevoir des notifications sur votre appareil",
+      "types": "Types de Notifications",
+      "medication": "Rappels de Médicaments",
+      "meal": "Enregistrement de Repas",
+      "exercise": "Rappels d'Exercice",
+      "goals": "Mises à Jour d'Objectifs",
+      "healthTips": "Conseils Santé",
+      "quietHours": "Heures Silencieuses",
+      "noQuietHours": "Pas d'heures silencieuses",
+      "night": "22h - 8h",
+      "work": "9h - 17h",
+      "custom": "Heures personnalisées"
+    },
+    "accessibility": {
+      "title": "Accessibilité",
+      "description": "Rendre Hemapp plus facile à utiliser",
+      "voiceGuidance": "Guidage Vocal",
+      "voiceGuidanceDesc": "Lire à haute voix le contenu et les instructions",
+      "voiceVolume": "Volume Vocal",
+      "highContrast": "Mode Contraste Élevé",
+      "highContrastDesc": "Augmenter le contraste pour une meilleure visibilité",
+      "fontSize": "Taille de Police",
+      "hapticFeedback": "Retour Haptique",
+      "hapticFeedbackDesc": "Vibrer pour les interactions tactiles"
+    },
+    "appearance": {
+      "title": "Apparence",
+      "description": "Personnaliser l'apparence de l'application",
+      "darkMode": "Mode Sombre",
+      "darkModeDesc": "Utiliser le thème sombre pour une meilleure visibilité en faible luminosité",
+      "colorTheme": "Thème de Couleur",
+      "defaultBlue": "Bleu Par Défaut",
+      "healthGreen": "Vert Santé",
+      "calmPurple": "Violet Calme",
+      "energeticOrange": "Orange Énergique"
+    },
+    "privacy": {
+      "title": "Confidentialité et Sécurité",
+      "description": "Contrôlez vos données et paramètres de confidentialité",
+      "biometricLock": "Verrouillage Biométrique",
+      "biometricEnabled": "Utiliser l'empreinte digitale ou Face ID pour déverrouiller",
+      "biometricNotSupported": "Non pris en charge sur cet appareil",
+      "autoLock": "Verrouillage Automatique",
+      "autoLockDesc": "Verrouiller l'application lorsqu'elle n'est pas utilisée",
+      "analytics": "Partager les Analyses d'Utilisation",
+      "analyticsDesc": "Aider à améliorer l'application (données anonymes uniquement)",
+      "exportData": "Exporter Mes Données",
+      "resetSettings": "Réinitialiser Tous les Paramètres",
+      "deleteAccount": "Supprimer le Compte"
+    }
+  },
   "healthMonitoring": {
     "title": "Surveillance de la Santé",
     "subtitle": "Suivez votre alimentation, vos objectifs et vos analyses de santé",

@@ -51,16 +51,16 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] sm:h-full flex-col sm:flex-row">
+    <div className="flex h-[calc(100vh-8rem)] sm:h-[calc(100vh-4rem)] flex-col sm:flex-row overflow-hidden">
       {/* Messages Sidebar - Mobile responsive */}
-      <div className={`${selectedChat ? 'hidden sm:block' : 'block'} w-full sm:w-80 border-r bg-card flex-shrink-0`}>
-        <div className="p-3 sm:p-4 border-b">
+      <div className={`${selectedChat ? 'hidden sm:block' : 'block'} w-full sm:w-80 lg:w-96 border-r bg-card flex-shrink-0 flex flex-col overflow-hidden`}>
+        <div className="p-3 sm:p-4 lg:p-6 border-b flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h3 className="text-base sm:text-lg font-semibold">{t('messages.title')}</h3>
+            <h3 className="text-base sm:text-lg lg:text-xl font-semibold">{t('messages.title')}</h3>
           </div>
         </div>
         
-        <div className="h-full overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0">
           <MessagesList 
             messages={messages}
             currentUserId={user?.id || ''}
@@ -71,7 +71,7 @@ const Messages = ({ selectedUserId }: MessagesProps = {}) => {
       </div>
 
       {/* Main Chat Area - Mobile responsive */}
-      <div className={`${selectedChat ? 'block' : 'hidden sm:block'} flex-1 min-h-0`}>
+      <div className={`${selectedChat ? 'block' : 'hidden sm:block'} flex-1 flex flex-col overflow-hidden min-h-0`}>
         {selectedChat ? (
           <div className="h-full flex flex-col">
             {/* Mobile back button */}

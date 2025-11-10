@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield, Watch, Mic } from "lucide-react";
 import SmartWatchSync from "./SmartWatchSync";
 import VoiceCommands from "./VoiceCommands";
+import { useTranslation } from 'react-i18next';
 
 interface AppSettingsProps {
   brailleMode?: boolean;
@@ -23,6 +24,7 @@ const AppSettings = ({
   speechEnabled = false,
   onSpeechToggle 
 }: AppSettingsProps = {}) => {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -168,20 +170,20 @@ const AppSettings = ({
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto p-2 sm:p-4 overflow-y-auto max-h-screen">
+    <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto p-2 sm:p-4 lg:p-6">
       <div>
-        <h2 className="text-xl sm:text-2xl font-bold mb-2">App Settings</h2>
-        <p className="text-muted-foreground text-sm sm:text-base">Customize your Hemapp experience</p>
+        <h2 className="text-xl sm:text-2xl font-bold mb-2">{t('appSettings.title')}</h2>
+        <p className="text-muted-foreground text-sm sm:text-base">{t('appSettings.subtitle')}</p>
       </div>
 
       {/* SmartWatch Integration */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base lg:text-lg">
             <Watch className="h-4 w-4 sm:h-5 sm:w-5" />
-            SmartWatch Integration
+            {t('appSettings.smartWatch.title')}
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Connect and sync with your smartwatch</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">{t('appSettings.smartWatch.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <SmartWatchSync />
@@ -190,12 +192,12 @@ const AppSettings = ({
 
       {/* Voice Commands */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base lg:text-lg">
             <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
-            Voice Commands
+            {t('appSettings.voiceCommands.title')}
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Control the app with voice commands</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">{t('appSettings.voiceCommands.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <VoiceCommands 

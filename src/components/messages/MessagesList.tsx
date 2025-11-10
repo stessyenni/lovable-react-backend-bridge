@@ -55,11 +55,11 @@ const MessagesList = ({ messages, currentUserId, onSelectChat, selectedChat }: M
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Conversations</CardTitle>
+    <Card className="border-0 shadow-none">
+      <CardHeader className="p-3 sm:p-4 lg:p-6">
+        <CardTitle className="text-sm sm:text-base lg:text-lg">Recent Conversations</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2 p-2 sm:p-6">
+      <CardContent className="space-y-2 p-2 sm:p-4 lg:p-6 pt-0">
         {conversationList.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground">No conversations yet</p>

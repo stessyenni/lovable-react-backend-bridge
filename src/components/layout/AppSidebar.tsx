@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { AppLogo } from "@/assets";
+import { useTranslation } from 'react-i18next';
 
 interface MenuItem {
   id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
@@ -43,6 +44,7 @@ const AppSidebar = ({
   onSectionChange,
   onBrailleToggle,
 }: AppSidebarProps) => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
@@ -71,7 +73,7 @@ const AppSidebar = ({
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs sm:text-sm">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs sm:text-sm">{t('sidebar.navigation')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => {
@@ -115,20 +117,20 @@ const AppSidebar = ({
           <SidebarMenuButton
             onClick={handleDoctorConsult}
             className="w-full flex items-center justify-start gap-2"
-            tooltip="Consult Doctor"
+            tooltip={t('sidebar.consultDoctor')}
           >
             <Video className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">Consult Doctor</span>
+            <span className="truncate">{t('sidebar.consultDoctor')}</span>
           </SidebarMenuButton>
           
           <SidebarMenuButton
             onClick={onBrailleToggle}
             className="w-full flex items-center justify-between"
-            tooltip="Braille Mode"
+            tooltip={t('sidebar.brailleMode')}
           >
             <div className="flex items-center gap-2">
               <Settings className="h-4 w-4 flex-shrink-0" />
-              <span className="truncate">Braille Mode</span>
+              <span className="truncate">{t('sidebar.brailleMode')}</span>
             </div>
             <Switch 
               checked={brailleMode}

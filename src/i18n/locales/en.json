@@ -81,6 +81,77 @@
     "braille": "Braille",
     "readPage": "Read Page"
   },
+  "sidebar": {
+    "navigation": "Navigation",
+    "consultDoctor": "Consult Doctor",
+    "brailleMode": "Braille Mode"
+  },
+  "appSettings": {
+    "title": "App Settings",
+    "subtitle": "Customize your Hemapp experience",
+    "smartWatch": {
+      "title": "SmartWatch Integration",
+      "description": "Connect and sync with your smartwatch"
+    },
+    "voiceCommands": {
+      "title": "Voice Commands",
+      "description": "Control the app with voice commands"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Control when and how you receive notifications",
+      "pushNotifications": "Push Notifications",
+      "pushDescription": "Receive notifications on your device",
+      "types": "Notification Types",
+      "medication": "Medication Reminders",
+      "meal": "Meal Logging",
+      "exercise": "Exercise Reminders",
+      "goals": "Goal Updates",
+      "healthTips": "Health Tips",
+      "quietHours": "Quiet Hours",
+      "noQuietHours": "No quiet hours",
+      "night": "10 PM - 8 AM",
+      "work": "9 AM - 5 PM",
+      "custom": "Custom hours"
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "description": "Make Hemapp easier to use",
+      "voiceGuidance": "Voice Guidance",
+      "voiceGuidanceDesc": "Read aloud app content and instructions",
+      "voiceVolume": "Voice Volume",
+      "highContrast": "High Contrast Mode",
+      "highContrastDesc": "Increase contrast for better visibility",
+      "fontSize": "Font Size",
+      "hapticFeedback": "Haptic Feedback",
+      "hapticFeedbackDesc": "Vibrate for touch interactions"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Customize how the app looks",
+      "darkMode": "Dark Mode",
+      "darkModeDesc": "Use dark theme for better visibility in low light",
+      "colorTheme": "Color Theme",
+      "defaultBlue": "Default Blue",
+      "healthGreen": "Health Green",
+      "calmPurple": "Calm Purple",
+      "energeticOrange": "Energetic Orange"
+    },
+    "privacy": {
+      "title": "Privacy & Security",
+      "description": "Control your data and privacy settings",
+      "biometricLock": "Biometric Lock",
+      "biometricEnabled": "Use fingerprint or face ID to unlock app",
+      "biometricNotSupported": "Not supported on this device",
+      "autoLock": "Auto Lock",
+      "autoLockDesc": "Lock app when not in use",
+      "analytics": "Share Usage Analytics",
+      "analyticsDesc": "Help improve the app (anonymous data only)",
+      "exportData": "Export My Data",
+      "resetSettings": "Reset All Settings",
+      "deleteAccount": "Delete Account"
+    }
+  },
   "healthMonitoring": {
     "title": "Health Monitoring",
     "subtitle": "Track your diet, goals, and health analytics",

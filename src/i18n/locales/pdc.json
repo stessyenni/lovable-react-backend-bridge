@@ -81,6 +81,77 @@
     "braille": "Braille",
     "readPage": "Read Page"
   },
+  "sidebar": {
+    "navigation": "Where You Wan Go",
+    "consultDoctor": "Talk to Doctor",
+    "brailleMode": "Braille Mode"
+  },
+  "appSettings": {
+    "title": "App Settings",
+    "subtitle": "Make your Hemapp better for you",
+    "smartWatch": {
+      "title": "SmartWatch Connection",
+      "description": "Connect your smartwatch with di app"
+    },
+    "voiceCommands": {
+      "title": "Voice Commands",
+      "description": "Use your voice take control di app"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Control how you go receive notifications",
+      "pushNotifications": "Push Notifications",
+      "pushDescription": "Receive notifications for your phone",
+      "types": "Notification Types",
+      "medication": "Medicine Reminders",
+      "meal": "Food Logging",
+      "exercise": "Exercise Reminders",
+      "goals": "Goal Updates",
+      "healthTips": "Health Tips",
+      "quietHours": "Quiet Hours",
+      "noQuietHours": "No quiet hours",
+      "night": "10 PM - 8 AM",
+      "work": "9 AM - 5 PM",
+      "custom": "Custom hours"
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "description": "Make Hemapp easy to use",
+      "voiceGuidance": "Voice Guidance",
+      "voiceGuidanceDesc": "Read app content and instructions with voice",
+      "voiceVolume": "Voice Volume",
+      "highContrast": "High Contrast Mode",
+      "highContrastDesc": "Make things clearer to see",
+      "fontSize": "Font Size",
+      "hapticFeedback": "Haptic Feedback",
+      "hapticFeedbackDesc": "Phone go vibrate when you touch things"
+    },
+    "appearance": {
+      "title": "How E Go Look",
+      "description": "Change how di app dey look",
+      "darkMode": "Dark Mode",
+      "darkModeDesc": "Use dark theme for see better for night",
+      "colorTheme": "Color Theme",
+      "defaultBlue": "Default Blue",
+      "healthGreen": "Health Green",
+      "calmPurple": "Calm Purple",
+      "energeticOrange": "Energetic Orange"
+    },
+    "privacy": {
+      "title": "Privacy & Security",
+      "description": "Control your data and privacy",
+      "biometricLock": "Biometric Lock",
+      "biometricEnabled": "Use fingerprint or face to unlock app",
+      "biometricNotSupported": "Your phone no fit support am",
+      "autoLock": "Auto Lock",
+      "autoLockDesc": "Lock app when you no dey use am",
+      "analytics": "Share Usage Analytics",
+      "analyticsDesc": "Help us make di app better (no personal info)",
+      "exportData": "Export My Data",
+      "resetSettings": "Reset All Settings",
+      "deleteAccount": "Delete Account"
+    }
+  },
   "healthMonitoring": {
     "title": "Health Monitoring",
     "subtitle": "Check your food, goals, and health analytics",

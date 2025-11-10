@@ -82,8 +82,8 @@ const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead, 
     : sortedMessages.find(m => m.recipient_id === recipientId)?.recipient;
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="pb-2 sm:pb-3">
+    <Card className="h-full flex flex-col overflow-hidden border-0 shadow-none">
+      <CardHeader className="pb-2 sm:pb-3 lg:pb-4 flex-shrink-0">
         <CardTitle className="flex items-center space-x-3 text-sm sm:text-base">
           <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
             <AvatarImage src={UserAvatarPlaceholder} alt="Recipient Avatar" />
@@ -97,8 +97,8 @@ const ChatWindow = ({ recipientId, messages, onSendMessage, markMessagesAsRead, 
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col p-2 sm:p-6">
-        <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-4 mb-4">
+      <CardContent className="flex-1 flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden min-h-0">
+        <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-4 mb-4 min-h-0">
           {sortedMessages.length === 0 && (
             <div className="flex justify-center items-center h-32">
               <p className="text-sm text-muted-foreground">Start your conversation</p>
