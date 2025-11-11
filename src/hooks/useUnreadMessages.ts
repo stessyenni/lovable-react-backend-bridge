@@ -26,51 +26,49 @@ export const useUnreadMessages = () => {
   }, [user?.id]);
 
   useEffect(() => {
-    let channel: any = null;
+    if (!user?.id) return;
 
-    if (user?.id) {
-      fetchUnreadCount();
+    fetchUnreadCount();
 
-      // Set up realtime subscription for new messages with unique channel name
-      const channelName = `unread-messages-${user.id}`;
-      
-      // Create channel with unique name
-      channel = supabase.channel(channelName);
-      
-      // Add event listeners
-      channel
-        .on('postgres_changes', {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `recipient_id=eq.${user.id}`
-        }, () => {
-          fetchUnreadCount();
-        })
-        .on('postgres_changes', {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `recipient_id=eq.${user.id}`
-        }, () => {
-          fetchUnreadCount();
-        });
-      
-      // Subscribe to the channel
-      channel.subscribe((status: string) => {
+    // Set up realtime subscription with unique channel name
+    const channelName = `unread-messages-${user.id}`;
+    
+    // Remove any existing channel with this name first
+    const existingChannel = supabase.getChannels().find(ch => ch.topic === channelName);
+    if (existingChannel) {
+      supabase.removeChannel(existingChannel);
+    }
+    
+    // Create and subscribe to new channel
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `recipient_id=eq.${user.id}`
+      }, () => {
+        fetchUnreadCount();
+      })
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'messages',
+        filter: `recipient_id=eq.${user.id}`
+      }, () => {
+        fetchUnreadCount();
+      })
+      .subscribe((status: string) => {
         if (status === 'SUBSCRIBED') {
           console.log(`Unread messages subscription active for ${channelName}`);
         }
       });
-    }
 
     return () => {
-      if (channel) {
-        channel.unsubscribe();
-        supabase.removeChannel(channel);
-      }
+      channel.unsubscribe();
+      supabase.removeChannel(channel);
     };
-  }, [user?.id]); // Remove fetchUnreadCount from dependencies
+  }, [user?.id, fetchUnreadCount]);
 
   const markAsRead = useCallback(async (messageId: string) => {
     if (!user?.id) return;
