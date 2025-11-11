@@ -47,6 +47,13 @@ export const useMessages = (userId: string | undefined, component?: string) => {
       // Set up realtime subscription for new messages with unique channel name
       const channelName = component ? `messages-updates-${component}-${userId}` : `messages-updates-${userId}`;
       
+      // Clean up any existing channel with the same name to avoid double subscribe (StrictMode, re-renders)
+      const existingChannels = supabase.getChannels().filter((ch: any) => typeof ch.topic === 'string' && ch.topic.endsWith(channelName));
+      existingChannels.forEach((ch: any) => {
+        try { ch.unsubscribe?.(); } catch {}
+        supabase.removeChannel(ch);
+      });
+      
       // Create channel with unique name
       channel = supabase.channel(channelName);
       

@@ -33,11 +33,12 @@ export const useUnreadMessages = () => {
     // Set up realtime subscription with unique channel name
     const channelName = `unread-messages-${user.id}`;
     
-    // Remove any existing channel with this name first
-    const existingChannel = supabase.getChannels().find(ch => ch.topic === channelName);
-    if (existingChannel) {
-      supabase.removeChannel(existingChannel);
-    }
+    // Remove any existing channel with this name first (account for 'realtime:' prefix)
+    const existingChannels = supabase.getChannels().filter((ch: any) => typeof ch.topic === 'string' && ch.topic.endsWith(channelName));
+    existingChannels.forEach((ch: any) => {
+      try { ch.unsubscribe?.(); } catch {}
+      supabase.removeChannel(ch);
+    });
     
     // Create and subscribe to new channel
     const channel = supabase
@@ -68,7 +69,7 @@ export const useUnreadMessages = () => {
       channel.unsubscribe();
       supabase.removeChannel(channel);
     };
-  }, [user?.id, fetchUnreadCount]);
+  }, [user?.id]);
 
   const markAsRead = useCallback(async (messageId: string) => {
     if (!user?.id) return;
