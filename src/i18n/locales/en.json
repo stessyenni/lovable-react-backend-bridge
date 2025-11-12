@@ -13,7 +13,7 @@
       },
       "dietMonitoring": {
         "title": "Diet Monitoring",
-        "description": "Track your meals and nutritional intake with smart recommendations. Examples: Breakfast, Lunch, Dinner, Snacks, and more."
+        "description": "Track your meals and nutritional intake with smart recommendations. Categories: Fruits, Vegetables, Nuts, Seeds, Grains, and more."
       },
       "healthTracking": {
         "title": "Health Tracking",

@@ -13,7 +13,7 @@
       },
       "dietMonitoring": {
         "title": "Food Monitoring",
-        "description": "Watch your chop and nutrition with smart advice. Example: Morning chop, Afternoon chop, Night chop, Snacks, and more."
+        "description": "Watch your chop and nutrition with smart advice. Categories: Fruit, Vegetable, Nut, Seed, Grain, and more."
       },
       "healthTracking": {
         "title": "Health Tracking",
