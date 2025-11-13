@@ -92,7 +92,7 @@ const generateComprehensiveResponse = (preSurveyUser) => {
     'Include community support features for PWDs'
   ][Math.floor(Math.random() * 16)];
   
-  const additionalComments = [
+  const commentsPool = [
     'Thank you for creating an accessible health app for PWDs. This is very important for us.',
     'We really need this app. Please keep improving it.',
     'Things like this do not come every day so I pray this app comes to realization.',
@@ -102,9 +102,9 @@ const generateComprehensiveResponse = (preSurveyUser) => {
     'May God bless this project. Amen.',
     'This will ease the management of our health and reduce frequent hospital visits.',
     'Please make it affordable or free for all PWDs.',
-    'We appreciate this initiative for persons with disabilities.',
-    ''
-  ][Math.floor(Math.random() * 11)];
+    'We appreciate this initiative for persons with disabilities.'
+  ];
+  const additionalComments = commentsPool[Math.floor(Math.random() * commentsPool.length)] || 'No additional comments at this time.';
 
   return {
     email,
@@ -247,16 +247,34 @@ const generatePostSurveyCSV = (responses) => {
 const main = () => {
   console.log('Generating comprehensive post-survey responses for all users...');
   
-  // Read pre-survey file from user-uploads
-  const preSurveyPath = path.join(__dirname, '..', 'user-uploads', 'Pre-Survey_Assistive_Mobile_Health_Software_Technologies_for_PWDs_Responses_-_final-2.csv');
-  
+  // Read pre-survey file from uploads (support both temp and permanent folders)
+  const preSurveyTempPath = path.join(
+    __dirname,
+    '..',
+    'user-uploads-temp',
+    'Pre-Survey_Assistive_Mobile_Health_Software_Technologies_for_PWDs_Responses_-_final-2.csv'
+  );
+  const preSurveyUploadsPath = path.join(
+    __dirname,
+    '..',
+    'user-uploads',
+    'Pre-Survey_Assistive_Mobile_Health_Software_Technologies_for_PWDs_Responses_-_final-2.csv'
+  );
+
+  let preSurveyPath = fs.existsSync(preSurveyTempPath)
+    ? preSurveyTempPath
+    : fs.existsSync(preSurveyUploadsPath)
+      ? preSurveyUploadsPath
+      : null;
+
   let preSurveyContent;
   try {
+    if (!preSurveyPath) throw new Error('Pre-survey CSV not found in user-uploads-temp or user-uploads');
     preSurveyContent = fs.readFileSync(preSurveyPath, 'utf-8');
-    console.log('✅ Pre-survey file loaded successfully');
+    console.log('✅ Pre-survey file loaded successfully from:', preSurveyPath);
   } catch (error) {
     console.error('❌ Error reading pre-survey file:', error.message);
-    console.log('Please ensure the file exists at:', preSurveyPath);
+    console.log('Please ensure the file exists at either:', preSurveyTempPath, 'or', preSurveyUploadsPath);
     process.exit(1);
   }
 
