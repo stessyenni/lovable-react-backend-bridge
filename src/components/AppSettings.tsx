@@ -209,14 +209,14 @@ const AppSettings = ({
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="p-3 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             Notifications
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">Control when and how you receive notifications</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0 sm:pt-0">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="push-notifications" className="text-xs sm:text-sm">Push Notifications</Label>
@@ -273,14 +273,14 @@ const AppSettings = ({
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="p-3 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Accessibility className="h-4 w-4 sm:h-5 sm:w-5" />
             Accessibility
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">Make Hemapp easier to use</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0 sm:pt-0">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="voice-guidance" className="text-xs sm:text-sm">Voice Guidance</Label>
@@ -339,14 +339,14 @@ const AppSettings = ({
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="p-3 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
             Appearance
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">Customize how the app looks</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0 sm:pt-0">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="dark-mode" className="text-xs sm:text-sm">Dark Mode</Label>
@@ -377,14 +377,14 @@ const AppSettings = ({
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="p-3 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
             Privacy & Security
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">Control your data and privacy settings</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0 sm:pt-0">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="biometric-lock" className="text-xs sm:text-sm">Biometric Lock</Label>
