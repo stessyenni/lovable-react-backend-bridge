@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,7 @@ import EmergencyPage from "@/components/EmergencyPage";
 
 const Facilities = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const { data: facilities = [], isLoading } = useQuery({
     queryKey: ["facilities"],
@@ -32,8 +34,8 @@ const Facilities = () => {
     window.open(mapsUrl, '_blank');
     
     toast({
-      title: "Opening Directions",
-      description: `Getting directions to ${name}`,
+      title: t('facilities.openingDirections'),
+      description: `${t('facilities.gettingDirections')} ${name}`,
     });
   };
 
@@ -41,13 +43,13 @@ const Facilities = () => {
     if (facility.phone) {
       window.open(`tel:${facility.phone}`, '_self');
       toast({
-        title: "Calling Facility",
-        description: `Calling ${facility.name}`,
+        title: t('facilities.callingFacility'),
+        description: `${t('facilities.calling')} ${facility.name}`,
       });
     } else {
       toast({
-        title: "Contact Information",
-        description: "Phone number not available for this facility",
+        title: t('facilities.contactInfo'),
+        description: t('facilities.phoneNotAvailable'),
         variant: "destructive",
       });
     }
@@ -71,14 +73,14 @@ const Facilities = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Facilities & Emergency</h2>
-        <p className="text-muted-foreground">Healthcare facilities and emergency services</p>
+        <h2 className="text-2xl font-bold">{t('facilities.title')}</h2>
+        <p className="text-muted-foreground">{t('facilities.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="facilities" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="facilities">Healthcare Facilities</TabsTrigger>
-          <TabsTrigger value="emergency">Emergency Center</TabsTrigger>
+          <TabsTrigger value="facilities">{t('facilities.healthcareFacilities')}</TabsTrigger>
+          <TabsTrigger value="emergency">{t('facilities.emergencyCenter')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="facilities" className="space-y-4">

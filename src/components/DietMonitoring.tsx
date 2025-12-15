@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import { useDietData, DietEntryType } from "./diet/hooks/useDietData";
 import QuickActions from "./diet/QuickActions";
@@ -14,6 +15,7 @@ import { useOfflineSync } from "@/hooks/useOfflineSync";
 
 const DietMonitoring = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const { entries, loading, fetchDietEntries, handleDeleteEntry, getTodayStats, getWeeklyStats } = useDietData();
   const { isOnline, pendingSync } = useOfflineSync();
   const [showDietEntry, setShowDietEntry] = useState(false);
@@ -69,8 +71,8 @@ const DietMonitoring = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Diet Monitoring</h2>
-          <p className="text-muted-foreground">Track your meals and nutrition intake with AI-powered analysis</p>
+          <h2 className="text-2xl font-bold">{t('diet.title')}</h2>
+          <p className="text-muted-foreground">{t('diet.subtitle')}</p>
         </div>
         <div className="flex items-center gap-3">
           <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
@@ -81,11 +83,11 @@ const DietMonitoring = () => {
             <div className={`w-2 h-2 rounded-full ${
               isOnline ? 'bg-green-600' : 'bg-orange-600'
             }`} />
-            {isOnline ? 'Online' : 'Offline'}
+            {isOnline ? t('common.online') : t('common.offline')}
           </div>
           {pendingSync.length > 0 && (
             <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-              {pendingSync.length} pending sync
+              {pendingSync.length} {t('common.pendingSync')}
             </div>
           )}
         </div>
