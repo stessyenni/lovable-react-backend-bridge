@@ -50,20 +50,20 @@ const UserAccount = () => {
   });
 
   const handleEditSuccess = () => {
-    refetch(); // Refresh profile data
+    refetch();
     setShowEditDialog(false);
     toast({
-      title: "Profile Updated",
-      description: "Your profile has been updated successfully.",
+      title: t('userAccount.profileUpdated'),
+      description: t('userAccount.profileUpdatedDesc'),
     });
   };
 
   if (isLoading) {
-    return <div>Loading profile...</div>;
+    return <div>{t('userAccount.loadingProfile')}</div>;
   }
 
   if (!profile) {
-    return <div>Profile not found</div>;
+    return <div>{t('common.noResults')}</div>;
   }
 
   return (
@@ -85,34 +85,34 @@ const UserAccount = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <User className="h-5 w-5" />
-              <span>Personal Information</span>
+              <span>{t('userAccount.personalInfo')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">First Name</p>
-                <p className="text-sm">{profile.first_name || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.firstName')}</p>
+                <p className="text-sm">{profile.first_name || t('common.notSet')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Last Name</p>
-                <p className="text-sm">{profile.last_name || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.lastName')}</p>
+                <p className="text-sm">{profile.last_name || t('common.notSet')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Username</p>
-                <p className="text-sm">{profile.username || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.username')}</p>
+                <p className="text-sm">{profile.username || t('common.notSet')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Email</p>
-                <p className="text-sm">{profile.email || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.email')}</p>
+                <p className="text-sm">{profile.email || t('common.notSet')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Phone</p>
-                <p className="text-sm">{profile.phone_number || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.phone')}</p>
+                <p className="text-sm">{profile.phone_number || t('common.notSet')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Age</p>
-                <p className="text-sm">{profile.age || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.age')}</p>
+                <p className="text-sm">{profile.age || t('common.notSet')}</p>
               </div>
             </div>
           </CardContent>
@@ -123,31 +123,31 @@ const UserAccount = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Settings className="h-5 w-5" />
-              <span>Health Information</span>
+              <span>{t('userAccount.healthInfo')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Gender</p>
-                <p className="text-sm">{profile.gender || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.gender')}</p>
+                <p className="text-sm">{profile.gender || t('common.notSet')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Height</p>
-                <p className="text-sm">{profile.height || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.height')}</p>
+                <p className="text-sm">{profile.height || t('common.notSet')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Weight (KG)</p>
-                <p className="text-sm">{profile.weight || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.weight')}</p>
+                <p className="text-sm">{profile.weight || t('common.notSet')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Emergency Contact</p>
-                <p className="text-sm">{profile.emergency_contact || "Not set"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('userAccount.emergencyContact')}</p>
+                <p className="text-sm">{profile.emergency_contact || t('common.notSet')}</p>
               </div>
             </div>
 
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">Medical Conditions</p>
+              <p className="text-sm font-medium text-muted-foreground mb-2">{t('userAccount.medicalConditions')}</p>
               <div className="flex flex-wrap gap-2">
                 {profile.medical_conditions && profile.medical_conditions.length > 0 ? (
                   profile.medical_conditions.map((condition, index) => (
@@ -156,13 +156,13 @@ const UserAccount = () => {
                     </Badge>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground">None specified</p>
+                  <p className="text-sm text-muted-foreground">{t('common.noneSpecified')}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">Allergies</p>
+              <p className="text-sm font-medium text-muted-foreground mb-2">{t('userAccount.allergies')}</p>
               <div className="flex flex-wrap gap-2">
                 {profile.allergies && profile.allergies.length > 0 ? (
                   profile.allergies.map((allergy, index) => (
@@ -171,7 +171,7 @@ const UserAccount = () => {
                     </Badge>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground">None specified</p>
+                  <p className="text-sm text-muted-foreground">{t('common.noneSpecified')}</p>
                 )}
               </div>
             </div>

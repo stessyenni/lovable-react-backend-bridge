@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield, Watch, Mic } from "lucide-react";
 import SmartWatchSync from "./SmartWatchSync";
 import VoiceCommands from "./VoiceCommands";
-import { useTranslation } from 'react-i18next';
 
 interface AppSettingsProps {
   brailleMode?: boolean;
@@ -41,7 +41,6 @@ const AppSettings = ({
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if biometric authentication is supported
     const checkBiometricSupport = async () => {
       if ('credentials' in navigator && 'create' in (navigator as any).credentials) {
         try {
@@ -54,7 +53,6 @@ const AppSettings = ({
           });
           setBiometricSupported(true);
         } catch (error) {
-          // Biometric not available or supported
           setBiometricSupported(false);
         }
       } else {
@@ -64,13 +62,11 @@ const AppSettings = ({
 
     checkBiometricSupport();
     
-    // Load saved biometric setting
     const savedBiometric = localStorage.getItem('biometricEnabled') === 'true';
     setBiometricEnabled(savedBiometric);
   }, []);
 
   useEffect(() => {
-    // Apply dark mode
     if (darkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('darkMode', 'true');
@@ -81,13 +77,11 @@ const AppSettings = ({
   }, [darkMode]);
 
   useEffect(() => {
-    // Apply font size
     document.documentElement.style.fontSize = `${fontSize[0]}px`;
     localStorage.setItem('fontSize', fontSize[0].toString());
   }, [fontSize]);
 
   useEffect(() => {
-    // Apply high contrast
     if (highContrast) {
       document.documentElement.classList.add('high-contrast');
       localStorage.setItem('highContrast', 'true');
@@ -98,7 +92,6 @@ const AppSettings = ({
   }, [highContrast]);
 
   useEffect(() => {
-    // Load saved settings on component mount
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
     const savedHighContrast = localStorage.getItem('highContrast') === 'true';
     const savedFontSize = localStorage.getItem('fontSize');
@@ -113,15 +106,14 @@ const AppSettings = ({
   const handleBiometricAuth = async () => {
     if (!biometricSupported) {
       toast({
-        title: "Biometric Not Supported",
-        description: "Your device doesn't support biometric authentication or it's not set up.",
+        title: t('appSettings.privacy.biometricLock'),
+        description: t('appSettings.privacy.biometricNotSupported'),
         variant: "destructive"
       });
       return;
     }
 
     try {
-      // Try to create a credential
       const credential = await (navigator as any).credentials.create({
         publicKey: {
           challenge: crypto.getRandomValues(new Uint8Array(32)),
@@ -145,25 +137,15 @@ const AppSettings = ({
         setBiometricEnabled(true);
         localStorage.setItem('biometricEnabled', 'true');
         toast({
-          title: "Biometric Authentication Enabled",
-          description: "Your device biometric authentication is now active.",
+          title: t('appSettings.privacy.biometricLock'),
+          description: t('appSettings.privacy.biometricEnabled'),
         });
       }
     } catch (error: any) {
       console.error('Biometric setup error:', error);
-      
-      let errorMessage = "Failed to set up biometric authentication.";
-      if (error.name === 'NotSupportedError') {
-        errorMessage = "Biometric authentication is not supported on this device.";
-      } else if (error.name === 'NotAllowedError') {
-        errorMessage = "Biometric authentication was not allowed. Please check your device settings.";
-      } else if (error.name === 'InvalidStateError') {
-        errorMessage = "Biometric authentication is already set up or device is not ready.";
-      }
-      
       toast({
-        title: "Biometric Setup Failed",
-        description: errorMessage,
+        title: t('appSettings.privacy.biometricLock'),
+        description: t('appSettings.privacy.biometricNotSupported'),
         variant: "destructive"
       });
     }
@@ -212,15 +194,15 @@ const AppSettings = ({
         <CardHeader className="p-3 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-            Notifications
+            {t('appSettings.notifications.title')}
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Control when and how you receive notifications</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">{t('appSettings.notifications.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0 sm:pt-0">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="push-notifications" className="text-xs sm:text-sm">Push Notifications</Label>
-              <p className="text-xs text-muted-foreground">Receive notifications on your device</p>
+              <Label htmlFor="push-notifications" className="text-xs sm:text-sm">{t('appSettings.notifications.pushNotifications')}</Label>
+              <p className="text-xs text-muted-foreground">{t('appSettings.notifications.pushDescription')}</p>
             </div>
             <Switch
               id="push-notifications"
@@ -230,42 +212,42 @@ const AppSettings = ({
           </div>
 
           <div className="space-y-4">
-            <Label className="text-xs sm:text-sm">Notification Types</Label>
+            <Label className="text-xs sm:text-sm">{t('appSettings.notifications.types')}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm">Medication Reminders</span>
+                <span className="text-xs sm:text-sm">{t('appSettings.notifications.medication')}</span>
                 <Switch defaultChecked />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm">Meal Logging</span>
+                <span className="text-xs sm:text-sm">{t('appSettings.notifications.meal')}</span>
                 <Switch defaultChecked />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm">Exercise Reminders</span>
+                <span className="text-xs sm:text-sm">{t('appSettings.notifications.exercise')}</span>
                 <Switch defaultChecked />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm">Goal Updates</span>
+                <span className="text-xs sm:text-sm">{t('appSettings.notifications.goals')}</span>
                 <Switch />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm">Health Tips</span>
+                <span className="text-xs sm:text-sm">{t('appSettings.notifications.healthTips')}</span>
                 <Switch />
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notification-time" className="text-xs sm:text-sm">Quiet Hours</Label>
+            <Label htmlFor="notification-time" className="text-xs sm:text-sm">{t('appSettings.notifications.quietHours')}</Label>
             <Select>
               <SelectTrigger>
-                <SelectValue placeholder="Select quiet hours" />
+                <SelectValue placeholder={t('appSettings.notifications.quietHours')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No quiet hours</SelectItem>
-                <SelectItem value="night">10 PM - 8 AM</SelectItem>
-                <SelectItem value="work">9 AM - 5 PM</SelectItem>
-                <SelectItem value="custom">Custom hours</SelectItem>
+                <SelectItem value="none">{t('appSettings.notifications.noQuietHours')}</SelectItem>
+                <SelectItem value="night">{t('appSettings.notifications.night')}</SelectItem>
+                <SelectItem value="work">{t('appSettings.notifications.work')}</SelectItem>
+                <SelectItem value="custom">{t('appSettings.notifications.custom')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -276,15 +258,15 @@ const AppSettings = ({
         <CardHeader className="p-3 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Accessibility className="h-4 w-4 sm:h-5 sm:w-5" />
-            Accessibility
+            {t('appSettings.accessibility.title')}
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Make Hemapp easier to use</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">{t('appSettings.accessibility.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0 sm:pt-0">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="voice-guidance" className="text-xs sm:text-sm">Voice Guidance</Label>
-              <p className="text-xs text-muted-foreground">Read aloud app content and instructions</p>
+              <Label htmlFor="voice-guidance" className="text-xs sm:text-sm">{t('appSettings.accessibility.voiceGuidance')}</Label>
+              <p className="text-xs text-muted-foreground">{t('appSettings.accessibility.voiceGuidanceDesc')}</p>
             </div>
             <Switch
               id="voice-guidance"
@@ -294,7 +276,7 @@ const AppSettings = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs sm:text-sm">Voice Volume: {voiceVolume[0]}%</Label>
+            <Label className="text-xs sm:text-sm">{t('appSettings.accessibility.voiceVolume')}: {voiceVolume[0]}%</Label>
             <Slider
               value={voiceVolume}
               onValueChange={setVoiceVolume}
@@ -306,8 +288,8 @@ const AppSettings = ({
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="high-contrast" className="text-xs sm:text-sm">High Contrast Mode</Label>
-              <p className="text-xs text-muted-foreground">Increase contrast for better visibility</p>
+              <Label htmlFor="high-contrast" className="text-xs sm:text-sm">{t('appSettings.accessibility.highContrast')}</Label>
+              <p className="text-xs text-muted-foreground">{t('appSettings.accessibility.highContrastDesc')}</p>
             </div>
             <Switch
               id="high-contrast"
@@ -317,7 +299,7 @@ const AppSettings = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs sm:text-sm">Font Size: {fontSize[0]}px</Label>
+            <Label className="text-xs sm:text-sm">{t('appSettings.accessibility.fontSize')}: {fontSize[0]}px</Label>
             <Slider
               value={fontSize}
               onValueChange={setFontSize}
@@ -330,8 +312,8 @@ const AppSettings = ({
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="haptic-feedback" className="text-xs sm:text-sm">Haptic Feedback</Label>
-              <p className="text-xs text-muted-foreground">Vibrate for touch interactions</p>
+              <Label htmlFor="haptic-feedback" className="text-xs sm:text-sm">{t('appSettings.accessibility.hapticFeedback')}</Label>
+              <p className="text-xs text-muted-foreground">{t('appSettings.accessibility.hapticFeedbackDesc')}</p>
             </div>
             <Switch id="haptic-feedback" defaultChecked />
           </div>
@@ -342,15 +324,15 @@ const AppSettings = ({
         <CardHeader className="p-3 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
-            Appearance
+            {t('appSettings.appearance.title')}
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Customize how the app looks</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">{t('appSettings.appearance.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0 sm:pt-0">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="dark-mode" className="text-xs sm:text-sm">Dark Mode</Label>
-              <p className="text-xs text-muted-foreground">Use dark theme for better visibility in low light</p>
+              <Label htmlFor="dark-mode" className="text-xs sm:text-sm">{t('appSettings.appearance.darkMode')}</Label>
+              <p className="text-xs text-muted-foreground">{t('appSettings.appearance.darkModeDesc')}</p>
             </div>
             <Switch
               id="dark-mode"
@@ -360,16 +342,16 @@ const AppSettings = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="theme" className="text-xs sm:text-sm">Color Theme</Label>
+            <Label htmlFor="theme" className="text-xs sm:text-sm">{t('appSettings.appearance.colorTheme')}</Label>
             <Select>
               <SelectTrigger>
-                <SelectValue placeholder="Select theme" />
+                <SelectValue placeholder={t('appSettings.appearance.colorTheme')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="default">Default Blue</SelectItem>
-                <SelectItem value="green">Health Green</SelectItem>
-                <SelectItem value="purple">Calm Purple</SelectItem>
-                <SelectItem value="orange">Energetic Orange</SelectItem>
+                <SelectItem value="default">{t('appSettings.appearance.defaultBlue')}</SelectItem>
+                <SelectItem value="green">{t('appSettings.appearance.healthGreen')}</SelectItem>
+                <SelectItem value="purple">{t('appSettings.appearance.calmPurple')}</SelectItem>
+                <SelectItem value="orange">{t('appSettings.appearance.energeticOrange')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -380,16 +362,16 @@ const AppSettings = ({
         <CardHeader className="p-3 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
-            Privacy & Security
+            {t('appSettings.privacy.title')}
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Control your data and privacy settings</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">{t('appSettings.privacy.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0 sm:pt-0">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="biometric-lock" className="text-xs sm:text-sm">Biometric Lock</Label>
+              <Label htmlFor="biometric-lock" className="text-xs sm:text-sm">{t('appSettings.privacy.biometricLock')}</Label>
               <p className="text-xs text-muted-foreground">
-                {biometricSupported ? "Use fingerprint or face ID to unlock app" : "Not supported on this device"}
+                {biometricSupported ? t('appSettings.privacy.biometricEnabled') : t('appSettings.privacy.biometricNotSupported')}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -404,8 +386,8 @@ const AppSettings = ({
                     setBiometricEnabled(false);
                     localStorage.setItem('biometricEnabled', 'false');
                     toast({
-                      title: "Biometric Lock Disabled",
-                      description: "Biometric authentication has been turned off.",
+                      title: t('appSettings.privacy.biometricLock'),
+                      description: t('appSettings.privacy.biometricNotSupported'),
                     });
                   }
                 }}
@@ -420,29 +402,29 @@ const AppSettings = ({
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="auto-lock" className="text-xs sm:text-sm">Auto Lock</Label>
-              <p className="text-xs text-muted-foreground">Lock app when not in use</p>
+              <Label htmlFor="auto-lock" className="text-xs sm:text-sm">{t('appSettings.privacy.autoLock')}</Label>
+              <p className="text-xs text-muted-foreground">{t('appSettings.privacy.autoLockDesc')}</p>
             </div>
             <Switch id="auto-lock" defaultChecked />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="analytics" className="text-xs sm:text-sm">Share Usage Analytics</Label>
-              <p className="text-xs text-muted-foreground">Help improve the app (anonymous data only)</p>
+              <Label htmlFor="analytics" className="text-xs sm:text-sm">{t('appSettings.privacy.analytics')}</Label>
+              <p className="text-xs text-muted-foreground">{t('appSettings.privacy.analyticsDesc')}</p>
             </div>
             <Switch id="analytics" defaultChecked />
           </div>
 
           <div className="pt-4 space-y-3">
             <Button variant="outline" className="w-full text-xs sm:text-sm">
-              Export My Data
+              {t('appSettings.privacy.exportData')}
             </Button>
             <Button variant="outline" className="w-full text-xs sm:text-sm">
-              Reset All Settings
+              {t('appSettings.privacy.resetSettings')}
             </Button>
             <Button variant="destructive" className="w-full text-xs sm:text-sm">
-              Delete Account
+              {t('appSettings.privacy.deleteAccount')}
             </Button>
           </div>
         </CardContent>
