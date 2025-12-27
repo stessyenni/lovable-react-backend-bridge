@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -6,7 +7,6 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useTranslation } from "react-i18next";
 import { 
   Volume2, 
   VolumeX, 
@@ -30,6 +30,7 @@ interface Voice {
 }
 
 const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsProps) => {
+  const { t, i18n } = useTranslation();
   const [voices, setVoices] = useState<Voice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<string>('');
   const [rate, setRate] = useState([1]);
@@ -37,7 +38,6 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
   const [volume, setVolume] = useState([0.8]);
   const [isTestingSpeech, setIsTestingSpeech] = useState(false);
   const { toast } = useToast();
-  const { i18n } = useTranslation();
 
   useEffect(() => {
     const loadVoices = () => {
@@ -121,15 +121,9 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
 
   const testVoice = () => {
     if (!speechEnabled || !selectedVoice) {
-      const messages: { [key: string]: { title: string; description: string } } = {
-        'en': { title: "Speech Disabled", description: "Please enable speech to test voices" },
-        'fr': { title: "Parole Désactivée", description: "Veuillez activer la parole pour tester les voix" },
-        'pdc': { title: "Speech Disabled", description: "Enable speech first to test voices" }
-      };
-      const msg = messages[i18n.language] || messages['en'];
       toast({
-        title: msg.title,
-        description: msg.description,
+        title: t('voice.speechNotSupported'),
+        description: t('appSettings.accessibility.voiceGuidance'),
         variant: "destructive"
       });
       return;
@@ -158,15 +152,9 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
     utterance.onend = () => setIsTestingSpeech(false);
     utterance.onerror = () => {
       setIsTestingSpeech(false);
-      const messages: { [key: string]: { title: string; description: string } } = {
-        'en': { title: "Speech Error", description: "Failed to test voice. Please try a different voice." },
-        'fr': { title: "Erreur de Parole", description: "Échec du test vocal. Essayez une autre voix." },
-        'pdc': { title: "Speech Error", description: "Voice test no work. Try another voice." }
-      };
-      const msg = messages[i18n.language] || messages['en'];
       toast({
-        title: msg.title,
-        description: msg.description,
+        title: t('common.error'),
+        description: t('voice.speechNotSupported'),
         variant: "destructive"
       });
     };
@@ -180,7 +168,8 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
   };
 
   const getVoiceDisplayName = (voice: Voice) => {
-    return `${voice.name} (${voice.gender === 'male' ? 'Male' : 'Female'})`;
+    const genderLabel = voice.gender === 'male' ? 'Male' : 'Female';
+    return `${voice.name} (${genderLabel})`;
   };
 
   return (
@@ -188,20 +177,20 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Voice Settings
+          {t('appSettings.voiceCommands.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Speech Enable/Disable */}
         <div className="flex items-center justify-between">
-          <Label className="text-base font-medium">Text-to-Speech</Label>
+          <Label className="text-base font-medium">{t('appSettings.accessibility.voiceGuidance')}</Label>
           <Button
             variant={speechEnabled ? "default" : "outline"}
             onClick={onSpeechToggle}
             className="flex items-center gap-2"
           >
             {speechEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-            {speechEnabled ? "Enabled" : "Disabled"}
+            {speechEnabled ? t('emergency.enabled') : t('smartwatch.disconnected')}
           </Button>
         </div>
 
@@ -209,10 +198,10 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
           <>
             {/* Voice Selection */}
             <div className="space-y-3">
-              <Label className="text-base font-medium">Choose Voice</Label>
+              <Label className="text-base font-medium">{t('common.selectLanguage')}</Label>
               <Select value={selectedVoice} onValueChange={setSelectedVoice}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a voice" />
+                  <SelectValue placeholder={t('common.selectLanguage')} />
                 </SelectTrigger>
                 <SelectContent>
                   {voices.map((voice) => (
@@ -233,7 +222,7 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
               </Select>
               {voices.length === 0 && (
                 <p className="text-sm text-muted-foreground">
-                  Loading voices...
+                  {t('common.loading')}
                 </p>
               )}
             </div>
@@ -265,7 +254,7 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Volume: {Math.round(volume[0] * 100)}%</Label>
+                <Label className="text-sm font-medium">{t('appSettings.accessibility.voiceVolume')}: {Math.round(volume[0] * 100)}%</Label>
                 <Slider
                   value={volume}
                   onValueChange={setVolume}
@@ -285,7 +274,7 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
                 className="flex items-center gap-2"
               >
                 <Play className="h-4 w-4" />
-                Test Voice
+                {t('voice.readAloud')}
               </Button>
               
               {isTestingSpeech && (
@@ -295,7 +284,7 @@ const VoiceSettings = ({ speechEnabled = false, onSpeechToggle }: VoiceSettingsP
                   className="flex items-center gap-2"
                 >
                   <Pause className="h-4 w-4" />
-                  Stop
+                  {t('voice.stopListening')}
                 </Button>
               )}
             </div>

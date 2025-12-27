@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Watch, Smartphone, Wifi, WifiOff, Bluetooth, Battery } from "lucide-react";
 
 const SmartWatchSync = () => {
+  const { t } = useTranslation();
   const [isConnected, setIsConnected] = useState(false);
   const [syncEnabled, setSyncEnabled] = useState(true);
   const [batteryLevel, setBatteryLevel] = useState(85);
@@ -36,14 +37,12 @@ const SmartWatchSync = () => {
           ]
         });
 
-        // Listen for disconnect events
         selectedDevice.addEventListener('gattserverdisconnected', (event: any) => {
           console.log('Device disconnected:', event.target.name);
-          // Only disconnect if user hasn't manually turned off sync
           if (syncEnabled) {
             toast({
-              title: "Watch Disconnected",
-              description: "Smartwatch connection lost. Attempting to reconnect...",
+              title: t('smartwatch.watchDisconnected'),
+              description: t('smartwatch.connectionLost'),
               variant: "destructive"
             });
           }
@@ -53,20 +52,20 @@ const SmartWatchSync = () => {
         setIsConnected(true);
         setLastSync(new Date());
         toast({
-          title: "Smartwatch Connected",
-          description: `Successfully connected to ${selectedDevice.name || 'your smartwatch'}`,
+          title: t('smartwatch.watchConnected'),
+          description: `${t('smartwatch.connectedTo')} ${selectedDevice.name || 'your smartwatch'}`,
         });
       } else {
         toast({
-          title: "Bluetooth Not Supported",
-          description: "Your browser doesn't support Bluetooth connectivity.",
+          title: t('smartwatch.bluetoothNotSupported'),
+          description: t('smartwatch.browserNoSupport'),
           variant: "destructive"
         });
       }
     } catch (error) {
       toast({
-        title: "Connection Failed",
-        description: "Failed to connect to smartwatch. Please ensure Bluetooth is enabled and try again.",
+        title: t('smartwatch.connectionFailed'),
+        description: t('smartwatch.enableBluetooth'),
         variant: "destructive"
       });
     }
@@ -79,16 +78,16 @@ const SmartWatchSync = () => {
     setIsConnected(false);
     setDevice(null);
     toast({
-      title: "Watch Disconnected",
-      description: "Smartwatch has been manually disconnected.",
+      title: t('smartwatch.watchDisconnected'),
+      description: t('smartwatch.manualDisconnect'),
     });
   };
 
   const handleSync = () => {
     setLastSync(new Date());
     toast({
-      title: "Sync Complete",
-      description: "Health data synced successfully from smartwatch.",
+      title: t('smartwatch.syncComplete'),
+      description: t('smartwatch.dataSynced'),
     });
   };
 
@@ -98,10 +97,10 @@ const SmartWatchSync = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Watch className="h-5 w-5" />
-            SmartWatch Connection
+            {t('smartwatch.title')}
           </CardTitle>
           <CardDescription>
-            Connect your smartwatch to sync health data automatically
+            {t('smartwatch.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -109,7 +108,7 @@ const SmartWatchSync = () => {
             <div className="flex items-center gap-2">
               <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
               <span className="text-sm font-medium">
-                {isConnected ? 'Connected' : 'Disconnected'}
+                {isConnected ? t('smartwatch.connected') : t('smartwatch.disconnected')}
               </span>
               {isConnected && (
                 <Badge variant="outline" className="ml-2">
@@ -121,12 +120,12 @@ const SmartWatchSync = () => {
             {isConnected ? (
               <Button onClick={handleDisconnect} variant="outline" size="sm">
                 <WifiOff className="h-4 w-4 mr-2" />
-                Disconnect
+                {t('smartwatch.disconnect')}
               </Button>
             ) : (
               <Button onClick={handleConnect} size="sm">
                 <Bluetooth className="h-4 w-4 mr-2" />
-                Connect Watch
+                {t('smartwatch.connectWatch')}
               </Button>
             )}
           </div>
@@ -135,9 +134,9 @@ const SmartWatchSync = () => {
             <>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="auto-sync">Auto Sync</Label>
+                  <Label htmlFor="auto-sync">{t('smartwatch.autoSync')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Automatically sync data every 15 minutes
+                    {t('smartwatch.autoSyncDesc')}
                   </p>
                 </div>
                 <Switch
@@ -149,24 +148,24 @@ const SmartWatchSync = () => {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">Last Sync</p>
+                  <p className="text-sm font-medium">{t('smartwatch.lastSync')}</p>
                   <p className="text-sm text-muted-foreground">
-                    {lastSync ? lastSync.toLocaleString() : 'Never'}
+                    {lastSync ? lastSync.toLocaleString() : t('smartwatch.never')}
                   </p>
                 </div>
                 <Button onClick={handleSync} variant="outline" size="sm">
                   <Wifi className="h-4 w-4 mr-2" />
-                  Sync Now
+                  {t('smartwatch.syncNow')}
                 </Button>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="text-center p-3 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground">Steps Today</p>
+                  <p className="text-sm text-muted-foreground">{t('smartwatch.stepsToday')}</p>
                   <p className="text-lg font-semibold">8,542</p>
                 </div>
                 <div className="text-center p-3 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground">Heart Rate</p>
+                  <p className="text-sm text-muted-foreground">{t('smartwatch.heartRate')}</p>
                   <p className="text-lg font-semibold">72 bpm</p>
                 </div>
               </div>

@@ -29,13 +29,12 @@ const Connections = ({ onMessageUser, onSectionChange }: ConnectionsProps) => {
   }, [user, fetchConnections]);
 
   const handleMessageUser = (userId: string) => {
-    // Switch to messages section and select the user
     onSectionChange?.('messages');
     onMessageUser?.(userId);
     
     toast({
-      title: "Opening chat",
-      description: "Switching to messages...",
+      title: t('connections.openingChat'),
+      description: t('connections.switchingToMessages'),
     });
   };
 
@@ -52,13 +51,13 @@ const Connections = ({ onMessageUser, onSectionChange }: ConnectionsProps) => {
         <TabsList className="grid w-full grid-cols-2 h-auto">
           <TabsTrigger value="connections" className="flex items-center gap-2 text-xs lg:text-sm p-2 lg:p-3">
             <Users className="h-3 w-3 lg:h-4 lg:w-4" />
-            <span className="hidden sm:inline">My Connections</span>
-            <span className="sm:hidden">Connected</span>
+            <span className="hidden sm:inline">{t('connections.myConnections')}</span>
+            <span className="sm:hidden">{t('connections.connected')}</span>
           </TabsTrigger>
           <TabsTrigger value="discover" className="flex items-center gap-2 text-xs lg:text-sm p-2 lg:p-3">
             <UserPlus className="h-3 w-3 lg:h-4 lg:w-4" />
-            <span className="hidden sm:inline">Discover People</span>
-            <span className="sm:hidden">Discover</span>
+            <span className="hidden sm:inline">{t('connections.discoverPeople')}</span>
+            <span className="sm:hidden">{t('connections.discover')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -66,10 +65,10 @@ const Connections = ({ onMessageUser, onSectionChange }: ConnectionsProps) => {
           <div className="space-y-2">
             <h3 className="text-sm lg:text-base font-medium flex items-center gap-2">
               <Users className="h-4 w-4" />
-              My Connections ({connections.length})
+              {t('connections.myConnectionsCount')} ({connections.length})
             </h3>
             <p className="text-xs lg:text-sm text-muted-foreground">
-              People you're connected with. Click the message button to start a conversation.
+              {t('connections.connectionMessage')}
             </p>
           </div>
           <ConnectionsList 
@@ -84,10 +83,10 @@ const Connections = ({ onMessageUser, onSectionChange }: ConnectionsProps) => {
           <div className="space-y-2">
             <h3 className="text-sm lg:text-base font-medium flex items-center gap-2">
               <UserPlus className="h-4 w-4" />
-              Discover New People
+              {t('connections.discoverNewPeople')}
             </h3>
             <p className="text-xs lg:text-sm text-muted-foreground">
-              Find and connect with other Hemapp users in your health journey.
+              {t('connections.discoverMessage')}
             </p>
           </div>
           <UserSearch 

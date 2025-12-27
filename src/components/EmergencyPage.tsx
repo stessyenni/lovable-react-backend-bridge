@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,14 +16,15 @@ import {
 } from "lucide-react";
 
 const EmergencyPage = () => {
+  const { t } = useTranslation();
   const [emergencyMode, setEmergencyMode] = useState(false);
   const { toast } = useToast();
 
   const emergencyContacts = [
-    { name: "Emergency Services", number: "911", type: "Emergency" },
-    { name: "Poison Control", number: "1-800-222-1222", type: "Poison" },
-    { name: "National Suicide Prevention", number: "1-800-273-8255", type: "Mental Health" },
-    { name: "Emergency Contact", number: "Loading...", type: "Personal" }
+    { name: t('emergency.emergencyServices'), number: "911", type: "Emergency" },
+    { name: t('emergency.poisonControl'), number: "1-800-222-1222", type: "Poison" },
+    { name: t('emergency.suicidePrevention'), number: "1-800-273-8255", type: "Mental Health" },
+    { name: t('emergency.personalContact'), number: "Loading...", type: "Personal" }
   ];
 
   const medicalInfo = {
@@ -35,25 +37,24 @@ const EmergencyPage = () => {
   const handleEmergencyCall = (number: string, name: string) => {
     if (number === "Loading...") {
       toast({
-        title: "No Emergency Contact",
-        description: "Please add an emergency contact in your profile settings.",
+        title: t('emergency.noEmergencyContact'),
+        description: t('emergency.addEmergencyContact'),
         variant: "destructive"
       });
       return;
     }
 
-    // In a real app, this would make the actual call
     toast({
-      title: "Calling " + name,
-      description: "Initiating emergency call to " + number,
+      title: t('emergency.call') + " " + name,
+      description: t('emergency.call') + " " + number,
     });
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: "Copied",
-      description: "Information copied to clipboard"
+      title: t('emergency.copied'),
+      description: t('emergency.infoCopied')
     });
   };
 
@@ -63,8 +64,8 @@ const EmergencyPage = () => {
         const coords = `${position.coords.latitude}, ${position.coords.longitude}`;
         copyToClipboard(coords);
         toast({
-          title: "Location Shared",
-          description: "Your coordinates have been copied to clipboard"
+          title: t('emergency.locationShared'),
+          description: t('emergency.coordinatesCopied')
         });
       });
     }
@@ -73,8 +74,8 @@ const EmergencyPage = () => {
   const activateEmergencyMode = () => {
     setEmergencyMode(true);
     toast({
-      title: "Emergency Mode Activated",
-      description: "Your emergency contacts will be notified",
+      title: t('emergency.emergencyModeActivated'),
+      description: t('emergency.contactsNotified'),
       variant: "destructive"
     });
   };
@@ -82,8 +83,8 @@ const EmergencyPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-destructive">Emergency Center</h2>
-        <p className="text-muted-foreground">Quick access to emergency contacts and medical information</p>
+        <h2 className="text-2xl font-bold text-destructive">{t('emergency.title')}</h2>
+        <p className="text-muted-foreground">{t('emergency.subtitle')}</p>
       </div>
 
       {emergencyMode && (
@@ -91,9 +92,9 @@ const EmergencyPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
-              <span className="font-semibold">EMERGENCY MODE ACTIVE</span>
+              <span className="font-semibold">{t('emergency.emergencyModeActive')}</span>
             </div>
-            <p className="text-sm mt-2">Emergency contacts have been notified of your situation.</p>
+            <p className="text-sm mt-2">{t('emergency.emergencyModeDesc')}</p>
           </CardContent>
         </Card>
       )}
@@ -104,9 +105,9 @@ const EmergencyPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Phone className="h-5 w-5" />
-              Emergency Contacts
+              {t('emergency.emergencyContacts')}
             </CardTitle>
-            <CardDescription>Quick dial for emergency situations</CardDescription>
+            <CardDescription>{t('emergency.quickDial')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {emergencyContacts.map((contact, index) => (
@@ -122,7 +123,7 @@ const EmergencyPage = () => {
                     variant={contact.type === "Emergency" ? "destructive" : "outline"}
                     onClick={() => handleEmergencyCall(contact.number, contact.name)}
                   >
-                    Call
+                    {t('emergency.call')}
                   </Button>
                 </div>
               </div>
@@ -135,14 +136,14 @@ const EmergencyPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Heart className="h-5 w-5" />
-              Medical Information
+              {t('emergency.medicalInfo')}
             </CardTitle>
-            <CardDescription>Critical medical details for first responders</CardDescription>
+            <CardDescription>{t('emergency.criticalDetails')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium">Blood Type</p>
+                <p className="text-sm font-medium">{t('emergency.bloodType')}</p>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">{medicalInfo.bloodType}</Badge>
                   <Button
@@ -155,7 +156,7 @@ const EmergencyPage = () => {
                 </div>
               </div>
               <div>
-                <p className="text-sm font-medium">Allergies</p>
+                <p className="text-sm font-medium">{t('emergency.allergiesLabel')}</p>
                 <div className="flex flex-wrap gap-1">
                   {medicalInfo.allergies.map((allergy, index) => (
                     <Badge key={index} variant="destructive" className="text-xs">
@@ -167,7 +168,7 @@ const EmergencyPage = () => {
             </div>
             
             <div>
-              <p className="text-sm font-medium mb-2">Medical Conditions</p>
+              <p className="text-sm font-medium mb-2">{t('emergency.medicalConditionsLabel')}</p>
               <div className="flex flex-wrap gap-1">
                 {medicalInfo.conditions.map((condition, index) => (
                   <Badge key={index} variant="outline" className="text-xs">
@@ -178,7 +179,7 @@ const EmergencyPage = () => {
             </div>
 
             <div>
-              <p className="text-sm font-medium mb-2">Current Medications</p>
+              <p className="text-sm font-medium mb-2">{t('emergency.currentMedications')}</p>
               <div className="flex flex-wrap gap-1">
                 {medicalInfo.medications.map((medication, index) => (
                   <Badge key={index} variant="secondary" className="text-xs">
@@ -195,9 +196,9 @@ const EmergencyPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              Emergency Actions
+              {t('emergency.emergencyActions')}
             </CardTitle>
-            <CardDescription>Immediate emergency response options</CardDescription>
+            <CardDescription>{t('emergency.immediateResponse')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button
@@ -208,7 +209,7 @@ const EmergencyPage = () => {
               disabled={emergencyMode}
             >
               <AlertTriangle className="h-4 w-4 mr-2" />
-              Activate Emergency Mode
+              {t('emergency.activateEmergencyMode')}
             </Button>
             
             <Button
@@ -218,7 +219,7 @@ const EmergencyPage = () => {
               onClick={shareLocation}
             >
               <MapPin className="h-4 w-4 mr-2" />
-              Share Current Location
+              {t('emergency.shareLocation')}
             </Button>
 
             <Button
@@ -228,7 +229,7 @@ const EmergencyPage = () => {
               onClick={() => copyToClipboard(JSON.stringify(medicalInfo, null, 2))}
             >
               <Copy className="h-4 w-4 mr-2" />
-              Copy Medical Info
+              {t('emergency.copyMedicalInfo')}
             </Button>
           </CardContent>
         </Card>
@@ -238,30 +239,30 @@ const EmergencyPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
-              Emergency Status
+              {t('emergency.emergencyStatus')}
             </CardTitle>
-            <CardDescription>Current emergency system status</CardDescription>
+            <CardDescription>{t('emergency.currentStatus')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Emergency Contacts</span>
-              <Badge variant="secondary">3 Active</Badge>
+              <span className="text-sm">{t('emergency.emergencyContacts')}</span>
+              <Badge variant="secondary">3 {t('emergency.active')}</Badge>
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm">Location Services</span>
-              <Badge variant="secondary">Enabled</Badge>
+              <span className="text-sm">{t('emergency.locationServices')}</span>
+              <Badge variant="secondary">{t('emergency.enabled')}</Badge>
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm">Medical Data</span>
-              <Badge variant="secondary">Complete</Badge>
+              <span className="text-sm">{t('emergency.medicalData')}</span>
+              <Badge variant="secondary">{t('emergency.complete')}</Badge>
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm">Emergency Mode</span>
+              <span className="text-sm">{t('emergency.emergencyMode')}</span>
               <Badge variant={emergencyMode ? "destructive" : "outline"}>
-                {emergencyMode ? "Active" : "Inactive"}
+                {emergencyMode ? t('emergency.active') : t('emergency.inactive')}
               </Badge>
             </div>
           </CardContent>
