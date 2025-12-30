@@ -7,7 +7,10 @@ export const useUnreadMessages = () => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchUnreadCount = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      setUnreadCount(0);
+      return;
+    }
 
     try {
       const { data, error } = await supabase.rpc('get_unread_message_count', {
@@ -16,12 +19,15 @@ export const useUnreadMessages = () => {
 
       if (error) {
         console.error('Error fetching unread count:', error);
+        setUnreadCount(0);
         return;
       }
 
-      setUnreadCount(data || 0);
+      // Ensure we set to 0 if data is null, undefined, or negative
+      setUnreadCount(typeof data === 'number' && data > 0 ? data : 0);
     } catch (error) {
       console.error('Unexpected error fetching unread count:', error);
+      setUnreadCount(0);
     }
   }, [user?.id]);
 

@@ -61,7 +61,7 @@ const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <SpeechInterface 
-                enableTextToSpeech={speechEnabled}
+                enableTextToSpeech={speechEnabled || brailleMode}
                 onNavigate={onSectionChange}
               />
             </div>
@@ -70,7 +70,13 @@ const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle
               <Button
                 variant={brailleMode ? "default" : "outline"}
                 size="sm"
-                onClick={onBrailleToggle}
+                onClick={() => {
+                  onBrailleToggle();
+                  // Sync braille with speech - when braille is toggled on, speech should also be on
+                  if (!brailleMode && !speechEnabled) {
+                    onSpeechToggle();
+                  }
+                }}
                 className="text-xs"
               >
                 ⠃⠗⠇ {brailleMode ? "ON" : "OFF"}
