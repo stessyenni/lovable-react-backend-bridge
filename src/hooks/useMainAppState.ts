@@ -60,9 +60,17 @@ export const useMainAppState = () => {
     const newBrailleMode = !brailleMode;
     setBrailleMode(newBrailleMode);
     localStorage.setItem('brailleMode', newBrailleMode.toString());
+    
+    // Sync braille with speech - when braille is enabled, also enable speech
+    if (newBrailleMode && !speechEnabled) {
+      setSpeechEnabled(true);
+    }
+    
     toast({
       title: newBrailleMode ? "Braille mode enabled" : "Braille mode disabled",
-      description: newBrailleMode ? "Screen reader optimizations active" : "Standard display mode active",
+      description: newBrailleMode 
+        ? "Screen reader optimizations and voice features active" 
+        : "Standard display mode active",
     });
   };
 
