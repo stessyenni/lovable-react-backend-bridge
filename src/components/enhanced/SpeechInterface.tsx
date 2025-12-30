@@ -20,23 +20,49 @@ const SpeechInterface = ({
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const [recognition, setRecognition] = useState<any>(null);
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
   const { toast } = useToast();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
+  const recognitionRef = useRef<any>(null);
+  const toastShownRef = useRef(false);
 
   // Map i18n language codes to speech recognition codes
   const getSpeechLangCode = (langCode: string) => {
     const langMap: { [key: string]: string } = {
       'en': 'en-US',
       'fr': 'fr-FR',
-      'pdc': 'en-CM', // Pidgin - fallback to Cameroon English
+      'pdc': 'en-NG', // Pidgin - fallback to Nigerian English
     };
     return langMap[langCode] || 'en-US';
   };
 
+  // Initialize speech synthesis and load voices
   useEffect(() => {
-    // Initialize speech recognition
+    if ('speechSynthesis' in window) {
+      speechSynthesisRef.current = window.speechSynthesis;
+      
+      const loadVoices = () => {
+        const voices = speechSynthesisRef.current?.getVoices();
+        if (voices && voices.length > 0) {
+          setVoicesLoaded(true);
+        }
+      };
+      
+      loadVoices();
+      speechSynthesisRef.current.onvoiceschanged = loadVoices;
+    }
+    
+    return () => {
+      if (speechSynthesisRef.current) {
+        speechSynthesisRef.current.onvoiceschanged = null;
+        speechSynthesisRef.current.cancel();
+      }
+    };
+  }, []);
+
+  // Initialize speech recognition once
+  useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognitionConstructor = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
       const recognitionInstance = new SpeechRecognitionConstructor();
@@ -50,11 +76,11 @@ const SpeechInterface = ({
         let interimTranscript = '';
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
+          const transcriptText = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
-            finalTranscript += transcript;
+            finalTranscript += transcriptText;
           } else {
-            interimTranscript += transcript;
+            interimTranscript += transcriptText;
           }
         }
 
@@ -64,7 +90,6 @@ const SpeechInterface = ({
           onTextRecognized(finalTranscript);
         }
         
-        // Process voice commands for navigation
         if (finalTranscript) {
           processVoiceCommand(finalTranscript);
         }
@@ -72,16 +97,6 @@ const SpeechInterface = ({
 
       recognitionInstance.onstart = () => {
         setIsListening(true);
-        const messages: { [key: string]: { title: string; description: string } } = {
-          'en': { title: "Listening Started", description: "Speak now, your voice is being recorded..." },
-          'fr': { title: "Écoute Démarrée", description: "Parlez maintenant, votre voix est enregistrée..." },
-          'pdc': { title: "I Don Start Listening", description: "Talk now, I dey record your voice..." }
-        };
-        const msg = messages[i18n.language] || messages['en'];
-        toast({
-          title: msg.title,
-          description: msg.description,
-        });
       };
 
       recognitionInstance.onend = () => {
@@ -91,35 +106,27 @@ const SpeechInterface = ({
       recognitionInstance.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
-        const messages: { [key: string]: { title: string; description: string } } = {
-          'en': { title: "Voice Recognition Error", description: `Error: ${event.error}. Please check your microphone permissions.` },
-          'fr': { title: "Erreur de Reconnaissance Vocale", description: `Erreur: ${event.error}. Vérifiez les autorisations du microphone.` },
-          'pdc': { title: "Voice Recognition Error", description: `Error: ${event.error}. Check your microphone permission.` }
-        };
-        const msg = messages[i18n.language] || messages['en'];
-        toast({
-          title: msg.title,
-          description: msg.description,
-          variant: "destructive"
-        });
       };
 
-      setRecognition(recognitionInstance);
-    }
-
-    // Initialize speech synthesis
-    if ('speechSynthesis' in window) {
-      speechSynthesisRef.current = window.speechSynthesis;
+      recognitionRef.current = recognitionInstance;
     }
 
     return () => {
-      if (recognition) {
-        recognition.stop();
-      }
-      if (speechSynthesisRef.current) {
-        speechSynthesisRef.current.cancel();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // Ignore errors on cleanup
+        }
       }
     };
+  }, []);
+
+  // Update recognition language when i18n language changes
+  useEffect(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.lang = getSpeechLangCode(i18n.language);
+    }
   }, [i18n.language]);
 
   // Auto-read text from page if enabled
@@ -150,15 +157,15 @@ const SpeechInterface = ({
   }, [autoReadText, enableTextToSpeech]);
 
   const startListening = () => {
-    if (recognition && !isListening) {
+    if (recognitionRef.current && !isListening) {
       setTranscript("");
-      recognition.start();
+      recognitionRef.current.start();
     }
   };
 
   const stopListening = () => {
-    if (recognition && isListening) {
-      recognition.stop();
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
     }
   };
 
@@ -174,21 +181,26 @@ const SpeechInterface = ({
       utterance.pitch = 1;
       utterance.volume = 0.8;
 
+      // Set language for the utterance
+      utterance.lang = getSpeechLangCode(i18n.language);
+
       // Use a stored voice setting or select based on current language
       const voices = speechSynthesisRef.current.getVoices();
-      const preferredVoice = localStorage.getItem('preferred-voice');
-      if (preferredVoice && voices.length > 0) {
-        const voice = voices.find(v => v.voiceURI === preferredVoice);
-        if (voice) {
-          utterance.voice = voice;
-        }
-      } else {
-        // Auto-select voice based on current language
-        const langCode = i18n.language;
-        const matchingVoice = voices.find(v => v.lang.startsWith(langCode)) || 
-                             voices.find(v => v.lang.startsWith('en'));
-        if (matchingVoice) {
-          utterance.voice = matchingVoice;
+      if (voices.length > 0) {
+        const preferredVoice = localStorage.getItem('preferred-voice');
+        if (preferredVoice) {
+          const voice = voices.find(v => v.voiceURI === preferredVoice);
+          if (voice) {
+            utterance.voice = voice;
+          }
+        } else {
+          // Auto-select voice based on current language
+          const langCode = getSpeechLangCode(i18n.language);
+          const matchingVoice = voices.find(v => v.lang.startsWith(langCode.substring(0, 2))) || 
+                               voices.find(v => v.lang.startsWith('en'));
+          if (matchingVoice) {
+            utterance.voice = matchingVoice;
+          }
         }
       }
 
@@ -197,28 +209,23 @@ const SpeechInterface = ({
       utterance.onerror = (event) => {
         console.error('Speech synthesis error:', event);
         setIsSpeaking(false);
-        const messages: { [key: string]: { title: string; description: string } } = {
-          'en': { title: "Speech Error", description: "Failed to read text aloud. Please check your browser's speech settings." },
-          'fr': { title: "Erreur de Parole", description: "Échec de la lecture du texte. Vérifiez les paramètres de parole du navigateur." },
-          'pdc': { title: "Speech Error", description: "I no fit read the text. Check your browser speech settings." }
-        };
-        const msg = messages[i18n.language] || messages['en'];
-        toast({
-          title: msg.title,
-          description: msg.description,
-          variant: "destructive"
-        });
+        // Only show error toast once per session to avoid spam
+        if (!toastShownRef.current) {
+          toastShownRef.current = true;
+          toast({
+            title: t('voice.speechError', 'Speech Error'),
+            description: t('voice.speechErrorDesc', 'Failed to read text aloud. Please check your browser speech settings.'),
+            variant: "destructive"
+          });
+          // Reset after 5 seconds to allow future errors to show
+          setTimeout(() => { toastShownRef.current = false; }, 5000);
+        }
       };
 
       speechSynthesisRef.current.speak(utterance);
     } catch (error) {
       console.error('Speech synthesis error:', error);
       setIsSpeaking(false);
-      toast({
-        title: "Speech Error",
-        description: "Speech synthesis is not available in your browser.",
-        variant: "destructive"
-      });
     }
   };
 
@@ -315,7 +322,7 @@ const SpeechInterface = ({
         variant={isListening ? "destructive" : "outline"}
         size="sm"
         onClick={isListening ? stopListening : startListening}
-        disabled={!recognition}
+        disabled={!recognitionRef.current}
         className="flex items-center gap-1"
       >
         {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
