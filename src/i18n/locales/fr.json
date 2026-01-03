@@ -52,7 +52,11 @@
     "fillBothFields": "Veuillez remplir le nom et le numéro",
     "saveFailed": "Échec de l'enregistrement du contact",
     "saved": "Enregistré",
-    "contactSaved": "Contact d'urgence enregistré avec succès"
+    "contactSaved": "Contact d'urgence enregistré avec succès",
+    "callEmergency": "Urgence",
+    "calling": "Appel en cours",
+    "noContact": "Aucun Contact d'Urgence",
+    "setContactFirst": "Veuillez d'abord définir votre contact d'urgence dans la page Urgence."
   },
   "welcome": {
     "title": "Bienvenue sur HemApp",

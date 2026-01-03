@@ -52,7 +52,11 @@
     "fillBothFields": "Abeg fill both name and number",
     "saveFailed": "E no save the contact",
     "saved": "E don save",
-    "contactSaved": "Emergency contact don save well well"
+    "contactSaved": "Emergency contact don save well well",
+    "callEmergency": "Emergency",
+    "calling": "Dey call",
+    "noContact": "No Emergency Contact",
+    "setContactFirst": "Abeg set your emergency contact for the Emergency page first."
   },
   "welcome": {
     "title": "Welcome for HemApp",
