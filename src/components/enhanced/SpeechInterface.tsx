@@ -17,6 +17,8 @@ const SpeechInterface = ({
   enableTextToSpeech = true, 
   autoReadText = false 
 }: SpeechInterfaceProps) => {
+  // Force enable text-to-speech always for read aloud functionality
+  const ttsEnabled = enableTextToSpeech || true;
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -170,7 +172,7 @@ const SpeechInterface = ({
   };
 
   const speakText = (text: string) => {
-    if (!enableTextToSpeech || !speechSynthesisRef.current) return;
+    if (!speechSynthesisRef.current) return;
 
     try {
       // Cancel any ongoing speech
@@ -331,22 +333,18 @@ const SpeechInterface = ({
         </span>
       </Button>
 
-      {/* Text-to-Speech Controls */}
-      {enableTextToSpeech && (
-        <>
-          <Button
-            variant="outline"  
-            size="sm"
-            onClick={isSpeaking ? stopSpeaking : () => readPageContent()}
-            className="flex items-center gap-1"
-          >
-            {isSpeaking ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-            <span className="hidden sm:inline">
-              {isSpeaking ? "Stop" : "Read Page"}
-            </span>
-          </Button>
-        </>
-      )}
+      {/* Text-to-Speech Controls - Always visible */}
+      <Button
+        variant="outline"  
+        size="sm"
+        onClick={isSpeaking ? stopSpeaking : () => readPageContent()}
+        className="flex items-center gap-1"
+      >
+        {isSpeaking ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+        <span className="hidden sm:inline">
+          {isSpeaking ? "Stop" : "Read Aloud"}
+        </span>
+      </Button>
 
       {/* Status indicator */}
       {(isListening || isSpeaking) && (

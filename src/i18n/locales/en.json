@@ -52,7 +52,11 @@
     "fillBothFields": "Please fill in both name and number",
     "saveFailed": "Failed to save contact",
     "saved": "Saved",
-    "contactSaved": "Emergency contact saved successfully"
+    "contactSaved": "Emergency contact saved successfully",
+    "callEmergency": "Emergency",
+    "calling": "Calling",
+    "noContact": "No Emergency Contact",
+    "setContactFirst": "Please set your emergency contact in the Emergency page first."
   },
   "welcome": {
     "title": "Welcome to HemApp",
@@ -123,7 +127,8 @@
     "keepUpGoodWork": "Keep up the good work!",
     "fiberIntake": "Fiber intake",
     "greatForDigestion": "Great for digestion!",
-    "home": "Home"
+    "home": "Home",
+    "mealAdded": "Meal added successfully!"
   },
   "languages": {
     "english": "English",

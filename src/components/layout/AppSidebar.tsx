@@ -16,12 +16,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Video, Settings } from "lucide-react";
+import { Video, Settings, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { AppLogo } from "@/assets";
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from "react";
 
 interface MenuItem {
   id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
@@ -49,6 +52,49 @@ const AppSidebar = ({
   const { setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
   const { unreadCount } = useUnreadMessages();
+  const { user } = useAuth();
+  const [emergencyContact, setEmergencyContact] = useState<{ name: string; number: string } | null>(null);
+
+  // Fetch emergency contact
+  useEffect(() => {
+    const fetchEmergencyContact = async () => {
+      if (!user?.id) return;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('emergency_contact')
+        .eq('id', user.id)
+        .single();
+      
+      if (data?.emergency_contact) {
+        const parts = data.emergency_contact.split(': ');
+        if (parts.length === 2) {
+          setEmergencyContact({ name: parts[0], number: parts[1] });
+        } else {
+          setEmergencyContact({ name: 'Emergency Contact', number: data.emergency_contact });
+        }
+      }
+    };
+    
+    fetchEmergencyContact();
+  }, [user?.id]);
+
+  const handleEmergencyCall = () => {
+    if (emergencyContact?.number) {
+      window.open(`tel:${emergencyContact.number}`, '_self');
+      toast({
+        title: t('emergency.calling', 'Calling') + " " + emergencyContact.name,
+        description: emergencyContact.number,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: t('emergency.noContact', 'No Emergency Contact'),
+        description: t('emergency.setContactFirst', 'Please set your emergency contact in the Emergency page first.'),
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleDoctorConsult = () => {
     toast({
@@ -114,6 +160,15 @@ const AppSidebar = ({
 
       <SidebarFooter className="p-3 sm:p-4">
         <div className="space-y-2">
+          <SidebarMenuButton
+            onClick={handleEmergencyCall}
+            className="w-full flex items-center justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+            tooltip={t('emergency.callEmergency', 'Call Emergency Contact')}
+          >
+            <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('emergency.callEmergency', 'Emergency')}</span>
+          </SidebarMenuButton>
+
           <SidebarMenuButton
             onClick={handleDoctorConsult}
             className="w-full flex items-center justify-start gap-2"

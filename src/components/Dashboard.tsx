@@ -22,7 +22,7 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
   const { toast } = useToast();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const { getTodayStats } = useDietData();
+  const { getTodayStats, entries, refreshData, fetchDietEntries } = useDietData();
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showMealCategories, setShowMealCategories] = useState(false);
   const [showViewCategories, setShowViewCategories] = useState(false);
@@ -31,12 +31,13 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
   const [todayStats, setTodayStats] = useState({ meals: 0, calories: 0, protein: 0, fiber: 0 });
   const [totalMealCount, setTotalMealCount] = useState(0);
 
+  // Update stats whenever entries change
   useEffect(() => {
-    if (user) {
+    if (user && entries.length >= 0) {
       const stats = getTodayStats();
       setTodayStats(stats);
     }
-  }, [user]);
+  }, [user, entries]);
 
   useEffect(() => {
     const fetchTotalMealCount = async () => {
@@ -53,7 +54,7 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
     };
     
     fetchTotalMealCount();
-  }, [user, todayStats]);
+  }, [user, entries]);
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -79,12 +80,11 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
 
   const handleSuccess = () => {
     setShowDietEntry(false);
-    // Refresh stats after meal is added
-    const stats = getTodayStats();
-    setTodayStats(stats);
+    // Refresh data to get updated stats
+    refreshData();
     toast({
-      title: "Success",
-      description: "Action completed successfully!",
+      title: t('common.success', 'Success'),
+      description: t('dashboard.mealAdded', 'Meal added successfully!'),
     });
   };
 

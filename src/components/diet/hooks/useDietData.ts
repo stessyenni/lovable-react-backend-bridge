@@ -22,17 +22,19 @@ export const useDietData = () => {
   const { toast } = useToast();
   const [entries, setEntries] = useState<DietEntryType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const fetchDietEntries = async () => {
     if (!user) return;
 
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('diet_entries')
         .select('*')
         .eq('user_id', user.id)
         .order('logged_at', { ascending: false })
-        .limit(10);
+        .limit(100); // Increased limit for better stats
 
       if (error) {
         console.error('Error fetching diet entries:', error);
@@ -45,6 +47,11 @@ export const useDietData = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Trigger a refresh of data
+  const refreshData = () => {
+    setRefreshKey(prev => prev + 1);
   };
 
   const handleDeleteEntry = async (entryId: string) => {
@@ -154,7 +161,7 @@ export const useDietData = () => {
     if (user) {
       fetchDietEntries();
     }
-  }, [user]);
+  }, [user, refreshKey]);
 
   return {
     entries,
@@ -162,7 +169,8 @@ export const useDietData = () => {
     fetchDietEntries,
     handleDeleteEntry,
     getTodayStats,
-    getWeeklyStats
+    getWeeklyStats,
+    refreshData
   };
 };
 
