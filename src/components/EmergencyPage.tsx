@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import EmergencyContactsManager, { EmergencyContact } from "./emergency/EmergencyContactsManager";
+import EmergencyContactSelector from "./emergency/EmergencyContactSelector";
 import { 
   AlertTriangle, 
   Phone, 
@@ -15,88 +15,18 @@ import {
   Heart, 
   Clock,
   Copy,
-  Shield,
-  Edit2,
-  Save,
-  X
+  Shield
 } from "lucide-react";
 
 const EmergencyPage = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [emergencyMode, setEmergencyMode] = useState(false);
-  const [personalContact, setPersonalContact] = useState({ name: "", number: "" });
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState("");
-  const [editNumber, setEditNumber] = useState("");
+  const [contacts, setContacts] = useState<EmergencyContact[]>([]);
+  const [showContactSelector, setShowContactSelector] = useState(false);
   const { toast } = useToast();
 
-  // Fetch user's emergency contact from profile
-  useEffect(() => {
-    const fetchEmergencyContact = async () => {
-      if (!user?.id) return;
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('emergency_contact')
-        .eq('id', user.id)
-        .single();
-      
-      if (data?.emergency_contact) {
-        // Parse stored contact (format: "Name: Number")
-        const parts = data.emergency_contact.split(': ');
-        if (parts.length === 2) {
-          setPersonalContact({ name: parts[0], number: parts[1] });
-        } else {
-          setPersonalContact({ name: t('emergency.personalContact'), number: data.emergency_contact });
-        }
-      }
-    };
-    
-    fetchEmergencyContact();
-  }, [user?.id, t]);
-
-  const saveEmergencyContact = async () => {
-    if (!user?.id || !editName.trim() || !editNumber.trim()) {
-      toast({
-        title: t('emergency.error'),
-        description: t('emergency.fillBothFields'),
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const contactString = `${editName.trim()}: ${editNumber.trim()}`;
-    
-    const { error } = await supabase
-      .from('profiles')
-      .update({ emergency_contact: contactString })
-      .eq('id', user.id);
-
-    if (error) {
-      toast({
-        title: t('emergency.error'),
-        description: t('emergency.saveFailed'),
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setPersonalContact({ name: editName.trim(), number: editNumber.trim() });
-    setIsEditing(false);
-    toast({
-      title: t('emergency.saved'),
-      description: t('emergency.contactSaved')
-    });
-  };
-
-  const startEditing = () => {
-    setEditName(personalContact.name);
-    setEditNumber(personalContact.number);
-    setIsEditing(true);
-  };
-
-  const emergencyContacts = [
+  const emergencyServices = [
     { name: t('emergency.emergencyServices'), number: "911", type: "Emergency" },
     { name: t('emergency.poisonControl'), number: "1-800-222-1222", type: "Poison" },
     { name: t('emergency.suicidePrevention'), number: "1-800-273-8255", type: "Mental Health" }
@@ -114,6 +44,43 @@ const EmergencyPage = () => {
     toast({
       title: t('emergency.call') + " " + name,
       description: t('emergency.call') + " " + number,
+    });
+  };
+
+  const handleSelectContact = (contact: EmergencyContact) => {
+    setShowContactSelector(false);
+    handleEmergencyCall(contact.phone, contact.name);
+  };
+
+  const sendSmsToAll = () => {
+    if (contacts.length === 0) {
+      toast({
+        title: t('emergency.noContacts'),
+        description: t('emergency.addContactsFirst'),
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Get location if available
+    navigator.geolocation?.getCurrentPosition(
+      (position) => {
+        const locationUrl = `https://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`;
+        const message = `${t('emergency.smsMessage')} ${locationUrl}`;
+        const phones = contacts.map(c => c.phone).join(',');
+        window.open(`sms:${phones}?body=${encodeURIComponent(message)}`, '_self');
+      },
+      () => {
+        const message = t('emergency.smsMessageNoLocation');
+        const phones = contacts.map(c => c.phone).join(',');
+        window.open(`sms:${phones}?body=${encodeURIComponent(message)}`, '_self');
+      }
+    );
+
+    toast({
+      title: t('emergency.smsSending'),
+      description: t('emergency.smsToAllContacts'),
+      variant: "destructive"
     });
   };
 
@@ -140,6 +107,7 @@ const EmergencyPage = () => {
 
   const activateEmergencyMode = () => {
     setEmergencyMode(true);
+    sendSmsToAll();
     toast({
       title: t('emergency.emergencyModeActivated'),
       description: t('emergency.contactsNotified'),
@@ -148,7 +116,7 @@ const EmergencyPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-2 sm:p-4 lg:p-6">
       <div>
         <h2 className="text-2xl font-bold text-destructive">{t('emergency.title')}</h2>
         <p className="text-muted-foreground">{t('emergency.subtitle')}</p>
@@ -167,17 +135,20 @@ const EmergencyPage = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Emergency Contacts */}
+        {/* My Emergency Contacts */}
+        <EmergencyContactsManager onContactsChange={setContacts} />
+
+        {/* Emergency Services */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Phone className="h-5 w-5" />
-              {t('emergency.emergencyContacts')}
+              {t('emergency.emergencyServices')}
             </CardTitle>
             <CardDescription>{t('emergency.quickDial')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {emergencyContacts.map((contact, index) => (
+            {emergencyServices.map((contact, index) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                 <div>
                   <p className="font-medium">{contact.name}</p>
@@ -195,69 +166,6 @@ const EmergencyPage = () => {
                 </div>
               </div>
             ))}
-
-            {/* Personal Emergency Contact - Editable */}
-            <div className="p-3 border-2 border-primary/50 rounded-lg bg-primary/5">
-              {isEditing ? (
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="contactName">{t('emergency.contactName')}</Label>
-                    <Input
-                      id="contactName"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      placeholder={t('emergency.enterContactName')}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contactNumber">{t('emergency.contactNumber')}</Label>
-                    <Input
-                      id="contactNumber"
-                      value={editNumber}
-                      onChange={(e) => setEditNumber(e.target.value)}
-                      placeholder={t('emergency.enterContactNumber')}
-                      type="tel"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={saveEmergencyContact}>
-                      <Save className="h-3 w-3 mr-1" />
-                      {t('emergency.save')}
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
-                      <X className="h-3 w-3 mr-1" />
-                      {t('emergency.cancel')}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">
-                      {personalContact.name || t('emergency.noContactSet')}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {personalContact.number || t('emergency.tapToAdd')}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary">{t('emergency.personal')}</Badge>
-                    {personalContact.number && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEmergencyCall(personalContact.number, personalContact.name)}
-                      >
-                        {t('emergency.call')}
-                      </Button>
-                    )}
-                    <Button size="sm" variant="ghost" onClick={startEditing}>
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
           </CardContent>
         </Card>
 
@@ -341,6 +249,18 @@ const EmergencyPage = () => {
               <AlertTriangle className="h-4 w-4 mr-2" />
               {t('emergency.activateEmergencyMode')}
             </Button>
+
+            {contacts.length > 0 && (
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full border-destructive text-destructive hover:bg-destructive/10"
+                onClick={() => setShowContactSelector(true)}
+              >
+                <Phone className="h-4 w-4 mr-2" />
+                {t('emergency.callMyContact')}
+              </Button>
+            )}
             
             <Button
               variant="outline"
@@ -375,8 +295,8 @@ const EmergencyPage = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm">{t('emergency.emergencyContacts')}</span>
-              <Badge variant="secondary">{personalContact.number ? 4 : 3} {t('emergency.active')}</Badge>
+              <span className="text-sm">{t('emergency.personalContacts')}</span>
+              <Badge variant="secondary">{contacts.length} {t('emergency.saved')}</Badge>
             </div>
             
             <div className="flex items-center justify-between">
@@ -398,6 +318,15 @@ const EmergencyPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Contact Selector Dialog */}
+      <EmergencyContactSelector
+        open={showContactSelector}
+        onClose={() => setShowContactSelector(false)}
+        contacts={contacts}
+        onSelectContact={handleSelectContact}
+        onSendSmsToAll={sendSmsToAll}
+      />
     </div>
   );
 };
