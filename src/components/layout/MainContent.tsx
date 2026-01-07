@@ -9,6 +9,7 @@ import Messages from "@/components/Messages";
 import HealthMonitoring from "@/components/HealthMonitoring";
 import Facilities from "@/components/Facilities";
 import Connections from "@/components/Connections";
+import Community from "@/components/Community";
 import UserAccount from "@/components/UserAccount";
 import SmartWatchSync from "@/components/SmartWatchSync";
 import FAQPage from "@/components/enhanced/FAQPage";
@@ -19,7 +20,7 @@ interface MainContentProps {
   speechEnabled: boolean;
   onSpeechToggle: () => void;
   onBrailleToggle: () => void;
-  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch') => void;
+  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community') => void;
 }
 
 const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle, onBrailleToggle, onSectionChange }: MainContentProps) => {
@@ -42,6 +43,8 @@ const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle
         return <Facilities />;
       case 'connections':
         return <Connections onSectionChange={onSectionChange} onMessageUser={handleMessageUser} />;
+      case 'community':
+        return <Community />;
       case 'account':
         return <UserAccount />;
       case 'smartwatch':

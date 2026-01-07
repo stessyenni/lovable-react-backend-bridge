@@ -25,9 +25,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppLogo } from "@/assets";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from "react";
+import EmergencyContactSelector from "@/components/emergency/EmergencyContactSelector";
+import { EmergencyContact } from "@/components/emergency/EmergencyContactsManager";
 
 interface MenuItem {
-  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch';
+  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community';
   label: string;
   icon: React.FC<any>;
 }
@@ -53,47 +55,100 @@ const AppSidebar = ({
   const isMobile = useIsMobile();
   const { unreadCount } = useUnreadMessages();
   const { user } = useAuth();
-  const [emergencyContact, setEmergencyContact] = useState<{ name: string; number: string } | null>(null);
+  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
+  const [showContactSelector, setShowContactSelector] = useState(false);
 
-  // Fetch emergency contact
+  // Fetch emergency contacts
   useEffect(() => {
-    const fetchEmergencyContact = async () => {
+    const fetchEmergencyContacts = async () => {
       if (!user?.id) return;
       
       const { data } = await supabase
-        .from('profiles')
-        .select('emergency_contact')
-        .eq('id', user.id)
-        .single();
+        .from('emergency_contacts')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('is_primary', { ascending: false });
       
-      if (data?.emergency_contact) {
-        const parts = data.emergency_contact.split(': ');
-        if (parts.length === 2) {
-          setEmergencyContact({ name: parts[0], number: parts[1] });
-        } else {
-          setEmergencyContact({ name: 'Emergency Contact', number: data.emergency_contact });
-        }
+      if (data) {
+        setEmergencyContacts(data);
       }
     };
     
-    fetchEmergencyContact();
+    fetchEmergencyContacts();
   }, [user?.id]);
 
-  const handleEmergencyCall = () => {
-    if (emergencyContact?.number) {
-      window.open(`tel:${emergencyContact.number}`, '_self');
-      toast({
-        title: t('emergency.calling', 'Calling') + " " + emergencyContact.name,
-        description: emergencyContact.number,
-        variant: "destructive"
-      });
-    } else {
+  const handleEmergencyButtonClick = () => {
+    if (emergencyContacts.length === 0) {
       toast({
         title: t('emergency.noContact', 'No Emergency Contact'),
         description: t('emergency.setContactFirst', 'Please set your emergency contact in the Emergency page first.'),
         variant: "destructive"
       });
+      return;
     }
+
+    if (emergencyContacts.length === 1) {
+      // If only one contact, call directly and send SMS
+      callContactAndSendSms(emergencyContacts[0]);
+    } else {
+      // If multiple contacts, show selector
+      setShowContactSelector(true);
+    }
+  };
+
+  const callContactAndSendSms = (contact: EmergencyContact) => {
+    // Send SMS to all contacts
+    navigator.geolocation?.getCurrentPosition(
+      (position) => {
+        const locationUrl = `https://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`;
+        const message = `${t('emergency.smsMessage', 'EMERGENCY! I need help! My location:')} ${locationUrl}`;
+        const phones = emergencyContacts.map(c => c.phone).join(',');
+        window.open(`sms:${phones}?body=${encodeURIComponent(message)}`, '_blank');
+      },
+      () => {
+        const message = t('emergency.smsMessageNoLocation', 'EMERGENCY! I need help! Please contact me immediately.');
+        const phones = emergencyContacts.map(c => c.phone).join(',');
+        window.open(`sms:${phones}?body=${encodeURIComponent(message)}`, '_blank');
+      }
+    );
+
+    // Call the selected contact
+    setTimeout(() => {
+      window.open(`tel:${contact.phone}`, '_self');
+    }, 500);
+
+    toast({
+      title: t('emergency.calling', 'Calling') + " " + contact.name,
+      description: t('emergency.smsToAllContacts', 'SMS sent to all emergency contacts'),
+      variant: "destructive"
+    });
+  };
+
+  const handleSelectContact = (contact: EmergencyContact) => {
+    setShowContactSelector(false);
+    callContactAndSendSms(contact);
+  };
+
+  const handleSendSmsToAll = () => {
+    setShowContactSelector(false);
+    navigator.geolocation?.getCurrentPosition(
+      (position) => {
+        const locationUrl = `https://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`;
+        const message = `${t('emergency.smsMessage', 'EMERGENCY! I need help! My location:')} ${locationUrl}`;
+        const phones = emergencyContacts.map(c => c.phone).join(',');
+        window.open(`sms:${phones}?body=${encodeURIComponent(message)}`, '_self');
+      },
+      () => {
+        const message = t('emergency.smsMessageNoLocation', 'EMERGENCY! I need help! Please contact me immediately.');
+        const phones = emergencyContacts.map(c => c.phone).join(',');
+        window.open(`sms:${phones}?body=${encodeURIComponent(message)}`, '_self');
+      }
+    );
+    toast({
+      title: t('emergency.smsSending', 'Sending SMS'),
+      description: t('emergency.smsToAllContacts', 'SMS sent to all emergency contacts'),
+      variant: "destructive"
+    });
   };
 
   const handleDoctorConsult = () => {
@@ -161,7 +216,7 @@ const AppSidebar = ({
       <SidebarFooter className="p-3 sm:p-4">
         <div className="space-y-2">
           <SidebarMenuButton
-            onClick={handleEmergencyCall}
+            onClick={handleEmergencyButtonClick}
             className="w-full flex items-center justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
             tooltip={t('emergency.callEmergency', 'Call Emergency Contact')}
           >
@@ -196,6 +251,15 @@ const AppSidebar = ({
           </SidebarMenuButton>
         </div>
       </SidebarFooter>
+
+      {/* Emergency Contact Selector */}
+      <EmergencyContactSelector
+        open={showContactSelector}
+        onClose={() => setShowContactSelector(false)}
+        contacts={emergencyContacts}
+        onSelectContact={handleSelectContact}
+        onSendSmsToAll={handleSendSmsToAll}
+      />
     </Sidebar>
   );
 };

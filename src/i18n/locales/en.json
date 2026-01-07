@@ -290,6 +290,7 @@
     "healthMonitoring": "Health Monitoring",
     "facilities": "Facilities",
     "connections": "Connections",
+    "community": "Community",
     "smartwatch": "SmartWatch",
     "account": "User Account",
     "faq": "FAQ & Help"
@@ -446,5 +447,55 @@
     "navigatingTo": "Navigating to",
     "commandNotRecognized": "Command not recognized. Try again.",
     "speechNotSupported": "Speech recognition is not supported in this browser"
+  },
+  "community": {
+    "title": "Community",
+    "subtitle": "Connect with others, share experiences, and ask questions",
+    "all": "All",
+    "createPost": "Create Post",
+    "newPost": "New Post",
+    "postTitle": "Post title",
+    "postContent": "Share your thoughts...",
+    "post": "Post",
+    "cancel": "Cancel",
+    "loading": "Loading posts...",
+    "noPosts": "No posts yet. Be the first to share!",
+    "noComments": "No comments yet",
+    "writeComment": "Write a comment...",
+    "error": "Error",
+    "fillAllFields": "Please fill in title and content",
+    "postFailed": "Failed to create post",
+    "success": "Success",
+    "postCreated": "Post created successfully",
+    "categories": {
+      "general": "General",
+      "experiences": "Experiences",
+      "questions": "Questions",
+      "tips": "Tips & Advice",
+      "success": "Success Stories"
+    }
+  },
+  "emergency": {
+    "myEmergencyContacts": "My Emergency Contacts",
+    "manageContacts": "Add and manage your personal emergency contacts",
+    "addContact": "Add Contact",
+    "relationship": "Relationship",
+    "relationshipPlaceholder": "e.g., Spouse, Parent, Friend",
+    "primary": "Primary",
+    "setPrimary": "Set as Primary",
+    "deleted": "Deleted",
+    "contactDeleted": "Contact deleted successfully",
+    "selectContact": "Select Emergency Contact",
+    "selectContactDesc": "Choose which contact to call",
+    "sendSmsToAll": "Send SMS Alert to All",
+    "callMyContact": "Call My Contact",
+    "personalContacts": "Personal Contacts",
+    "saved": "saved",
+    "noContacts": "No Contacts",
+    "addContactsFirst": "Please add emergency contacts first",
+    "smsMessage": "EMERGENCY! I need help! My location:",
+    "smsMessageNoLocation": "EMERGENCY! I need help! Please contact me immediately.",
+    "smsSending": "Sending SMS",
+    "smsToAllContacts": "SMS sent to all emergency contacts"
   }
 }
