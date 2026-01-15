@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +21,12 @@ import {
   TrendingUp,
   HelpCircle,
   Lightbulb,
-  X
+  X,
+  Copy,
+  Facebook,
+  Twitter,
+  Sparkles,
+  Bot
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -39,6 +45,7 @@ interface Post {
     profile_image_url: string | null;
   };
   user_liked?: boolean;
+  is_ai_generated?: boolean;
 }
 
 interface Comment {
@@ -62,6 +69,66 @@ const CATEGORIES = [
   { id: 'success', label: 'community.categories.success', icon: TrendingUp },
 ];
 
+// Daily health tips for PWDs (Persons with Disabilities)
+const DAILY_HEALTH_TIPS = [
+  {
+    title: "Iron-Rich Foods for Hemoglobin",
+    content: "Include iron-rich foods like spinach, lentils, red meat, and fortified cereals in your diet. Pair them with vitamin C sources like citrus fruits to enhance iron absorption. This is especially important for managing hemoglobin levels and preventing anemia."
+  },
+  {
+    title: "Staying Hydrated for Better Health",
+    content: "Proper hydration is crucial for overall health. Aim for 8 glasses of water daily. If you have mobility challenges, keep a water bottle within reach. Staying hydrated helps with circulation, digestion, and energy levels."
+  },
+  {
+    title: "Gentle Exercise for Everyone",
+    content: "Physical activity is beneficial for all abilities. Chair exercises, gentle stretching, or adaptive yoga can improve circulation and mood. Always consult your healthcare provider before starting new exercises."
+  },
+  {
+    title: "Managing Stress and Mental Health",
+    content: "Mental health is just as important as physical health. Practice deep breathing, meditation, or connect with supportive communities. Don't hesitate to reach out for help when needed."
+  },
+  {
+    title: "Vitamin B12 and Your Health",
+    content: "Vitamin B12 is essential for nerve function and red blood cell production. Include eggs, dairy, fish, or B12-fortified foods in your diet. Those with dietary restrictions may need supplements."
+  },
+  {
+    title: "Sleep and Recovery",
+    content: "Quality sleep is vital for recovery and health maintenance. Establish a consistent sleep schedule, create a comfortable sleep environment, and limit screen time before bed."
+  },
+  {
+    title: "Protein for Strength and Energy",
+    content: "Adequate protein intake supports muscle health and energy. Include lean meats, beans, eggs, or plant-based proteins in your meals. Spread protein intake throughout the day for best results."
+  },
+  {
+    title: "Folic Acid Benefits",
+    content: "Folic acid helps produce healthy red blood cells. Dark leafy greens, beans, citrus fruits, and fortified grains are excellent sources. This is particularly important for preventing certain types of anemia."
+  },
+  {
+    title: "Accessible Meal Preparation Tips",
+    content: "Plan meals ahead and use adaptive kitchen tools if needed. Batch cooking can save energy. Ask for help when needed - community support makes healthy eating easier."
+  },
+  {
+    title: "Regular Health Check-ups",
+    content: "Regular monitoring of health metrics is important. Track your hemoglobin levels, blood pressure, and other vital signs. Use apps like HemApp to maintain records and share with your healthcare team."
+  },
+  {
+    title: "Building a Support Network",
+    content: "Connect with others who understand your health journey. Support groups, online communities, and family connections provide emotional support and practical advice."
+  },
+  {
+    title: "Understanding Food Labels",
+    content: "Learn to read nutrition labels to make informed food choices. Look for iron, fiber, and protein content. Avoid excessive sodium and added sugars for better health management."
+  },
+  {
+    title: "Calcium and Vitamin D",
+    content: "These nutrients work together for bone health. Include dairy, fortified plant milks, fatty fish, and get safe sun exposure. Especially important for those with limited mobility."
+  },
+  {
+    title: "Managing Fatigue",
+    content: "Fatigue is common with hemoglobin-related conditions. Pace your activities, take rest breaks, and prioritize important tasks. Small, frequent meals can help maintain energy levels."
+  }
+];
+
 const Community = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -74,10 +141,20 @@ const Community = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [dailyTip, setDailyTip] = useState<typeof DAILY_HEALTH_TIPS[0] | null>(null);
 
   useEffect(() => {
     fetchPosts();
+    generateDailyTip();
   }, [selectedCategory]);
+
+  const generateDailyTip = () => {
+    // Use current date to consistently show the same tip each day
+    const today = new Date();
+    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+    const tipIndex = dayOfYear % DAILY_HEALTH_TIPS.length;
+    setDailyTip(DAILY_HEALTH_TIPS[tipIndex]);
+  };
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -203,6 +280,27 @@ const Community = () => {
     }
   };
 
+  const handleShare = async (post: Post, platform: 'copy' | 'whatsapp' | 'facebook' | 'twitter') => {
+    const shareText = `${post.title}\n\n${post.content.substring(0, 200)}${post.content.length > 200 ? '...' : ''}\n\n- Shared from HemApp Community`;
+    const shareUrl = window.location.href;
+    
+    switch (platform) {
+      case 'copy':
+        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+        toast({ title: t('community.success'), description: t('community.linkCopied') });
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + shareUrl)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+        break;
+    }
+  };
+
   const getCategoryIcon = (category: string) => {
     const cat = CATEGORIES.find(c => c.id === category);
     return cat ? cat.icon : MessageSquare;
@@ -218,6 +316,58 @@ const Community = () => {
         <h2 className="text-xl lg:text-2xl font-bold">{t('community.title')}</h2>
         <p className="text-sm lg:text-base text-muted-foreground">{t('community.subtitle')}</p>
       </div>
+
+      {/* Daily Health Tip Card */}
+      {dailyTip && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-full bg-primary/10">
+                <Sparkles className="h-4 w-4 text-primary" />
+              </div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                {t('community.dailyHealthTip')}
+                <Badge variant="secondary" className="text-xs">
+                  <Bot className="h-3 w-3 mr-1" />
+                  AI
+                </Badge>
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <h3 className="font-semibold mb-2">{dailyTip.title}</h3>
+            <p className="text-sm text-muted-foreground">{dailyTip.content}</p>
+            <div className="flex gap-2 mt-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="h-4 w-4 mr-1" />
+                    {t('community.share')}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => handleShare({ id: '', user_id: '', title: dailyTip.title, content: dailyTip.content, category: 'tips', likes_count: 0, comments_count: 0, created_at: '' }, 'copy')}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    {t('community.copyLink')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleShare({ id: '', user_id: '', title: dailyTip.title, content: dailyTip.content, category: 'tips', likes_count: 0, comments_count: 0, created_at: '' }, 'whatsapp')}>
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    {t('community.shareWhatsApp')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleShare({ id: '', user_id: '', title: dailyTip.title, content: dailyTip.content, category: 'tips', likes_count: 0, comments_count: 0, created_at: '' }, 'facebook')}>
+                    <Facebook className="h-4 w-4 mr-2" />
+                    {t('community.shareFacebook')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleShare({ id: '', user_id: '', title: dailyTip.title, content: dailyTip.content, category: 'tips', likes_count: 0, comments_count: 0, created_at: '' }, 'twitter')}>
+                    <Twitter className="h-4 w-4 mr-2" />
+                    {t('community.shareTwitter')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Category Tabs */}
       <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -316,7 +466,7 @@ const Community = () => {
                           </div>
                           <h3 className="font-semibold mt-1">{post.title}</h3>
                           <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{post.content}</p>
-                          <div className="flex items-center gap-4 mt-3">
+                          <div className="flex items-center gap-2 mt-3 flex-wrap">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -330,9 +480,32 @@ const Community = () => {
                               <MessageSquare className="h-4 w-4 mr-1" />
                               {post.comments_count}
                             </Button>
-                            <Button variant="ghost" size="sm">
-                              <Share2 className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <Share2 className="h-4 w-4 mr-1" />
+                                  {t('community.share')}
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => handleShare(post, 'copy')}>
+                                  <Copy className="h-4 w-4 mr-2" />
+                                  {t('community.copyLink')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleShare(post, 'whatsapp')}>
+                                  <MessageSquare className="h-4 w-4 mr-2" />
+                                  {t('community.shareWhatsApp')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleShare(post, 'facebook')}>
+                                  <Facebook className="h-4 w-4 mr-2" />
+                                  {t('community.shareFacebook')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleShare(post, 'twitter')}>
+                                  <Twitter className="h-4 w-4 mr-2" />
+                                  {t('community.shareTwitter')}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       </div>
