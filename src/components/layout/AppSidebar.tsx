@@ -20,6 +20,7 @@ import { Video, Settings, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { useNewCommunityPosts } from "@/hooks/useNewCommunityPosts";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLogo } from "@/assets";
@@ -54,6 +55,7 @@ const AppSidebar = ({
   const { setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
   const { unreadCount } = useUnreadMessages();
+  const { newPostsCount, markAsViewed } = useNewCommunityPosts();
   const { user } = useAuth();
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [showContactSelector, setShowContactSelector] = useState(false);
@@ -185,6 +187,10 @@ const AppSidebar = ({
                       isActive={activeSection === item.id}
                       onClick={() => {
                         onSectionChange(item.id);
+                        // Mark community posts as viewed when opening community
+                        if (item.id === 'community') {
+                          markAsViewed();
+                        }
                         // Auto-close sidebar on mobile when menu item is selected
                         if (isMobile) {
                           setOpenMobile(false);
@@ -202,6 +208,14 @@ const AppSidebar = ({
                           className="ml-auto h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
                         >
                           {unreadCount > 99 ? '99+' : unreadCount}
+                        </Badge>
+                      )}
+                      {item.id === 'community' && newPostsCount > 0 && (
+                        <Badge 
+                          variant="secondary" 
+                          className="ml-auto h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground"
+                        >
+                          {newPostsCount > 99 ? '99+' : newPostsCount}
                         </Badge>
                       )}
                     </SidebarMenuButton>
