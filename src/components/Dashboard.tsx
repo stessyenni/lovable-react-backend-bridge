@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Activity, Heart, Utensils, Calendar, TrendingUp, Plus, Apple, Bookmark, Eye, Home } from "lucide-react";
+import { Activity, Heart, Utensils, Calendar, TrendingUp, Plus, Apple, Bookmark, Eye, Home, Lightbulb, Dumbbell, RefreshCw } from "lucide-react";
 import DietModals from "./diet/DietModals";
 import EnhancedMealCategories from "./enhanced/EnhancedMealCategories";
 import ViewCategories from "./ViewCategories";
@@ -13,6 +13,7 @@ import TrendsPage from "./TrendsPage";
 import { useDietData } from "./diet/hooks/useDietData";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from 'react-i18next';
+import { useNotificationSettings } from "@/hooks/useNotificationSettings";
 
 interface DashboardProps {
   onGoHome?: () => void;
@@ -23,6 +24,7 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const { getTodayStats, entries, refreshData, fetchDietEntries } = useDietData();
+  const { currentHealthTip, currentExerciseReminder, refreshHealthTip, refreshExerciseReminder } = useNotificationSettings();
   const [showDietEntry, setShowDietEntry] = useState(false);
   const [showMealCategories, setShowMealCategories] = useState(false);
   const [showViewCategories, setShowViewCategories] = useState(false);
@@ -109,6 +111,59 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
           </Button>
         )}
       </div>
+
+      {/* Health Tips & Exercise Reminders */}
+      {(currentHealthTip || currentExerciseReminder) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 px-1">
+          {currentHealthTip && (
+            <Card className="border-l-4 border-l-green-500 bg-green-50/50 dark:bg-green-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center justify-between text-sm font-medium text-green-700 dark:text-green-400">
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="h-4 w-4" />
+                    {t('dashboard.healthTip', 'Health Tip')}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={refreshHealthTip}
+                    className="h-6 w-6 p-0 hover:bg-green-100 dark:hover:bg-green-900"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <p className="text-sm text-green-800 dark:text-green-300">{currentHealthTip}</p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {currentExerciseReminder && (
+            <Card className="border-l-4 border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center justify-between text-sm font-medium text-blue-700 dark:text-blue-400">
+                  <div className="flex items-center gap-2">
+                    <Dumbbell className="h-4 w-4" />
+                    {t('dashboard.exerciseReminder', 'Exercise Reminder')}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={refreshExerciseReminder}
+                    className="h-6 w-6 p-0 hover:bg-blue-100 dark:hover:bg-blue-900"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <p className="text-sm text-blue-800 dark:text-blue-300">{currentExerciseReminder}</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
 
       {/* Today's Progress */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-1">

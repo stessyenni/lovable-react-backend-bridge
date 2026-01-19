@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield, Watch, Mic } from "lucide-react";
 import SmartWatchSync from "./SmartWatchSync";
 import VoiceCommands from "./VoiceCommands";
+import { useNotificationSettings } from "@/hooks/useNotificationSettings";
 
 interface AppSettingsProps {
   brailleMode?: boolean;
@@ -25,20 +26,36 @@ const AppSettings = ({
   onSpeechToggle 
 }: AppSettingsProps = {}) => {
   const { t } = useTranslation();
-  const [notifications, setNotifications] = useState(true);
+  const { settings: notificationSettings, updateSetting } = useNotificationSettings();
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return document.documentElement.classList.contains('dark');
     }
     return false;
   });
-  const [voiceGuidance, setVoiceGuidance] = useState(true);
+  const [voiceGuidance, setVoiceGuidance] = useState(() => {
+    const saved = localStorage.getItem('voiceGuidance');
+    return saved !== null ? saved === 'true' : true;
+  });
   const [highContrast, setHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState([16]);
-  const [voiceVolume, setVoiceVolume] = useState([75]);
+  const [voiceVolume, setVoiceVolume] = useState(() => {
+    const saved = localStorage.getItem('voiceVolume');
+    return saved ? [parseInt(saved)] : [75];
+  });
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
   const { toast } = useToast();
+
+  // Save voice guidance setting
+  useEffect(() => {
+    localStorage.setItem('voiceGuidance', voiceGuidance.toString());
+  }, [voiceGuidance]);
+
+  // Save voice volume setting
+  useEffect(() => {
+    localStorage.setItem('voiceVolume', voiceVolume[0].toString());
+  }, [voiceVolume]);
 
   useEffect(() => {
     const checkBiometricSupport = async () => {
@@ -206,8 +223,8 @@ const AppSettings = ({
             </div>
             <Switch
               id="push-notifications"
-              checked={notifications}
-              onCheckedChange={setNotifications}
+              checked={notificationSettings.pushNotifications}
+              onCheckedChange={(checked) => updateSetting('pushNotifications', checked)}
             />
           </div>
 
@@ -216,23 +233,38 @@ const AppSettings = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm">{t('appSettings.notifications.medication')}</span>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={notificationSettings.medication}
+                  onCheckedChange={(checked) => updateSetting('medication', checked)}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm">{t('appSettings.notifications.meal')}</span>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={notificationSettings.meal}
+                  onCheckedChange={(checked) => updateSetting('meal', checked)}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm">{t('appSettings.notifications.exercise')}</span>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={notificationSettings.exercise}
+                  onCheckedChange={(checked) => updateSetting('exercise', checked)}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm">{t('appSettings.notifications.goals')}</span>
-                <Switch />
+                <Switch 
+                  checked={notificationSettings.goals}
+                  onCheckedChange={(checked) => updateSetting('goals', checked)}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm">{t('appSettings.notifications.healthTips')}</span>
-                <Switch />
+                <Switch 
+                  checked={notificationSettings.healthTips}
+                  onCheckedChange={(checked) => updateSetting('healthTips', checked)}
+                />
               </div>
             </div>
           </div>
