@@ -143,9 +143,14 @@ const Community = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dailyTip, setDailyTip] = useState<typeof DAILY_HEALTH_TIPS[0] | null>(null);
 
+  // Generate daily tip on mount only (not dependent on category)
+  useEffect(() => {
+    generateDailyTip();
+  }, []);
+
+  // Fetch posts when category changes
   useEffect(() => {
     fetchPosts();
-    generateDailyTip();
   }, [selectedCategory]);
 
   const generateDailyTip = () => {
