@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield, Watch, Mic } from "lucide-react";
+import { Bell, Moon, Accessibility, Volume2, Vibrate, Shield, Watch, Mic, Save } from "lucide-react";
 import SmartWatchSync from "./SmartWatchSync";
 import VoiceCommands from "./VoiceCommands";
 import { useNotificationSettings } from "@/hooks/useNotificationSettings";
@@ -168,11 +168,33 @@ const AppSettings = ({
     }
   };
 
+  const handleSaveSettings = () => {
+    // All settings are already being saved via useEffect hooks
+    // This provides explicit feedback to the user
+    localStorage.setItem('darkMode', darkMode.toString());
+    localStorage.setItem('highContrast', highContrast.toString());
+    localStorage.setItem('fontSize', fontSize[0].toString());
+    localStorage.setItem('voiceGuidance', voiceGuidance.toString());
+    localStorage.setItem('voiceVolume', voiceVolume[0].toString());
+    localStorage.setItem('biometricEnabled', biometricEnabled.toString());
+    
+    toast({
+      title: t('common.save'),
+      description: t('appSettings.settingsSaved') || "Your settings have been saved successfully.",
+    });
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6 w-full max-w-4xl mx-auto p-2 sm:p-4 lg:p-6 min-w-0">
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold mb-2">{t('appSettings.title')}</h2>
-        <p className="text-muted-foreground text-sm sm:text-base">{t('appSettings.subtitle')}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2">{t('appSettings.title')}</h2>
+          <p className="text-muted-foreground text-sm sm:text-base">{t('appSettings.subtitle')}</p>
+        </div>
+        <Button onClick={handleSaveSettings} className="flex items-center gap-2">
+          <Save className="h-4 w-4" />
+          {t('common.save')}
+        </Button>
       </div>
 
       {/* SmartWatch Integration */}

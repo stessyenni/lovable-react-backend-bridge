@@ -165,6 +165,7 @@
   "appSettings": {
     "title": "App Settings",
     "subtitle": "Customize your Hemapp experience",
+    "settingsSaved": "Your settings have been saved successfully.",
     "smartWatch": {
       "title": "SmartWatch Integration",
       "description": "Connect and sync with your smartwatch"
