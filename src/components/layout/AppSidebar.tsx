@@ -30,7 +30,7 @@ import EmergencyContactSelector from "@/components/emergency/EmergencyContactSel
 import { EmergencyContact } from "@/components/emergency/EmergencyContactsManager";
 
 interface MenuItem {
-  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community' | 'emergency';
+  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community';
   label: string;
   icon: React.FC<any>;
 }
