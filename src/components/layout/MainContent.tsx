@@ -13,6 +13,7 @@ import Community from "@/components/Community";
 import UserAccount from "@/components/UserAccount";
 import SmartWatchSync from "@/components/SmartWatchSync";
 import FAQPage from "@/components/enhanced/FAQPage";
+import EmergencyPage from "@/components/EmergencyPage";
 
 interface MainContentProps {
   activeSection: string;
@@ -20,7 +21,7 @@ interface MainContentProps {
   speechEnabled: boolean;
   onSpeechToggle: () => void;
   onBrailleToggle: () => void;
-  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community') => void;
+  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community' | 'emergency') => void;
 }
 
 const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle, onBrailleToggle, onSectionChange }: MainContentProps) => {
@@ -51,6 +52,8 @@ const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle
         return <SmartWatchSync />;
       case 'faq':
         return <FAQPage />;
+      case 'emergency':
+        return <EmergencyPage />;
       default:
         return <Dashboard />;
     }
