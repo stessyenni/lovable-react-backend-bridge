@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import SpeechInterface from "@/components/enhanced/SpeechInterface";
 import VoiceCommandsSidebar from "@/components/VoiceCommandsSidebar";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Dashboard from "@/components/Dashboard";
 import Messages from "@/components/Messages";
 import HealthMonitoring from "@/components/HealthMonitoring";
@@ -13,7 +13,7 @@ import Community from "@/components/Community";
 import UserAccount from "@/components/UserAccount";
 import SmartWatchSync from "@/components/SmartWatchSync";
 import FAQPage from "@/components/enhanced/FAQPage";
-import EmergencyPage from "@/components/EmergencyPage";
+import { useAccessibilityAnnouncer } from "@/hooks/useAccessibilityAnnouncer";
 
 interface MainContentProps {
   activeSection: string;
@@ -21,11 +21,36 @@ interface MainContentProps {
   speechEnabled: boolean;
   onSpeechToggle: () => void;
   onBrailleToggle: () => void;
-  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community' | 'emergency') => void;
+  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community') => void;
 }
 
 const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle, onBrailleToggle, onSectionChange }: MainContentProps) => {
   const [selectedMessageUser, setSelectedMessageUser] = useState<string | null>(null);
+
+  // Accessibility announcer - activated when braille mode is on
+  const { announce } = useAccessibilityAnnouncer({
+    enabled: brailleMode,
+    announceClicks: true,
+    announceScrolls: true,
+  });
+
+  // Announce section changes when braille mode is active
+  useEffect(() => {
+    if (brailleMode && activeSection) {
+      const sectionNames: Record<string, string> = {
+        'dashboard': 'Dashboard',
+        'messages': 'Messages',
+        'health-monitoring': 'Health Monitoring',
+        'facilities': 'Health Facilities',
+        'connections': 'Connections',
+        'community': 'Community',
+        'account': 'User Account',
+        'smartwatch': 'SmartWatch Sync',
+        'faq': 'FAQ and Help',
+      };
+      announce(`Now viewing ${sectionNames[activeSection] || activeSection}`);
+    }
+  }, [activeSection, brailleMode, announce]);
 
   const handleMessageUser = (userId: string) => {
     setSelectedMessageUser(userId);
@@ -52,8 +77,6 @@ const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle
         return <SmartWatchSync />;
       case 'faq':
         return <FAQPage />;
-      case 'emergency':
-        return <EmergencyPage />;
       default:
         return <Dashboard />;
     }

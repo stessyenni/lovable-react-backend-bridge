@@ -1,5 +1,5 @@
 
-import { BarChart3, MessageCircle, Activity, MapPin, User, Watch, HelpCircle, Users, Globe, AlertTriangle } from "lucide-react";
+import { BarChart3, MessageCircle, Activity, MapPin, User, Watch, HelpCircle, Users, Globe } from "lucide-react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useMainAppState } from "@/hooks/useMainAppState";
 import AppHeader from "./layout/AppHeader";
@@ -11,7 +11,7 @@ import FloatingHemBot from "./FloatingHemBot";
 import { useTranslation } from 'react-i18next';
 
 interface MenuItem {
-  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community' | 'emergency';
+  id: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community';
   label: string;
   icon: React.FC<any>;
 }
@@ -40,7 +40,6 @@ const MainApp = () => {
     { id: 'facilities', label: t('menu.facilities'), icon: MapPin },
     { id: 'connections', label: t('menu.connections'), icon: Users },
     { id: 'community', label: t('menu.community'), icon: Globe },
-    { id: 'emergency', label: t('menu.emergency'), icon: AlertTriangle },
     { id: 'smartwatch', label: t('menu.smartwatch'), icon: Watch },
     { id: 'account', label: t('menu.account'), icon: User },
     { id: 'faq', label: t('menu.faq'), icon: HelpCircle },
