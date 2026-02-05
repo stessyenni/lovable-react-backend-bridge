@@ -230,12 +230,17 @@ const AppSidebar = ({
       <SidebarFooter className="p-3 sm:p-4">
         <div className="space-y-2">
           <SidebarMenuButton
-            onClick={handleEmergencyButtonClick}
+            onClick={() => {
+              onSectionChange('emergency');
+              if (isMobile) {
+                setOpenMobile(false);
+              }
+            }}
             className="w-full flex items-center justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-            tooltip={t('emergency.callEmergency', 'Call Emergency Contact')}
+            tooltip={t('menu.emergency', 'Emergency')}
           >
             <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{t('emergency.callEmergency', 'Emergency')}</span>
+            <span className="truncate">{t('menu.emergency', 'Emergency')}</span>
           </SidebarMenuButton>
 
           <SidebarMenuButton

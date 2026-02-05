@@ -78,6 +78,8 @@ const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle
         return <SmartWatchSync />;
       case 'faq':
         return <FAQPage />;
+      case 'emergency':
+        return <EmergencyPage />;
       default:
         return <Dashboard />;
     }
