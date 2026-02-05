@@ -21,7 +21,7 @@ interface MainContentProps {
   speechEnabled: boolean;
   onSpeechToggle: () => void;
   onBrailleToggle: () => void;
-  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community') => void;
+  onSectionChange?: (section: 'home' | 'dashboard' | 'messages' | 'health-monitoring' | 'facilities' | 'connections' | 'account' | 'faq' | 'smartwatch' | 'community' | 'emergency') => void;
 }
 
 const MainContent = ({ activeSection, brailleMode, speechEnabled, onSpeechToggle, onBrailleToggle, onSectionChange }: MainContentProps) => {
