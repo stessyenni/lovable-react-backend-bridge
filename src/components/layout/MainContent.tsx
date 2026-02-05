@@ -13,6 +13,7 @@ import Community from "@/components/Community";
 import UserAccount from "@/components/UserAccount";
 import SmartWatchSync from "@/components/SmartWatchSync";
 import FAQPage from "@/components/enhanced/FAQPage";
+import EmergencyPage from "@/components/EmergencyPage";
 import { useAccessibilityAnnouncer } from "@/hooks/useAccessibilityAnnouncer";
 
 interface MainContentProps {
