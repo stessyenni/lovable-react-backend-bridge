@@ -8,15 +8,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import EmergencyContactsManager, { EmergencyContact } from "./emergency/EmergencyContactsManager";
 import EmergencyContactSelector from "./emergency/EmergencyContactSelector";
-import { 
-  AlertTriangle, 
-  Phone, 
-  MapPin, 
-  Heart, 
+import EmergencyStatusGrid from "./emergency/EmergencyStatusGrid";
+import {
+  AlertTriangle,
+  Phone,
+  MapPin,
+  Heart,
   Clock,
   Copy,
-  Shield
+  Shield,
 } from "lucide-react";
+
 
 const EmergencyPage = () => {
   const { t } = useTranslation();
@@ -362,29 +364,7 @@ const EmergencyPage = () => {
             <CardDescription className="text-xs sm:text-sm">{t('emergency.currentStatus')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 sm:p-3 bg-muted/50 rounded-lg">
-                <span className="text-xs sm:text-sm text-muted-foreground">{t('emergency.personalContacts')}</span>
-                <Badge variant="secondary" className="mt-1 sm:mt-0 w-fit text-xs">{contacts.length} {t('emergency.saved')}</Badge>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 sm:p-3 bg-muted/50 rounded-lg">
-                <span className="text-xs sm:text-sm text-muted-foreground">{t('emergency.locationServices')}</span>
-                <Badge variant="secondary" className="mt-1 sm:mt-0 w-fit text-xs">{t('emergency.enabled')}</Badge>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 sm:p-3 bg-muted/50 rounded-lg">
-                <span className="text-xs sm:text-sm text-muted-foreground">{t('emergency.medicalData')}</span>
-                <Badge variant="secondary" className="mt-1 sm:mt-0 w-fit text-xs">{t('emergency.complete')}</Badge>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 sm:p-3 bg-muted/50 rounded-lg">
-                <span className="text-xs sm:text-sm text-muted-foreground">{t('emergency.emergencyMode')}</span>
-                <Badge variant={emergencyMode ? "destructive" : "outline"} className="mt-1 sm:mt-0 w-fit text-xs">
-                  {emergencyMode ? t('emergency.active') : t('emergency.inactive')}
-                </Badge>
-              </div>
-            </div>
+            <EmergencyStatusGrid contactsCount={contacts.length} emergencyMode={emergencyMode} />
           </CardContent>
         </Card>
       </div>
