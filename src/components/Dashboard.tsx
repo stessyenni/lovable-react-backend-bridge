@@ -290,9 +290,31 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
             </div>
           ) : (
             <div className="space-y-4">
+              {/* Show recent meals with images */}
+              {entries.slice(0, 3).filter(e => e.image_url).length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  {entries.slice(0, 3).filter(e => e.image_url).map(entry => (
+                    <div key={entry.id} className="relative rounded-lg overflow-hidden">
+                      <img 
+                        src={entry.image_url!} 
+                        alt={entry.meal_name}
+                        className="w-full h-16 sm:h-20 object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute bottom-1 left-1 right-1">
+                        <p className="text-white text-xs font-medium truncate">{entry.meal_name}</p>
+                        {entry.calories && (
+                          <p className="text-white/80 text-xs">{entry.calories} kcal</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <div className="flex items-center space-x-4">
-                <div className="bg-green-100 p-2 rounded-full">
-                  <Utensils className="h-4 w-4 text-green-600" />
+                <div className="bg-accent p-2 rounded-full">
+                  <Utensils className="h-4 w-4 text-accent-foreground" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">{todayStats.meals} {t('dashboard.mealsLoggedToday')}</p>
@@ -301,8 +323,8 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
               </div>
               {todayStats.protein > 0 && (
                 <div className="flex items-center space-x-4">
-                  <div className="bg-blue-100 p-2 rounded-full">
-                    <Heart className="h-4 w-4 text-blue-600" />
+                  <div className="bg-primary/10 p-2 rounded-full">
+                    <Heart className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">{t('dashboard.proteinIntake')}: {todayStats.protein}g</p>
@@ -312,8 +334,8 @@ const Dashboard = ({ onGoHome }: DashboardProps) => {
               )}
               {todayStats.fiber > 0 && (
                 <div className="flex items-center space-x-4">
-                  <div className="bg-red-100 p-2 rounded-full">
-                    <Activity className="h-4 w-4 text-red-600" />
+                  <div className="bg-secondary p-2 rounded-full">
+                    <Activity className="h-4 w-4 text-secondary-foreground" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">{t('dashboard.fiberIntake')}: {todayStats.fiber}g</p>
