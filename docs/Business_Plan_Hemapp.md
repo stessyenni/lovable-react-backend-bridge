@@ -16,14 +16,18 @@ Provide affordable, accessible, and AI-powered health management tools that help
 ## Product Overview
 
 ### Core Features (Current Implementation)
-1. **AI Health Consultation** - Symptom analysis and health recommendations
-2. **Diet Monitoring** - Comprehensive meal tracking with nutrition analysis
-3. **Health Dashboard** - Real-time health metrics and progress tracking
-4. **Social Health Community** - Connect with health professionals and peers
-5. **Emergency Services** - Quick access to emergency contacts and facilities
-6. **Healthcare Facility Finder** - Locate nearby medical facilities
-7. **Accessibility Features** - Voice commands with African voices, Braille mode
-8. **Offline Functionality** - Work without internet connection
+1. **AI Health Consultation** - Symptom analysis and health recommendations via HemBot AI chatbot
+2. **Diet Monitoring** - Comprehensive meal tracking with image upload, AI-powered nutritional analysis, and nutrient statistics (calories, protein, fiber) displayed across Dashboard and Health Monitoring pages
+3. **Health Dashboard** - Real-time health metrics, progress tracking, and recent meal gallery with caloric data
+4. **Health Monitoring** - Nutrient trend visualization synced with diet entries; automatic data refresh on meal logging
+5. **Social Health Community** - Connect with health professionals and peers via messaging and community posts
+6. **Emergency Services** - Fully responsive emergency page with adaptive column layouts, emergency status grid, quick actions, and emergency contact management
+7. **Healthcare Facility Finder** - Locate nearby medical facilities with map integration
+8. **Accessibility Features** - Voice commands sidebar, voice settings, African voice options, Braille mode, screen reader support
+9. **Offline Functionality** - Offline-first architecture with background sync
+10. **Meal Categories & Items** - Custom meal categories with image support, per-serving nutritional data, and AI analysis integration
+11. **Multi-language Support** - English, French, and Pidgin (pdc) with i18next localization
+12. **Cross-platform Mobile** - Capacitor-based builds for Android and iOS
 
 ### Target Market
 - **Primary:** Health-conscious individuals in urban African areas (ages 25-45)
