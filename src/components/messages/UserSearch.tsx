@@ -10,13 +10,7 @@ import { Search, UserPlus, Users, Sparkles, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { fetchRecentPublicProfiles, searchPublicProfiles, type PublicProfile } from "@/lib/publicProfiles";
 
-interface Profile {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-  username: string | null;
-  profile_image_url: string | null;
-}
+type Profile = PublicProfile;
 
 interface Connection {
   id: string;
