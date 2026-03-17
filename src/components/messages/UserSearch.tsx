@@ -71,18 +71,8 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
   const loadRecommendedUsers = async () => {
     setRecommendationLoading(true);
     try {
-      // For now, show all users except current user since RLS prevents demo user creation
-      // In production, this would filter by actual connections
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, username, profile_image_url, created_at')
-        .neq('id', currentUserId)
-        .order('created_at', { ascending: false })
-        .limit(8);
-
-      if (error) throw error;
-
-      setRecommendedUsers(data || []);
+      const data = await fetchRecentPublicProfiles(currentUserId, 8);
+      setRecommendedUsers(data);
     } catch (error) {
       console.error('Error loading recommended users:', error);
     } finally {
