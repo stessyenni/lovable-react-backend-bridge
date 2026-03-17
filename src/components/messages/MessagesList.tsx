@@ -45,8 +45,7 @@ const MessagesList = ({ messages, currentUserId, onSelectChat, selectedChat }: M
     if (otherUser.first_name && otherUser.last_name) {
       return `${otherUser.first_name} ${otherUser.last_name}`;
     }
-    if (otherUser.username) return otherUser.username;
-    return otherUser.email || 'Unknown User';
+    return otherUser.username || 'Unknown User';
   };
 
   const getInitials = (message: Message) => {

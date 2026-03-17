@@ -20,8 +20,7 @@ const ConnectionsList = ({ connections, currentUserId, onRefresh, onMessageUser 
     if (user.first_name && user.last_name) {
       return `${user.first_name} ${user.last_name}`;
     }
-    if (user.username) return user.username;
-    return user.email || 'Unknown User';
+    return user.username || 'Unknown User';
   };
 
   const getInitials = (user: User | undefined) => {
