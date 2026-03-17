@@ -88,7 +88,7 @@ const DemoDataCreator = () => {
       // Get all users from the public directory view
       const allUsers = await fetchAllPublicProfileIds();
 
-      if (usersError || !allUsers || allUsers.length < 2) {
+      if (!allUsers || allUsers.length < 2) {
         console.log('Not enough users to create connections');
         return;
       }

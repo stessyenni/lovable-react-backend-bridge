@@ -252,10 +252,7 @@ const Community = () => {
 
     if (commentsData) {
       const userIds = [...new Set(commentsData.map(c => c.user_id))];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, profile_image_url')
-        .in('id', userIds);
+      const profiles = await fetchPublicProfilesByIds(userIds);
 
       setComments(commentsData.map(comment => ({
         ...comment,
