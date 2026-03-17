@@ -4,7 +4,7 @@ export interface User {
   first_name: string | null;
   last_name: string | null;
   username: string | null;
-  email: string | null;
+  profile_image_url?: string | null;
 }
 
 export interface Connection {
