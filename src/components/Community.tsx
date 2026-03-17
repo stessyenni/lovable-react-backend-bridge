@@ -178,10 +178,7 @@ const Community = () => {
     if (postsData) {
       // Fetch profiles for each post
       const userIds = [...new Set(postsData.map(p => p.user_id))];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, profile_image_url')
-        .in('id', userIds);
+      const profiles = await fetchPublicProfilesByIds(userIds);
 
       // Fetch likes for current user
       let userLikes: string[] = [];
