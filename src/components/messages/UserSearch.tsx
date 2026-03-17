@@ -42,17 +42,9 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, username, profile_image_url')
-        .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,username.ilike.%${searchTerm}%`)
-        .neq('id', currentUserId)
-        .limit(10);
-
-      if (error) throw error;
-
+      const data = await searchPublicProfiles(searchTerm, currentUserId, 10);
       console.log('Search results:', data);
-      setSearchResults(data || []);
+      setSearchResults(data);
     } catch (error) {
       console.error('Error searching users:', error);
       toast({
