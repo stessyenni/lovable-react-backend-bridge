@@ -33,7 +33,7 @@ export const useHemBot = (userId: string | undefined) => {
 
       // 2) Call the HemBot edge function (it will save the bot reply)
       const { error } = await supabase.functions.invoke('hembot-ai', {
-        body: { message: userMessage, userId }
+        body: { message: userMessage }
       });
 
       if (error) {

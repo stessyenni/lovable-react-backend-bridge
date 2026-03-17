@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { fetchAllPublicProfileIds } from "@/lib/publicProfiles";
 
 // Demo users data
 const demoUsers = [
@@ -84,12 +85,10 @@ const DemoDataCreator = () => {
 
   const createSampleConnections = async () => {
     try {
-      // Get all users from the database
-      const { data: allUsers, error: usersError } = await supabase
-        .from('profiles')
-        .select('id');
+      // Get all users from the public directory view
+      const allUsers = await fetchAllPublicProfileIds();
 
-      if (usersError || !allUsers || allUsers.length < 2) {
+      if (!allUsers || allUsers.length < 2) {
         console.log('Not enough users to create connections');
         return;
       }

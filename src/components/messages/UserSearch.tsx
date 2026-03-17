@@ -9,14 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, UserPlus, Users, Sparkles, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { fetchRecentPublicProfiles, searchPublicProfiles, type PublicProfile } from "@/lib/publicProfiles";
 
-interface Profile {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-  username: string | null;
-  profile_image_url: string | null;
-}
+type Profile = PublicProfile;
 
 interface Connection {
   id: string;
@@ -48,17 +43,9 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, username, profile_image_url')
-        .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,username.ilike.%${searchTerm}%`)
-        .neq('id', currentUserId)
-        .limit(10);
-
-      if (error) throw error;
-
+      const data = await searchPublicProfiles(searchTerm, currentUserId, 10);
       console.log('Search results:', data);
-      setSearchResults(data || []);
+      setSearchResults(data);
     } catch (error) {
       console.error('Error searching users:', error);
       toast({
@@ -85,18 +72,8 @@ const UserSearch = ({ currentUserId, connections, onConnectionUpdate }: UserSear
   const loadRecommendedUsers = async () => {
     setRecommendationLoading(true);
     try {
-      // For now, show all users except current user since RLS prevents demo user creation
-      // In production, this would filter by actual connections
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, username, profile_image_url, created_at')
-        .neq('id', currentUserId)
-        .order('created_at', { ascending: false })
-        .limit(8);
-
-      if (error) throw error;
-
-      setRecommendedUsers(data || []);
+      const data = await fetchRecentPublicProfiles(currentUserId, 8);
+      setRecommendedUsers(data);
     } catch (error) {
       console.error('Error loading recommended users:', error);
     } finally {

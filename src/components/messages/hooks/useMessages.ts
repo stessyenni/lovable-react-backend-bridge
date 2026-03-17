@@ -3,25 +3,20 @@ import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "../types";
-
+import { fetchPublicProfilesByIds } from "@/lib/publicProfiles";
 
 export const useMessages = (userId: string | undefined, component?: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-
   const fetchMessages = useCallback(async () => {
     if (!userId) return;
 
     try {
       const { data, error } = await supabase
         .from('messages')
-        .select(`
-          *,
-          sender:profiles!messages_sender_id_fkey(id, first_name, last_name, username, email),
-          recipient:profiles!messages_recipient_id_fkey(id, first_name, last_name, username, email)
-        `)
+        .select('id, sender_id, recipient_id, content, read_at, created_at')
         .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`)
         .order('created_at', { ascending: false });
 
@@ -30,7 +25,15 @@ export const useMessages = (userId: string | undefined, component?: string) => {
         return;
       }
 
-      setMessages(data || []);
+      const profileIds = [...new Set((data || []).flatMap((message) => [message.sender_id, message.recipient_id]))];
+      const profiles = await fetchPublicProfilesByIds(profileIds);
+      const profileMap = new Map(profiles.map((profile) => [profile.id, profile]));
+
+      setMessages((data || []).map((message) => ({
+        ...message,
+        sender: profileMap.get(message.sender_id),
+        recipient: profileMap.get(message.recipient_id),
+      })));
     } catch (error) {
       console.error('Unexpected error:', error);
     } finally {
@@ -44,20 +47,16 @@ export const useMessages = (userId: string | undefined, component?: string) => {
     if (userId) {
       fetchMessages();
 
-      // Set up realtime subscription for new messages with unique channel name
       const channelName = component ? `messages-updates-${component}-${userId}` : `messages-updates-${userId}`;
       
-      // Clean up any existing channel with the same name to avoid double subscribe (StrictMode, re-renders)
       const existingChannels = supabase.getChannels().filter((ch: any) => typeof ch.topic === 'string' && ch.topic.endsWith(channelName));
       existingChannels.forEach((ch: any) => {
         try { ch.unsubscribe?.(); } catch {}
         supabase.removeChannel(ch);
       });
       
-      // Create channel with unique name
       channel = supabase.channel(channelName);
       
-      // Add event listeners
       channel
         .on('postgres_changes', {
           event: 'INSERT',
@@ -76,7 +75,6 @@ export const useMessages = (userId: string | undefined, component?: string) => {
           fetchMessages();
         });
       
-      // Subscribe to the channel
       channel.subscribe((status: string) => {
         if (status === 'SUBSCRIBED') {
           console.log(`Messages subscription active for ${channelName}`);
@@ -90,7 +88,7 @@ export const useMessages = (userId: string | undefined, component?: string) => {
         supabase.removeChannel(channel);
       }
     };
-  }, [userId, component]); // Include component in dependencies
+  }, [userId, component, fetchMessages]);
 
   const sendMessage = async (recipientId: string, content: string) => {
     if (!userId || !content.trim()) return;
@@ -113,8 +111,6 @@ export const useMessages = (userId: string | undefined, component?: string) => {
         });
         return;
       }
-
-      // Regular messaging - no HemBot integration in messages page
 
       toast({
         title: "Message sent",

@@ -4,11 +4,15 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+const jsonResponse = (body: Record<string, unknown>, status: number) => new Response(JSON.stringify(body), {
+  status,
+  headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+});
+
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -16,37 +20,69 @@ serve(async (req) => {
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const authHeader = req.headers.get('Authorization');
 
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not set');
     }
 
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error('Supabase configuration missing');
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const { message, userId } = await req.json();
-
-    if (!message || !userId) {
-      throw new Error('Message and userId are required');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return jsonResponse({ error: 'Unauthorized', success: false }, 401);
     }
 
-    console.log('HemBot received message:', message, 'from user:', userId);
+    const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: {
+        headers: {
+          Authorization: authHeader,
+        },
+      },
+    });
 
-    // Get user profile for personalized responses
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
+    const authenticatedUserId = claimsData?.claims?.sub;
+
+    if (claimsError || !authenticatedUserId) {
+      console.error('HemBot auth validation failed:', claimsError);
+      return jsonResponse({ error: 'Unauthorized', success: false }, 401);
+    }
+
+    const requestBody = await req.json();
+    const message = typeof requestBody?.message === 'string' ? requestBody.message.trim() : '';
+    const requestedUserId = typeof requestBody?.userId === 'string' ? requestBody.userId : null;
+
+    if (!message) {
+      return jsonResponse({ error: 'Message is required', success: false }, 400);
+    }
+
+    if (message.length > 2000) {
+      return jsonResponse({ error: 'Message is too long', success: false }, 400);
+    }
+
+    if (requestedUserId && requestedUserId !== authenticatedUserId) {
+      return jsonResponse({ error: 'Forbidden', success: false }, 403);
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    console.log('HemBot received message from authenticated user:', authenticatedUserId);
+
     const { data: profile } = await supabase
       .from('profiles')
       .select('first_name, last_name, age, medical_conditions, allergies')
-      .eq('id', userId)
+      .eq('id', authenticatedUserId)
       .single();
 
     const userName = profile?.first_name || 'there';
     const medicalConditions = profile?.medical_conditions || [];
     const allergies = profile?.allergies || [];
 
-    // Create context-aware system prompt
     const systemPrompt = `You are HemBot, a friendly and knowledgeable AI health assistant for the Hemapp application. 
 
     User Information:
@@ -74,7 +110,6 @@ serve(async (req) => {
 
     Current conversation context: The user is using the Hemapp mobile health application.`;
 
-    // Call Lovable AI Gateway
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -100,16 +135,13 @@ serve(async (req) => {
     const data = await response.json();
     const botResponse = data.choices[0].message.content;
 
-    console.log('HemBot generated response:', botResponse);
-
-    // Save HemBot's response to the database
     const HEMBOT_ID = '99999999-9999-9999-9999-999999999999';
-    
+
     const { error: insertError } = await supabase
       .from('messages')
       .insert({
         sender_id: HEMBOT_ID,
-        recipient_id: userId,
+        recipient_id: authenticatedUserId,
         content: botResponse,
         message_type: 'text'
       });
@@ -119,24 +151,12 @@ serve(async (req) => {
       throw insertError;
     }
 
-    console.log('HemBot response saved successfully');
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      response: botResponse 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
+    return jsonResponse({ success: true, response: botResponse }, 200);
   } catch (error) {
     console.error('Error in HemBot function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    return new Response(JSON.stringify({ 
-      error: errorMessage,
-      success: false 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({
+      error: 'Unable to process HemBot request',
+      success: false,
+    }, 500);
   }
 });
