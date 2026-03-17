@@ -9,6 +9,8 @@ export interface PublicProfile {
   created_at?: string;
 }
 
+const publicProfilesQuery = () => (supabase as any).from("public_profiles");
+
 export const PUBLIC_PROFILE_SELECT = "id, first_name, last_name, username, profile_image_url, created_at";
 
 export const fetchPublicProfilesByIds = async (userIds: string[]) => {
@@ -18,8 +20,7 @@ export const fetchPublicProfilesByIds = async (userIds: string[]) => {
     return [] as PublicProfile[];
   }
 
-  const { data, error } = await supabase
-    .from("public_profiles")
+  const { data, error } = await publicProfilesQuery()
     .select(PUBLIC_PROFILE_SELECT)
     .in("id", uniqueUserIds);
 
@@ -34,13 +35,9 @@ export const searchPublicProfiles = async (searchTerm: string, currentUserId: st
     return [] as PublicProfile[];
   }
 
-  const escapedSearchTerm = trimmedSearchTerm.replace(/[%_,]/g, (char) => `\\${char}`);
-  const likeQuery = `%${escapedSearchTerm}%`;
-
-  const { data, error } = await supabase
-    .from("public_profiles")
+  const { data, error } = await publicProfilesQuery()
     .select(PUBLIC_PROFILE_SELECT)
-    .or(`first_name.ilike.${likeQuery},last_name.ilike.${likeQuery},username.ilike.${likeQuery}`)
+    .or(`first_name.ilike.%${trimmedSearchTerm}%,last_name.ilike.%${trimmedSearchTerm}%,username.ilike.%${trimmedSearchTerm}%`)
     .neq("id", currentUserId)
     .limit(limit);
 
@@ -49,8 +46,7 @@ export const searchPublicProfiles = async (searchTerm: string, currentUserId: st
 };
 
 export const fetchRecentPublicProfiles = async (currentUserId: string, limit = 8) => {
-  const { data, error } = await supabase
-    .from("public_profiles")
+  const { data, error } = await publicProfilesQuery()
     .select(PUBLIC_PROFILE_SELECT)
     .neq("id", currentUserId)
     .order("created_at", { ascending: false })
@@ -58,4 +54,11 @@ export const fetchRecentPublicProfiles = async (currentUserId: string, limit = 8
 
   if (error) throw error;
   return (data ?? []) as PublicProfile[];
+};
+
+export const fetchAllPublicProfileIds = async () => {
+  const { data, error } = await publicProfilesQuery().select("id");
+
+  if (error) throw error;
+  return (data ?? []) as Array<{ id: string }>;
 };
