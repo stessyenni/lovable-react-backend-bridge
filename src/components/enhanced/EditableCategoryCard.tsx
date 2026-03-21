@@ -47,10 +47,22 @@ interface EditableCategoryCardProps {
   onUpdate: () => void;
 }
 
+const colorOptions = [
+  "bg-purple-100 text-purple-800",
+  "bg-green-100 text-green-800",
+  "bg-blue-100 text-blue-800",
+  "bg-red-100 text-red-800",
+  "bg-yellow-100 text-yellow-800",
+  "bg-pink-100 text-pink-800",
+  "bg-orange-100 text-orange-800",
+  "bg-teal-100 text-teal-800"
+];
+
 const EditableCategoryCard = ({ category, onUpdate }: EditableCategoryCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(category.name);
   const [editedDescription, setEditedDescription] = useState(category.description || "");
+  const [editedColorClass, setEditedColorClass] = useState(category.color_class);
   const [newItemName, setNewItemName] = useState("");
   const [newItemCalories, setNewItemCalories] = useState("");
   const [newItemProtein, setNewItemProtein] = useState("");
