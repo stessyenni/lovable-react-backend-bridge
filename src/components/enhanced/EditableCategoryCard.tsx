@@ -222,6 +222,22 @@ const EditableCategoryCard = ({ category, onUpdate }: EditableCategoryCardProps)
                     className="text-sm"
                     placeholder="Description (optional)"
                   />
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Color Theme</p>
+                    <div className="flex flex-wrap gap-1">
+                      {colorOptions.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setEditedColorClass(color)}
+                          className={`px-2 py-0.5 rounded text-xs border-2 ${
+                            editedColorClass === color ? 'border-primary' : 'border-transparent'
+                          } ${color}`}
+                        >
+                          Aa
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <>
