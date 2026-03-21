@@ -535,6 +535,55 @@ const EnhancedMealCategories = ({ onClose }: EnhancedMealCategoriesProps) => {
         </ScrollArea>
       </div>
 
+      {/* Edit Category Dialog */}
+      <Dialog open={!!editingCategory} onOpenChange={(open) => !open && setEditingCategory(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Category</DialogTitle>
+            <DialogDescription>
+              Update the category name, description, or color
+            </DialogDescription>
+          </DialogHeader>
+          {editingCategory && (
+            <EditCategoryForm
+              category={editingCategory}
+              colorOptions={colorOptions}
+              onSave={async (updated) => {
+                try {
+                  const { error } = await (supabase as any)
+                    .from('meal_categories')
+                    .update({
+                      name: updated.name,
+                      description: updated.description,
+                      color_class: updated.color_class,
+                      updated_at: new Date().toISOString()
+                    })
+                    .eq('id', editingCategory.id)
+                    .eq('user_id', user?.id);
+
+                  if (error) throw error;
+
+                  toast({
+                    title: "Category Updated",
+                    description: `"${updated.name}" has been updated.`,
+                  });
+                  setEditingCategory(null);
+                  fetchCategories();
+                } catch (error) {
+                  console.error('Error updating category:', error);
+                  toast({
+                    title: "Error",
+                    description: "Failed to update category",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              onCancel={() => setEditingCategory(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Add Category Dialog */}
       <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
         <DialogContent>
