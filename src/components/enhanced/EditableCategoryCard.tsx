@@ -274,6 +274,7 @@ const EditableCategoryCard = ({ category, onUpdate }: EditableCategoryCardProps)
                     setIsEditing(false);
                     setEditedName(category.name);
                     setEditedDescription(category.description || "");
+                    setEditedColorClass(category.color_class);
                   }}
                 >
                   <X className="h-3 w-3" />
