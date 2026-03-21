@@ -91,6 +91,7 @@ const EditableCategoryCard = ({ category, onUpdate }: EditableCategoryCardProps)
         .update({
           name: editedName,
           description: editedDescription,
+          color_class: editedColorClass,
           updated_at: new Date().toISOString()
         })
         .eq('id', category.id)
