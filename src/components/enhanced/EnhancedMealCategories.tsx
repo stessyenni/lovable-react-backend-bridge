@@ -54,6 +54,54 @@ interface MealItem {
   ai_analysis_data?: any;
 }
 
+interface EditCategoryFormProps {
+  category: MealCategory;
+  colorOptions: string[];
+  onSave: (updated: { name: string; description: string; color_class: string }) => void;
+  onCancel: () => void;
+}
+
+const EditCategoryForm = ({ category, colorOptions, onSave, onCancel }: EditCategoryFormProps) => {
+  const [name, setName] = useState(category.name);
+  const [description, setDescription] = useState(category.description || "");
+  const [colorClass, setColorClass] = useState(category.color_class);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Category Name</Label>
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Category name" />
+      </div>
+      <div>
+        <Label>Description (Optional)</Label>
+        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+      </div>
+      <div>
+        <Label>Color Theme</Label>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {colorOptions.map((color) => (
+            <button
+              key={color}
+              onClick={() => setColorClass(color)}
+              className={`px-3 py-1 rounded text-sm border-2 ${
+                colorClass === color ? 'border-primary' : 'border-transparent'
+              } ${color}`}
+            >
+              Sample
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="flex gap-2 pt-4">
+        <Button onClick={() => onSave({ name, description, color_class: colorClass })} className="flex-1" disabled={!name.trim()}>
+          Save Changes
+        </Button>
+        <Button onClick={onCancel} variant="outline">Cancel</Button>
+      </div>
+    </div>
+  );
+};
+
 interface EnhancedMealCategoriesProps {
   onClose?: () => void;
 }
@@ -534,6 +582,55 @@ const EnhancedMealCategories = ({ onClose }: EnhancedMealCategoriesProps) => {
           </div>
         </ScrollArea>
       </div>
+
+      {/* Edit Category Dialog */}
+      <Dialog open={!!editingCategory} onOpenChange={(open) => !open && setEditingCategory(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Category</DialogTitle>
+            <DialogDescription>
+              Update the category name, description, or color
+            </DialogDescription>
+          </DialogHeader>
+          {editingCategory && (
+            <EditCategoryForm
+              category={editingCategory}
+              colorOptions={colorOptions}
+              onSave={async (updated) => {
+                try {
+                  const { error } = await (supabase as any)
+                    .from('meal_categories')
+                    .update({
+                      name: updated.name,
+                      description: updated.description,
+                      color_class: updated.color_class,
+                      updated_at: new Date().toISOString()
+                    })
+                    .eq('id', editingCategory.id)
+                    .eq('user_id', user?.id);
+
+                  if (error) throw error;
+
+                  toast({
+                    title: "Category Updated",
+                    description: `"${updated.name}" has been updated.`,
+                  });
+                  setEditingCategory(null);
+                  fetchCategories();
+                } catch (error) {
+                  console.error('Error updating category:', error);
+                  toast({
+                    title: "Error",
+                    description: "Failed to update category",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              onCancel={() => setEditingCategory(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Add Category Dialog */}
       <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
