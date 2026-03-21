@@ -47,10 +47,22 @@ interface EditableCategoryCardProps {
   onUpdate: () => void;
 }
 
+const colorOptions = [
+  "bg-purple-100 text-purple-800",
+  "bg-green-100 text-green-800",
+  "bg-blue-100 text-blue-800",
+  "bg-red-100 text-red-800",
+  "bg-yellow-100 text-yellow-800",
+  "bg-pink-100 text-pink-800",
+  "bg-orange-100 text-orange-800",
+  "bg-teal-100 text-teal-800"
+];
+
 const EditableCategoryCard = ({ category, onUpdate }: EditableCategoryCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(category.name);
   const [editedDescription, setEditedDescription] = useState(category.description || "");
+  const [editedColorClass, setEditedColorClass] = useState(category.color_class);
   const [newItemName, setNewItemName] = useState("");
   const [newItemCalories, setNewItemCalories] = useState("");
   const [newItemProtein, setNewItemProtein] = useState("");
@@ -79,6 +91,7 @@ const EditableCategoryCard = ({ category, onUpdate }: EditableCategoryCardProps)
         .update({
           name: editedName,
           description: editedDescription,
+          color_class: editedColorClass,
           updated_at: new Date().toISOString()
         })
         .eq('id', category.id)
@@ -209,6 +222,22 @@ const EditableCategoryCard = ({ category, onUpdate }: EditableCategoryCardProps)
                     className="text-sm"
                     placeholder="Description (optional)"
                   />
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Color Theme</p>
+                    <div className="flex flex-wrap gap-1">
+                      {colorOptions.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setEditedColorClass(color)}
+                          className={`px-2 py-0.5 rounded text-xs border-2 ${
+                            editedColorClass === color ? 'border-primary' : 'border-transparent'
+                          } ${color}`}
+                        >
+                          Aa
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -245,6 +274,7 @@ const EditableCategoryCard = ({ category, onUpdate }: EditableCategoryCardProps)
                     setIsEditing(false);
                     setEditedName(category.name);
                     setEditedDescription(category.description || "");
+                    setEditedColorClass(category.color_class);
                   }}
                 >
                   <X className="h-3 w-3" />
