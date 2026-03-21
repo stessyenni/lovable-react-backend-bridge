@@ -54,6 +54,54 @@ interface MealItem {
   ai_analysis_data?: any;
 }
 
+interface EditCategoryFormProps {
+  category: MealCategory;
+  colorOptions: string[];
+  onSave: (updated: { name: string; description: string; color_class: string }) => void;
+  onCancel: () => void;
+}
+
+const EditCategoryForm = ({ category, colorOptions, onSave, onCancel }: EditCategoryFormProps) => {
+  const [name, setName] = useState(category.name);
+  const [description, setDescription] = useState(category.description || "");
+  const [colorClass, setColorClass] = useState(category.color_class);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Category Name</Label>
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Category name" />
+      </div>
+      <div>
+        <Label>Description (Optional)</Label>
+        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+      </div>
+      <div>
+        <Label>Color Theme</Label>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {colorOptions.map((color) => (
+            <button
+              key={color}
+              onClick={() => setColorClass(color)}
+              className={`px-3 py-1 rounded text-sm border-2 ${
+                colorClass === color ? 'border-primary' : 'border-transparent'
+              } ${color}`}
+            >
+              Sample
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="flex gap-2 pt-4">
+        <Button onClick={() => onSave({ name, description, color_class: colorClass })} className="flex-1" disabled={!name.trim()}>
+          Save Changes
+        </Button>
+        <Button onClick={onCancel} variant="outline">Cancel</Button>
+      </div>
+    </div>
+  );
+};
+
 interface EnhancedMealCategoriesProps {
   onClose?: () => void;
 }
