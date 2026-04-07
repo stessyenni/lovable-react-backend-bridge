@@ -42,6 +42,7 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [createdMeal, setCreatedMeal] = useState<any | null>(null);
   const [showMealDetails, setShowMealDetails] = useState(false);
   const { user } = useAuth();
