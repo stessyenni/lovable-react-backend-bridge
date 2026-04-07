@@ -2,3 +2,6 @@ project_id = "zmpdvmusqapwkopqgqdr"
 
 [functions.hembot-ai]
 verify_jwt = false
+
+[functions.analyze-meal-image]
+verify_jwt = false

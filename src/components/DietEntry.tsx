@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useMealCategories } from "@/hooks/useMealCategories";
-import { Plus, Camera, X, Save } from "lucide-react";
+import { Plus, Camera, X, Save, Loader2 } from "lucide-react";
 import MealDetailsModal from "@/components/MealDetailsModal";
 
 interface MealCategory {
@@ -42,11 +42,48 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [createdMeal, setCreatedMeal] = useState<any | null>(null);
   const [showMealDetails, setShowMealDetails] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const { categories, addCategory } = useMealCategories();
+
+  const analyzeImage = async (base64: string) => {
+    setAnalyzing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-meal-image', {
+        body: { imageBase64: base64, mealName: mealName || undefined },
+      });
+
+      if (error) {
+        console.error('Image analysis error:', error);
+        toast({
+          title: "Analysis failed",
+          description: "Could not detect nutrients from the image. Please enter manually.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data?.success) {
+        if (data.calories) setCalories(String(data.calories));
+        if (data.protein && data.protein !== '0') setProtein(data.protein);
+        if (data.fiber && data.fiber !== '0') setFiber(data.fiber);
+        if (data.mealName && !mealName) setMealName(data.mealName);
+        if (data.description && !mealContent) setMealContent(data.description);
+
+        toast({
+          title: "Image Analyzed ✨",
+          description: `Detected ~${data.calories} calories, ${data.protein}g protein, ${data.fiber}g fiber`,
+        });
+      }
+    } catch (err) {
+      console.error('Unexpected analysis error:', err);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,7 +91,10 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
+        const result = e.target?.result as string;
+        setImagePreview(result);
+        // Trigger AI analysis
+        analyzeImage(result);
       };
       reader.readAsDataURL(file);
     }
@@ -326,6 +366,14 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
                     alt="Meal preview" 
                     className="w-full h-48 sm:h-56 object-cover rounded-lg"
                   />
+                  {analyzing && (
+                    <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                      <div className="flex items-center gap-2 text-white text-sm font-medium">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Analyzing nutrients...
+                      </div>
+                    </div>
+                  )}
                   <Button
                     type="button"
                     variant="destructive"
