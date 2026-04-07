@@ -366,6 +366,14 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
                     alt="Meal preview" 
                     className="w-full h-48 sm:h-56 object-cover rounded-lg"
                   />
+                  {analyzing && (
+                    <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                      <div className="flex items-center gap-2 text-white text-sm font-medium">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Analyzing nutrients...
+                      </div>
+                    </div>
+                  )}
                   <Button
                     type="button"
                     variant="destructive"
