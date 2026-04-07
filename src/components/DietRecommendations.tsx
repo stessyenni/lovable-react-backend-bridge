@@ -121,7 +121,7 @@ const DietRecommendations = () => {
                           src={rec.image}
                           alt={rec.name}
                           loading="lazy"
-                          className="object-cover w-full h-full display-flex align-items-center rounded-t-lg sm:rounded-t-none sm:rounded-l-lg"
+                          className="object-cover w-full h-full rounded-t-lg sm:rounded-t-none sm:rounded-l-lg"
                         />
                       </AspectRatio>
                     </div>
