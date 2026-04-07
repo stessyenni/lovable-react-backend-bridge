@@ -49,13 +49,52 @@ const DietEntry = ({ onSuccess, editMode = false, existingEntry, onClose }: Diet
   const { toast } = useToast();
   const { categories, addCategory } = useMealCategories();
 
+  const analyzeImage = async (base64: string) => {
+    setAnalyzing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-meal-image', {
+        body: { imageBase64: base64, mealName: mealName || undefined },
+      });
+
+      if (error) {
+        console.error('Image analysis error:', error);
+        toast({
+          title: "Analysis failed",
+          description: "Could not detect nutrients from the image. Please enter manually.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data?.success) {
+        if (data.calories) setCalories(String(data.calories));
+        if (data.protein && data.protein !== '0') setProtein(data.protein);
+        if (data.fiber && data.fiber !== '0') setFiber(data.fiber);
+        if (data.mealName && !mealName) setMealName(data.mealName);
+        if (data.description && !mealContent) setMealContent(data.description);
+
+        toast({
+          title: "Image Analyzed ✨",
+          description: `Detected ~${data.calories} calories, ${data.protein}g protein, ${data.fiber}g fiber`,
+        });
+      }
+    } catch (err) {
+      console.error('Unexpected analysis error:', err);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
+        const result = e.target?.result as string;
+        setImagePreview(result);
+        // Trigger AI analysis
+        analyzeImage(result);
       };
       reader.readAsDataURL(file);
     }
