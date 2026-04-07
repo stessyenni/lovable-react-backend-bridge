@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useMealCategories } from "@/hooks/useMealCategories";
-import { Plus, Camera, X, Save } from "lucide-react";
+import { Plus, Camera, X, Save, Loader2 } from "lucide-react";
 import MealDetailsModal from "@/components/MealDetailsModal";
 
 interface MealCategory {
