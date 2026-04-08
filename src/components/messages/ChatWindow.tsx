@@ -59,14 +59,20 @@ const sortedMessages = [...messages].sort(
     
     // Handle the case where user data comes from messages with different structure
     const userData = user as any;
-    if (userData.user_metadata?.first_name && userData.user_metadata?.last_name) {
-      return `${userData.user_metadata.first_name} ${userData.user_metadata.last_name}`;
-    }
-    if (userData.first_name && userData.last_name) {
-      return `${userData.first_name} ${userData.last_name}`;
-    }
-    if (userData.username) return userData.username;
-    return userData.email || 'Unknown User';
+    const metadataName = [userData.user_metadata?.first_name, userData.user_metadata?.last_name]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+    if (metadataName) return metadataName;
+
+    const profileName = [userData.first_name, userData.last_name]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+    if (profileName) return profileName;
+
+    if (userData.username?.trim()) return userData.username.trim();
+    return userData.email || 'User';
   };
 
   const getInitials = (user: User | undefined) => {

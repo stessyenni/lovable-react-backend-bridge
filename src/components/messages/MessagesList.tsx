@@ -40,12 +40,12 @@ const MessagesList = ({ messages, currentUserId, onSelectChat, selectedChat }: M
     const otherUserId = message.sender_id === currentUserId ? message.recipient_id : message.sender_id;
     const otherUser = message.sender_id === currentUserId ? message.recipient : message.sender;
     
-    if (!otherUser) return 'Unknown User';
-    
-    if (otherUser.first_name && otherUser.last_name) {
-      return `${otherUser.first_name} ${otherUser.last_name}`;
-    }
-    return otherUser.username || 'Unknown User';
+    if (!otherUser) return `User ${otherUserId.slice(0, 8)}`;
+
+    const fullName = [otherUser.first_name, otherUser.last_name].filter(Boolean).join(' ').trim();
+    if (fullName) return fullName;
+    if (otherUser.username?.trim()) return otherUser.username.trim();
+    return `User ${otherUserId.slice(0, 8)}`;
   };
 
   const getInitials = (message: Message) => {
