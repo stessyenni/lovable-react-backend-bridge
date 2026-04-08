@@ -115,8 +115,8 @@ const DietRecommendations = () => {
                 >
                   {/* Image + Header */}
                   <div className="flex flex-col sm:flex-row">
-                    <div className="sm:w-48 md:w-56 shrink-0">
-                      <AspectRatio ratio={4 / 3} className="sm:h-full">
+                   <div className="w-full sm:w-52 md:w-64 lg:w-72 shrink-0">
+                      <AspectRatio ratio={16 / 10} className="sm:h-full">
                         <img
                           src={rec.image}
                           alt={rec.name}
