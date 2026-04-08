@@ -26,8 +26,13 @@ export const useMessages = (userId: string | undefined, component?: string) => {
       }
 
       const profileIds = [...new Set((data || []).flatMap((message) => [message.sender_id, message.recipient_id]))];
-      const profiles = await fetchPublicProfilesByIds(profileIds);
-      const profileMap = new Map(profiles.map((profile) => [profile.id, profile]));
+      let profileMap = new Map<string, any>();
+      try {
+        const profiles = await fetchPublicProfilesByIds(profileIds);
+        profileMap = new Map(profiles.map((profile) => [profile.id, profile]));
+      } catch (err) {
+        console.error('Error fetching profiles for messages:', err);
+      }
 
       setMessages((data || []).map((message) => ({
         ...message,
