@@ -9,13 +9,26 @@ export const useConnections = (userId: string | undefined) => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const { toast } = useToast();
 
+  const normalizeRelatedProfile = (profile: any) => {
+    if (!profile) return undefined;
+    return Array.isArray(profile) ? profile[0] : profile;
+  };
+
   const fetchConnections = useCallback(async () => {
     if (!userId) return;
 
     try {
       const { data, error } = await supabase
         .from('user_connections')
-        .select('id, follower_id, following_id, status, created_at')
+        .select(`
+          id,
+          follower_id,
+          following_id,
+          status,
+          created_at,
+          follower:public_profiles!user_connections_follower_id_fkey(id, first_name, last_name, username, profile_image_url),
+          following:public_profiles!user_connections_following_id_fkey(id, first_name, last_name, username, profile_image_url)
+        `)
         .or(`follower_id.eq.${userId},following_id.eq.${userId}`)
         .eq('status', 'accepted');
 
@@ -35,8 +48,8 @@ export const useConnections = (userId: string | undefined) => {
 
       setConnections((data || []).map((connection) => ({
         ...connection,
-        follower: profileMap.get(connection.follower_id),
-        following: profileMap.get(connection.following_id),
+        follower: normalizeRelatedProfile((connection as any).follower) || profileMap.get(connection.follower_id),
+        following: normalizeRelatedProfile((connection as any).following) || profileMap.get(connection.following_id),
       })));
     } catch (error) {
       console.error('Unexpected error:', error);

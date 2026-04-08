@@ -17,10 +17,10 @@ interface ConnectionsListProps {
 const ConnectionsList = ({ connections, currentUserId, onRefresh, onMessageUser }: ConnectionsListProps) => {
   const getDisplayName = (user: User | undefined) => {
     if (!user) return 'Unknown User';
-    if (user.first_name && user.last_name) {
-      return `${user.first_name} ${user.last_name}`;
-    }
-    return user.username || 'Unknown User';
+    const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ').trim();
+    if (fullName) return fullName;
+    if (user.username?.trim()) return user.username.trim();
+    return 'User';
   };
 
   const getInitials = (user: User | undefined) => {

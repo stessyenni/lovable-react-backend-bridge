@@ -9,6 +9,11 @@ export const useMessages = (userId: string | undefined, component?: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  const normalizeRelatedProfile = (profile: any) => {
+    if (!profile) return undefined;
+    return Array.isArray(profile) ? profile[0] : profile;
+  };
   
   const fetchMessages = useCallback(async () => {
     if (!userId) return;
@@ -16,7 +21,16 @@ export const useMessages = (userId: string | undefined, component?: string) => {
     try {
       const { data, error } = await supabase
         .from('messages')
-        .select('id, sender_id, recipient_id, content, read_at, created_at')
+        .select(`
+          id,
+          sender_id,
+          recipient_id,
+          content,
+          read_at,
+          created_at,
+          sender:public_profiles!messages_sender_id_fkey(id, first_name, last_name, username, profile_image_url),
+          recipient:public_profiles!messages_recipient_id_fkey(id, first_name, last_name, username, profile_image_url)
+        `)
         .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`)
         .order('created_at', { ascending: false });
 
@@ -36,8 +50,8 @@ export const useMessages = (userId: string | undefined, component?: string) => {
 
       setMessages((data || []).map((message) => ({
         ...message,
-        sender: profileMap.get(message.sender_id),
-        recipient: profileMap.get(message.recipient_id),
+        sender: normalizeRelatedProfile((message as any).sender) || profileMap.get(message.sender_id),
+        recipient: normalizeRelatedProfile((message as any).recipient) || profileMap.get(message.recipient_id),
       })));
     } catch (error) {
       console.error('Unexpected error:', error);
