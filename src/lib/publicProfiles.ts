@@ -24,8 +24,11 @@ export const fetchPublicProfilesByIds = async (userIds: string[]) => {
     .select(PUBLIC_PROFILE_SELECT)
     .in("id", uniqueUserIds);
 
-  if (error) throw error;
-  return (data ?? []) as PublicProfile[];
+  if (error) {
+    console.error('Error fetching public profiles:', error);
+    return [] as PublicProfile[];
+  }
+  return (data ?? []).filter((p: any) => p.id) as PublicProfile[];
 };
 
 export const searchPublicProfiles = async (searchTerm: string, currentUserId: string, limit = 10) => {

@@ -80,10 +80,10 @@ const AppHeader = ({
             />
           </div>
 
-          {/* Connection Status - Hidden on mobile */}
-          <div className="hidden lg:flex items-center space-x-2">
+          {/* Connection Status - Visible on all devices */}
+          <div className="flex items-center space-x-1 sm:space-x-2">
             <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
-            <span className={`text-sm text-muted-foreground ${brailleMode ? "font-bold" : ""}`}>
+            <span className={`text-xs sm:text-sm text-muted-foreground ${brailleMode ? "font-bold" : ""} hidden sm:inline`}>
               {isOnline ? t('header.online') : t('header.offline')}
             </span>
             <Switch 

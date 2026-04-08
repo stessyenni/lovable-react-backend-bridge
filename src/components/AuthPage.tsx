@@ -86,11 +86,17 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center space-y-4">
-          {/* Language Switcher */}
-          <div className="absolute top-4 right-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4">
+      <Card className="w-full max-w-md shadow-lg relative">
+        <CardHeader className="text-center space-y-4 pt-12 sm:pt-6">
+          {/* Language Switcher & Offline Toggle */}
+          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <div className={`w-2 h-2 rounded-full ${navigator.onLine ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <span className="text-xs text-muted-foreground hidden sm:inline">
+                {navigator.onLine ? 'Online' : 'Offline'}
+              </span>
+            </div>
             <LanguageSwitcher />
           </div>
           
