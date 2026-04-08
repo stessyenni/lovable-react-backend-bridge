@@ -44,8 +44,11 @@ export const searchPublicProfiles = async (searchTerm: string, currentUserId: st
     .neq("id", currentUserId)
     .limit(limit);
 
-  if (error) throw error;
-  return (data ?? []) as PublicProfile[];
+  if (error) {
+    console.error('Error searching public profiles:', error);
+    return [] as PublicProfile[];
+  }
+  return (data ?? []).filter((p: any) => p.id) as PublicProfile[];
 };
 
 export const fetchRecentPublicProfiles = async (currentUserId: string, limit = 8) => {
@@ -55,13 +58,19 @@ export const fetchRecentPublicProfiles = async (currentUserId: string, limit = 8
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) throw error;
-  return (data ?? []) as PublicProfile[];
+  if (error) {
+    console.error('Error fetching recent profiles:', error);
+    return [] as PublicProfile[];
+  }
+  return (data ?? []).filter((p: any) => p.id) as PublicProfile[];
 };
 
 export const fetchAllPublicProfileIds = async () => {
   const { data, error } = await publicProfilesQuery().select("id");
 
-  if (error) throw error;
-  return (data ?? []) as Array<{ id: string }>;
+  if (error) {
+    console.error('Error fetching all profile IDs:', error);
+    return [] as Array<{ id: string }>;
+  }
+  return (data ?? []).filter((p: any) => p.id) as Array<{ id: string }>;
 };
