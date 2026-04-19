@@ -15,16 +15,16 @@ interface ConnectionsListProps {
 }
 
 const ConnectionsList = ({ connections, currentUserId, onRefresh, onMessageUser }: ConnectionsListProps) => {
-  const getDisplayName = (user: User | undefined) => {
-    if (!user) return 'Unknown User';
+  const getDisplayName = (user: User | undefined, fallbackUserId?: string) => {
+    if (!user) return fallbackUserId ? `User ${fallbackUserId.slice(0, 8)}` : 'User';
     const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ').trim();
     if (fullName) return fullName;
     if (user.username?.trim()) return user.username.trim();
-    return 'User';
+    return fallbackUserId ? `User ${fallbackUserId.slice(0, 8)}` : 'User';
   };
 
-  const getInitials = (user: User | undefined) => {
-    const name = getDisplayName(user);
+  const getInitials = (user: User | undefined, fallbackUserId?: string) => {
+    const name = getDisplayName(user, fallbackUserId);
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
@@ -54,16 +54,19 @@ const ConnectionsList = ({ connections, currentUserId, onRefresh, onMessageUser 
             const otherUser = connection.follower_id === currentUserId 
               ? connection.following 
               : connection.follower;
+            const otherUserId = connection.follower_id === currentUserId
+              ? connection.following_id
+              : connection.follower_id;
             
             return (
               <div key={connection.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border rounded-lg gap-3">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
                     <AvatarImage src={UserAvatarPlaceholder} alt="User Avatar" />
-                    <AvatarFallback className="text-xs sm:text-sm">{getInitials(otherUser)}</AvatarFallback>
+                    <AvatarFallback className="text-xs sm:text-sm">{getInitials(otherUser, otherUserId)}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-sm sm:text-base truncate">{getDisplayName(otherUser)}</p>
+                    <p className="font-medium text-sm sm:text-base truncate">{getDisplayName(otherUser, otherUserId)}</p>
                     <p className="text-xs sm:text-sm text-muted-foreground">
                       Connected since {new Date(connection.created_at).toLocaleDateString()}
                     </p>
