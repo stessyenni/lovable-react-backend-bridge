@@ -310,6 +310,15 @@ const Community = () => {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase() || 'U';
   };
 
+  const getDisplayName = (
+    profile?: { first_name: string | null; last_name: string | null; profile_image_url: string | null } | null,
+    fallbackUserId?: string,
+  ) => {
+    const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ').trim();
+    if (fullName) return fullName;
+    return fallbackUserId ? `User ${fallbackUserId.slice(0, 8)}` : 'User';
+  };
+
   return (
     <div className="space-y-4 lg:space-y-6 w-full max-w-5xl mx-auto p-2 sm:p-4 lg:p-6 min-w-0">
       <div className="space-y-2">
@@ -454,7 +463,7 @@ const Community = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-medium">
-                              {post.profile?.first_name} {post.profile?.last_name}
+                              {getDisplayName(post.profile, post.user_id)}
                             </span>
                             <Badge variant="secondary" className="text-xs">
                               <CategoryIcon className="h-3 w-3 mr-1" />
@@ -544,7 +553,7 @@ const Community = () => {
                     <div className="flex-1 bg-muted p-3 rounded-lg">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">
-                          {comment.profile?.first_name} {comment.profile?.last_name}
+                          {getDisplayName(comment.profile, comment.user_id)}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
